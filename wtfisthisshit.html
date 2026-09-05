@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="hosting-provider" content="Netlify">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinay Bhai | Smart Test Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-body: #f2f6fb; --bg-surface: #ffffff;
+            --text-main: #0b1328; --text-muted: #60718b;
+            --primary: #f97316; --primary-hover: #ea580c;
+            --success: #16a34a; --danger: #ef4444; --warning: #eab308;
+            --border-light: #e2e8f0; --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.3);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --correct-bg: #dcfce7; --correct-border: #4ade80; --correct-text: #166534;
+            --wrong-bg: #fee2e2; --wrong-border: #f87171; --wrong-text: #991b1b;
+            --exam-bar-bg: #2B4C7E; --exam-workspace-bg: #e2e8f0;
+            --control-panel-bg: #f1f5f9;
+            --opt-btn-bg: #ffffff; --opt-btn-border: #cbd5e1;
+            --opt-selected-bg: #eff6ff;
+            --weak-card-bg: #fff7ed; --weak-card-border: #fed7aa; --weak-card-title: #9a3412;
+            --vault-note-bg: #fef08a; --vault-note-border: #fde047; --vault-note-text: #854d0e;
+            --session-badge-bg: #fef3c7; --session-badge-border: #fde68a;
+        }
+
+        .dark {
+            --bg-body: #0f172a; --bg-surface: #1e293b;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --border-light: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --correct-bg: #064e3b; --correct-border: #10b981; --correct-text: #6ee7b7;
+            --wrong-bg: #7f1d1d; --wrong-border: #f87171; --wrong-text: #fca5a5;
+            --exam-bar-bg: #1e3a5f; --exam-workspace-bg: #0f172a;
+            --control-panel-bg: #1e293b;
+            --opt-btn-bg: #334155; --opt-btn-border: #475569;
+            --opt-selected-bg: #1e3a5f;
+            --weak-card-bg: #431407; --weak-card-border: #9a3412; --weak-card-title: #fdba74;
+            --vault-note-bg: #422006; --vault-note-border: #a16207; --vault-note-text: #fde047;
+            --session-badge-bg: #422006; --session-badge-border: #a16207;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        html, body { 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* NAVBAR & APP NAVIGATION */
+        .auth-bar { background: var(--bg-surface); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); z-index: 50; flex-shrink: 0; }
+        .brand-logo { font-weight: 700; font-size: 18px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
+        .brand-logo span { color: var(--primary); }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border-light);}
+
+        .app-nav { background: var(--bg-surface); padding: 20px 16px; display: flex; flex-direction: column; gap: 6px; border-right: 1px solid var(--border-light); box-shadow: var(--shadow-sm); flex-shrink: 0; }
+        .nav-tab { padding: 12px 16px; color: var(--text-muted); font-weight: 600; font-size: 14px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s;}
+        .nav-tab:hover { color: var(--primary); }
+        .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .admin-only { display: none; }
+
+        /* VIEW PANELS */
+        .view-panel { display: none; flex: 1; width: 100vw; height: calc(100vh - 105px); overflow-y: auto; animation: fadeIn 0.3s ease-in-out; background: var(--bg-body);}
+        .view-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* GUEST INTERCEPT OVERLAY */
+        #guest-intercept-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
+        .intercept-card { background: var(--bg-surface); padding: 32px; border-radius: 16px; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); border: 1px solid var(--border-light); }
+
+        /* DASHBOARD & SECTION LAYOUT */
+        .section-container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
+        .header-section { text-align: center; margin-bottom: 30px; }
+        .header-section h1 { font-size: 32px; font-weight: 700; color: var(--text-main); }
+        .header-section p { font-size: 15px; color: var(--text-muted); margin-top: 8px; }
+
+        .card { background: var(--bg-surface); padding: 24px; border-radius: 12px; box-shadow: var(--shadow-md); border: 1px solid var(--border-light); margin-bottom: 24px; }
+        .card h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);}
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--text-main);}
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 14px; background: var(--bg-body); transition: all 0.2s;}
+        
+        .btn { background: var(--primary); color: white; padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn:hover { filter: brightness(0.9); }
+        .btn-success { background-color: var(--success); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-warning { background-color: var(--warning); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-light); color: var(--text-main); }
+        .btn-outline:hover { background: var(--bg-body); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .test-grid { display: flex; overflow-x: auto; gap: 16px; margin-top: 15px; padding-bottom: 12px; white-space: nowrap; align-items: stretch; }
+        .test-grid::-webkit-scrollbar { height: 8px; }
+        .test-grid::-webkit-scrollbar-track { background: var(--bg-body); border-radius: 4px; }
+        .test-grid::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .test-card { flex: 0 0 320px; display: flex; flex-direction: column; background: var(--bg-body); border: 1px solid var(--border-light); padding: 16px; border-radius: 10px; transition: transform 0.2s; position: relative; white-space: normal; min-height: 200px;}
+        .test-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+        .test-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text-main); padding-right: 70px;}
+        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        .history-table th, .history-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-light); }
+        .history-table th { background-color: var(--bg-body); font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px;}
+        
+        /* VAULT NOTES */
+        .vault-notes { background: var(--vault-note-bg); border: 1px solid var(--vault-note-border); padding: 12px; border-radius: 8px; width: 100%; height: 100px; resize: vertical; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--vault-note-text); box-shadow: var(--shadow-sm); outline: none; margin-top: 5px; line-height: 1.5;}
+        
+        /* EXAM INTERFACE */
+        #exam-view { display: none; flex-direction: column; width: 100vw; height: 100vh; background: var(--bg-body); z-index: 100; position: fixed; top: 0; left: 0;}
+        #exam-view.active { display: flex; }
+        .exam-top-bar { height: 50px; background: var(--exam-bar-bg); padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; color: white;}
+        .exam-workspace { display: flex; width: 100vw; height: calc(100vh - 50px); overflow: hidden; background: var(--exam-workspace-bg);}
+        .pdf-panel { width: 70%; flex: 0 0 70%; height: 100%; overflow-y: auto; background: var(--bg-surface); display: flex; flex-direction: column; border: none;}
+        .pdf-panel iframe { width: 100%; height: 100%; border: none; flex: 1; display: block; outline: none; }
+        .control-panel { width: 30%; flex: 0 0 30%; height: 100%; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--control-panel-bg); }
+        .q-card { background: var(--bg-surface); border-radius: 8px; padding: 15px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);}
+        .options-row { display: flex; justify-content: space-evenly; margin-bottom: 25px; }
+        .opt-btn { width: 45px; height: 45px; border-radius: 4px; border: 1px solid var(--opt-btn-border); background: var(--opt-btn-bg); font-weight: 700; font-size: 18px; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center;}
+        .opt-btn.selected { border: 2px solid var(--primary); background: var(--opt-selected-bg); color: var(--primary); }
+
+        .palette-scroll { flex: 1; overflow-y: auto; margin-top: 10px;}
+        .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .pal-btn { height: 35px; border-radius: 4px; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+        .pal-btn.active { outline: 2px solid #000; box-shadow: 0 0 0 3px #fde047; z-index: 2; }
+        .pal-btn.unseen { background: var(--bg-surface); border: 1px solid var(--opt-btn-border); }
+        .pal-btn.not-answered { background: #ef4444; color: white; border: none; }
+        .pal-btn.answered { background: #22c55e; color: white; border: none; }
+        .pal-btn.marked { background: #8b5cf6; color: white; border: none; }
+        .pal-btn.ans-marked { background: #8b5cf6; color: white; border: none; }
+
+        /* RESULT VIEW */
+        #result-view { padding: 20px; overflow-y: auto; width: 100vw; height: 100vh; display: none; flex-direction: column; background: var(--bg-body); z-index: 100; position: fixed; top: 0; left: 0;}
+        #result-view.active { display: flex; }
+        .score-banner { background: var(--bg-surface); padding: 16px 24px; border-radius: 12px; border: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .split-review-workspace { display: flex; gap: 16px; }
+        .review-left-panel { flex: 1; background: var(--bg-surface); border-radius: 12px; border: 1px solid var(--border-light); }
+        .result-grid-scroll { padding: 16px; padding-bottom: 60px; background: var(--bg-body); }
+        .subject-result-section { margin-bottom: 20px; background: var(--bg-surface); padding: 14px; border-radius: 10px; border: 1px solid var(--border-light); }
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 6px;}
+        
+        /* GRADING STYLES */
+        .res-box { border: 1px solid var(--border-light); padding: 8px; border-radius: 6px; text-align: center; }
+        .res-box.correct { background: var(--correct-bg); border-color: var(--correct-border); }
+        .res-box.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); }
+        .res-box.unattempted { background: var(--bg-body); }
+        .res-box.not-counted { opacity: 0.55; }
+
+        /* SCORE SUMMARY */
+        .stats-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .stat-chip { background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .stat-chip b { font-size: 15px; color: var(--text-main); margin-left: 4px; }
+        .subject-stats-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        .subject-stats-table th, .subject-stats-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-light); text-align: center; }
+        .subject-stats-table th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 10px; }
+        .subject-stats-table td:first-child, .subject-stats-table th:first-child { text-align: left; }
+
+        /* WEAK TOPICS */
+        .weak-topics-card { background: var(--weak-card-bg); border: 1px solid var(--weak-card-border); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+        .weak-topics-card h4 { font-size: 13px; font-weight: 700; color: var(--weak-card-title); margin-bottom: 10px; }
+        .weak-topic-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--weak-card-border); font-size: 13px; }
+        .weak-topic-row:last-child { border-bottom: none; }
+        .weak-topic-count { background: #ef4444; color: white; font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+
+        /* PER-QUESTION TOPIC TAG */
+        .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 10px 0 6px; padding-top: 6px; border-top: 1px dashed var(--border-light); }
+        .section-label:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+        .topic-input { width: 100%; margin-top: 6px; font-size: 10px; padding: 3px 4px; border: 1px solid var(--border-light); border-radius: 4px; background: var(--bg-body); color: var(--text-main); text-align: center; }
+        .badge-not-counted { display: block; font-size: 9px; color: var(--danger); font-weight: 700; margin-top: 2px; }
+
+        /* MISTAKE VAULT (Analytics tab) */
+        .mistake-card { flex: 0 0 280px; background: var(--bg-body); border: 1px solid var(--border-light); border-left: 4px solid var(--danger); padding: 14px; border-radius: 10px; white-space: normal; }
+        .mistake-card .mc-topic { font-weight: 700; font-size: 14px; color: var(--text-main); margin-bottom: 4px; }
+        .mistake-card .mc-count { font-size: 12px; color: var(--danger); font-weight: 600; }
+        .mistake-card .mc-subject { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* SCORE CIRCLE (result view) */
+        .score-circle-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; border: 8px solid var(--border-light); border-top-color: var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+        .score-circle .num { font-size: 24px; font-weight: 700; color: var(--text-main); }
+        .score-circle .den { font-size: 10px; color: var(--text-muted); }
+        .pacing-mini { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+        .pacing-mini b { color: var(--text-main); }
+
+        /* SUBJECT TIMING METRICS TABLE (result view) */
+        .subject-timing-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; }
+        .subject-timing-table th { background: var(--bg-body); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 8px 12px; text-align: center; border-bottom: 1px solid var(--border-light); }
+        .subject-timing-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-light); text-align: center; }
+        .subject-timing-table td:first-child { text-align: left; font-weight: 600; color: var(--text-main); }
+        .subject-timing-table tr:last-child td { border-bottom: none; }
+
+        /* MANUAL TICK MARK for cloud test cards */
+        .tick-checkbox { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; cursor: pointer; accent-color: var(--success); }
+
+        /* CONTINUE / RETAKE MODAL */
+        #resume-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 300; align-items: center; justify-content: center; }
+        .resume-card { background: var(--bg-surface); padding: 32px; border-radius: 16px; max-width: 460px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); border: 1px solid var(--border-light); }
+        .resume-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .resume-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+        .resume-options { display: flex; flex-direction: column; gap: 12px; }
+        .resume-info { background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 20px; text-align: left; }
+        .resume-info b { color: var(--text-main); }
+
+        /* CHART SCROLL WRAPPER (analytics vault) — charts get a fixed-width inner
+           container inside a horizontally scrollable wrapper so they extend sideways
+           gracefully as the user accumulates 100+ tests instead of squishing. */
+        .chart-scroll-wrapper { overflow-x: auto; overflow-y: hidden; border-radius: 8px; }
+        .chart-scroll-inner { height: 240px; position: relative; min-width: 100%; }
+
+        /* VINAY BHAI DASHBOARD SHELL */
+        body { background: var(--bg-body); }
+        .auth-bar { height: 72px; padding: 0 30px; background: #080d1d; border-bottom: 0; }
+        .brand-logo { color: #fff; font-size: 20px; letter-spacing: -.4px; }
+        .brand-logo::before { content: 'VB'; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg,#f97316,#d97706); color: #fff; font-size: 14px; font-weight: 800; box-shadow: 0 8px 18px rgba(249,115,22,.25); }
+        .brand-logo span { color: #fb923c; }
+        .auth-bar .btn-outline { color: #e2e8f0; border-color: #334155; }
+        .app-nav { position: fixed; top: 72px; bottom: 0; left: 0; width: 238px; align-items: stretch; padding: 26px 16px; gap: 6px; z-index: 40; overflow-y: auto; }
+        .app-nav::before { content: 'VB · VINAY BHAI'; color: #94a3b8; font-size: 11px; font-weight: 800; letter-spacing: .12em; padding: 0 12px 22px; }
+        .nav-group-label { color: #94a3b8; font-size: 11px; font-weight: 800; letter-spacing: .1em; padding: 18px 12px 8px; text-transform: uppercase; }
+        .nav-tab { border: 0; border-radius: 11px; padding: 12px 14px; color: #52647e; font-size: 14px; text-align: left; transition: background .2s, color .2s, transform .2s; }
+        .nav-tab:hover { color: #ea580c; background: #fff7ed; transform: translateX(2px); }
+        .nav-tab.active { color: #ea580c; background: #fff7ed; border: 0; box-shadow: none; }
+        .view-panel { width: calc(100vw - 238px); height: calc(100vh - 72px); margin-left: 238px; }
+        .section-container { max-width: none; padding: 40px 48px 80px; }
+        .header-section { text-align: left; margin-bottom: 24px; }
+        .header-section h1 { font-size: 30px; letter-spacing: -.8px; }
+        .header-section p { font-size: 14px; }
+        .card { padding: 26px; border-radius: 18px; box-shadow: 0 8px 26px rgba(15,23,42,.06); }
+        .card h2 { border-bottom: 0; padding-bottom: 0; }
+        .overview-hero { background: linear-gradient(115deg,#111b33 0%,#17243e 58%,#263d59 100%); color: #fff; border-radius: 22px; padding: 30px 34px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; box-shadow: 0 18px 34px rgba(15,23,42,.18); }
+        .overview-hero h1 { font-size: 30px; margin: 12px 0 8px; letter-spacing: -.8px; }
+        .overview-hero p { color: #b7c4d9; line-height: 1.6; max-width: 580px; }
+        .target-pill { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(249,115,22,.16); color: #fb923c; border: 1px solid rgba(251,146,60,.35); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+        .hero-cta { background: linear-gradient(135deg,#f97316,#ea580c); box-shadow: 0 12px 24px rgba(249,115,22,.28); padding: 15px 22px; border-radius: 12px; white-space: nowrap; }
+        .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; margin-bottom: 24px; }
+        .metric-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; display:flex; align-items:center; gap: 14px; box-shadow: 0 7px 18px rgba(15,23,42,.05); }
+        .metric-icon { width: 46px; height: 46px; border-radius: 13px; display:grid; place-items:center; font-size: 21px; flex-shrink:0; }
+        .metric-icon.orange { background:#fff1e8; color:#f97316; } .metric-icon.blue { background:#eaf2ff; color:#3b82f6; } .metric-icon.green { background:#e8fbf2; color:#10b981; } .metric-icon.violet { background:#f1edff; color:#8b5cf6; }
+        .metric-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: .05em; }
+        .metric-value { color: var(--text-main); font-size: 26px; font-weight: 800; margin-top: 3px; }
+        .test-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); overflow: visible; white-space: normal; }
+        .test-card { flex: none; min-height: 190px; border-radius: 15px; padding: 20px; background: #f8fafc; }
+        .test-card:hover { transform: translateY(-4px); border-color: #fb923c; box-shadow: 0 12px 24px rgba(249,115,22,.12); }
+        .search-input { width:100%; padding: 13px 16px; border:1px solid var(--border-light); border-radius: 12px; background:var(--bg-body); color:var(--text-main); margin: 4px 0 16px; }
+        .section-kicker { font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+        .leaderboard-form { display:grid; grid-template-columns: 1.5fr 1fr repeat(5,1fr) auto; gap: 8px; align-items:end; }
+        .leaderboard-form input { min-width: 0; }
+        .leaderboard-table { width:100%; border-collapse:collapse; margin-top:18px; font-size:13px; }
+        .leaderboard-table th,.leaderboard-table td { padding:12px; border-bottom:1px solid var(--border-light); text-align:left; }
+        .leaderboard-table th { color:var(--text-muted); font-size:11px; text-transform:uppercase; }
+        @media (max-width: 900px) { .metric-grid { grid-template-columns:repeat(2,1fr); } .test-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .overview-hero { align-items:flex-start; flex-direction:column; } .leaderboard-form { grid-template-columns:repeat(2,1fr); } }
+        @media (max-width: 640px) { .auth-bar { padding:0 16px; } .auth-bar .user-profile > div, .auth-bar #auth-actions { display:none !important; } .app-nav { width:70px; padding:20px 8px; } .app-nav::before { content:'VB'; padding:0 0 20px; text-align:center; color:#f97316; } .nav-group-label { display:none; } .nav-tab { font-size:0; text-align:center; padding:12px 4px; } .nav-tab:first-letter { font-size:18px; } .view-panel { width:calc(100vw - 70px); margin-left:70px; } .section-container { padding:24px 16px 60px; } .metric-grid,.test-grid { grid-template-columns:1fr; } .overview-hero { padding:24px; } .overview-hero h1 { font-size:24px; } }
+
+        /* PENALTY ANALYTICS */
+        .penalty-analytics-card { background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #ef4444; border-radius: 10px; padding: 14px; margin-bottom: 20px; }
+        .penalty-analytics-card h4 { font-size: 14px; font-weight: 700; color: #991b1b; margin-bottom: 12px; }
+        .penalty-metrics-row { display: flex; gap: 16px; flex-wrap: wrap; }
+        .penalty-metric-box { flex: 1; min-width: 200px; background: var(--bg-surface); border-radius: 8px; padding: 12px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 4px; }
+        .penalty-metric-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .penalty-metric-value { font-size: 28px; font-weight: 700; }
+        .penalty-metric-subtext { font-size: 11px; color: var(--text-muted); font-style: italic; }
+        .penalty-pill { display: inline-block; background: #fee2e2; color: #dc2626; font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+        .guesswork-banner { background: #fffbeb; border: 1px solid #fcd34d; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 12px; font-weight: 600; color: #92400e; }
+    </style>
+    <script>
+        window.mockLogin = window.mockLogin || function() { alert("Authentication module initializing. Please wait..."); };
+        window.mockLogout = window.mockLogout || function() {};
+    </script>
+</head>
+<body>
+
+    <div id="guest-intercept-modal">
+        <div class="intercept-card">
+            <div style="font-size: 40px; margin-bottom: 12px;">🔒</div>
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Authentication Required</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Log in with your Google Account to access tests and sync scores to Firebase.</p>
+            <button class="btn" style="width: 100%; padding: 12px;" onclick="window.mockLogin()">Sign In with Google</button>
+        </div>
+    </div>
+
+    <!-- CONTINUE / RETAKE MODAL (cloud tests only) -->
+    <div id="resume-modal">
+        <div class="resume-card">
+            <div style="font-size: 36px; margin-bottom: 10px;">📝</div>
+            <h2 id="resume-modal-title">Resume Cloud Test</h2>
+            <p id="resume-modal-subtitle">You have an unfinished attempt saved. How would you like to proceed?</p>
+            <div id="resume-modal-info" class="resume-info"></div>
+            <div class="resume-options">
+                <button class="btn btn-success" style="padding: 14px; font-size: 15px;" id="resume-continue-btn" onclick="window.handleResumeChoice('continue')">▶ Continue From Where I Left Off</button>
+                <button class="btn btn-warning" style="padding: 14px; font-size: 15px;" id="resume-retake-btn" onclick="window.handleResumeChoice('retake')">🔄 Start Fresh (Retake From Beginning)</button>
+                <button class="btn btn-outline" style="padding: 10px; font-size: 13px;" onclick="window.closeResumeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="auth-bar">
+        <div class="brand-logo">Vinay&nbsp;<span>Bhai</span></div>
+        <div id="auth-actions"><button class="btn" onclick="window.mockLogin()">Sign In with Google</button></div>
+        <div id="user-profile-display" class="user-profile" style="display: none;">
+            <button id="theme-toggle-btn" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="window.toggleThemeMode()">🌙 Dark Mode</button>
+            <div style="display: flex; flex-direction: column; text-align: right;">
+                <span id="user-name" style="font-size: 14px; font-weight: 600;">Student Name</span>
+            </div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="window.mockLogout()">Logout</button>
+        </div>
+    </header>
+
+    <nav class="app-nav">
+        <div class="nav-group-label">Main Menu</div>
+        <div class="nav-tab active" id="tab-dashboard" onclick="switchMainView('dashboard-view', this)">🏠 Overview</div>
+        <div class="nav-tab" id="tab-attempts" onclick="switchMainView('attempts-view', this); window.renderHistoryVault();">📝 My Attempts</div>
+        <div class="nav-tab" id="tab-analytics" onclick="switchMainView('analytics-view', this); window.loadAnalyticsHub();">📊 Analytics</div>
+        <div class="nav-group-label">Practice & Tests</div>
+        <div class="nav-tab" id="tab-browse" onclick="switchMainView('browse-view', this); window.loadOfficialCloudTests();">📚 Browse Tests</div>
+        <div class="nav-tab" id="tab-leaderboard" onclick="switchMainView('leaderboard-view', this); window.renderLeaderboard();">🏆 Rank Leaderboard</div>
+        <div class="nav-tab" id="tab-upload" onclick="switchMainView('local-upload-view', this)">🧪 Local Sandbox</div>
+        <div class="nav-group-label">Account & Admin</div>
+        <div class="nav-tab admin-only" id="admin-nav-tab" onclick="switchMainView('admin-view', this); window.loadAdminTests();">📤 Admin Upload Panel</div>
+        <div class="nav-tab" id="tab-profile" onclick="switchMainView('profile-view', this); window.renderProfileStats();">👤 Profile & Stats</div>
+        <div class="nav-tab" onclick="window.mockLogout()">🚪 Logout</div>
+    </nav>
+
+    <!-- 1. OVERVIEW DASHBOARD VIEW -->
+    <div id="dashboard-view" class="view-panel active section-container">
+        <div class="overview-hero">
+            <div>
+                <span class="target-pill">TARGET GOAL: NEET / JEE</span>
+                <h1 id="hero-greeting">Good evening, Future Doctor</h1>
+                <p>Your personalized command center. Track scores, spot weak topics, and crush your next mock with precision analytics.</p>
+            </div>
+            <button class="hero-cta" onclick="window.startLatestCloudTest()">Start Today's Mock Test →</button>
+        </div>
+
+        <div class="metric-grid">
+            <div class="metric-card"><div class="metric-icon orange">🎯</div><div><div class="metric-label">Overall Accuracy</div><div class="metric-value" id="ov-accuracy">—</div></div></div>
+            <div class="metric-card"><div class="metric-icon blue">📄</div><div><div class="metric-label">Tests Taken</div><div class="metric-value" id="ov-tests">0</div></div></div>
+            <div class="metric-card"><div class="metric-icon green">⚡</div><div><div class="metric-label">Questions Solved</div><div class="metric-value" id="ov-questions">0</div></div></div>
+            <div class="metric-card"><div class="metric-icon violet">🏅</div><div><div class="metric-label">Predicted AIR</div><div class="metric-value" id="ov-air">—</div></div></div>
+        </div>
+
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <h2 style="margin:0;border:0;padding:0;">📚 Recommended Cloud Tests</h2>
+                <span class="section-kicker" id="ov-test-count">Loading…</span>
+            </div>
+            <input class="search-input" type="text" id="test-search-input" placeholder="🔍 Search tests (e.g. T5, NEET, Easy)…" oninput="window.filterCloudTests()">
+            <div id="available-tests-container" class="test-grid">
+                <p style="color: var(--text-muted); font-size: 14px;">Please authenticate...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin:0;border:0;padding:0;">📊 Recent Performance Snapshot</h2>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: var(--danger);" onclick="wipeHistory()">Wipe Vault Data</button>
+            </div>
+            <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 12px;">
+                <table class="history-table">
+                    <thead><tr><th>Exam Title</th><th>Date</th><th>Score Metrics</th><th>Actions</th></tr></thead>
+                    <tbody id="history-rows">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Please log in.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1B. MY ATTEMPTS VIEW -->
+    <div id="attempts-view" class="view-panel section-container">
+        <div class="header-section"><h1>📝 My Attempts</h1><p>Every test you've taken, with attempt tags and accuracy badges.</p></div>
+        <div class="card">
+            <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 12px;">
+                <table class="history-table">
+                    <thead><tr><th>Exam Title</th><th>Date</th><th>Attempt Tag</th><th>Score</th><th>Accuracy</th><th>Actions</th></tr></thead>
+                    <tbody id="attempts-rows">
+                        <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Log in to view attempts.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1C. BROWSE TESTS VIEW -->
+    <div id="browse-view" class="view-panel section-container">
+        <div class="header-section"><h1>📚 Browse Cloud Tests</h1><p>All tests are auto-named T1, T2, T3… Type a test name in the search to jump straight to it.</p></div>
+        <div class="card">
+            <input class="search-input" type="text" id="browse-search-input" placeholder="🔍 Search tests (e.g. T5)…" oninput="window.filterCloudTests()">
+            <div id="browse-tests-container" class="test-grid">
+                <p style="color: var(--text-muted); font-size: 14px;">Loading cloud tests…</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1D. RANK LEADERBOARD VIEW -->
+    <div id="leaderboard-view" class="view-panel section-container">
+        <div class="header-section"><h1>🏆 Rank Leaderboard</h1><p>Log competitor scores and compare them directly against yours.</p></div>
+        <div class="card">
+            <h2>Add Competitor Score</h2>
+            <div class="leaderboard-form">
+                <div class="form-group" style="margin:0;"><label>Name</label><input type="text" id="comp-name" placeholder="e.g. Rahul"></div>
+                <div class="form-group" style="margin:0;"><label>Test</label><input type="text" id="comp-test" placeholder="T1"></div>
+                <div class="form-group" style="margin:0;"><label>Physics</label><input type="number" id="comp-phy" placeholder="180"></div>
+                <div class="form-group" style="margin:0;"><label>Chemistry</label><input type="number" id="comp-chem" placeholder="180"></div>
+                <div class="form-group" style="margin:0;"><label>Botany</label><input type="number" id="comp-bot" placeholder="180"></div>
+                <div class="form-group" style="margin:0;"><label>Zoology</label><input type="number" id="comp-zoo" placeholder="180"></div>
+                <button class="btn" style="background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.addCompetitor()">+ Add</button>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Comparative Leaderboard</h2>
+            <div style="overflow-x:auto"><table class="leaderboard-table" id="leaderboard-table"><thead><tr><th>Rank</th><th>Name</th><th>Test</th><th>Physics</th><th>Chemistry</th><th>Botany</th><th>Zoology</th><th>Total</th><th></th></tr></thead><tbody id="leaderboard-rows"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- 1E. PROFILE & STATS VIEW -->
+    <div id="profile-view" class="view-panel section-container">
+        <div class="header-section"><h1>👤 Profile & Stats</h1><p>Your cumulative stats at a glance.</p></div>
+        <div class="metric-grid" id="profile-metric-grid">
+            <div class="metric-card"><div class="metric-icon orange">🎯</div><div><div class="metric-label">Overall Accuracy</div><div class="metric-value" id="prof-accuracy">—</div></div></div>
+            <div class="metric-card"><div class="metric-icon blue">📄</div><div><div class="metric-label">Tests Taken</div><div class="metric-value" id="prof-tests">0</div></div></div>
+            <div class="metric-card"><div class="metric-icon green">⚡</div><div><div class="metric-label">Questions Solved</div><div class="metric-value" id="prof-questions">0</div></div></div>
+            <div class="metric-card"><div class="metric-icon violet">🏅</div><div><div class="metric-label">Best Score</div><div class="metric-value" id="prof-best">—</div></div></div>
+        </div>
+    </div>
+
+    <!-- 1B. ANALYTICS VAULT VIEW (trend + accuracy + speed charts, sourced entirely from Firestore) -->
+    <div id="analytics-view" class="view-panel section-container">
+        <div class="header-section"><h1>📊 Performance Analytics Vault</h1><p>Track your score trend, accuracy, and subject-wise speed across every saved attempt.</p></div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>📈 Score Trend</h2>
+                <div class="chart-scroll-wrapper"><div class="chart-scroll-inner" id="trend-chart-wrapper"><canvas id="trend-chart"></canvas></div></div>
+            </div>
+            <div class="card">
+                <h2>⚡ Pacing Overview (latest attempt)</h2>
+                <div id="pacing-overview" style="font-size: 13px; line-height: 1.8; color: var(--text-muted);">
+                    Take a test with the timer running to see pacing stats here.
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>🎯 Test-by-Test Accuracy Trend</h2>
+                <div class="chart-scroll-wrapper"><div class="chart-scroll-inner" id="accuracy-chart-wrapper"><canvas id="accuracy-chart"></canvas></div></div>
+            </div>
+            <div class="card">
+                <h2>🏎️ Subject-wise Speed (Seconds / Question)</h2>
+                <div class="chart-scroll-wrapper"><div class="chart-scroll-inner" id="speed-chart-wrapper"><canvas id="speed-chart"></canvas></div></div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>📊 Subject-wise Score Improvement</h2>
+                <div class="chart-scroll-wrapper"><div class="chart-scroll-inner" id="subject-score-chart-wrapper"><canvas id="subject-score-chart"></canvas></div></div>
+            </div>
+            <div class="card">
+                <h2>🎯 Subject-wise Accuracy Improvement</h2>
+                <div class="chart-scroll-wrapper"><div class="chart-scroll-inner" id="subject-accuracy-chart-wrapper"><canvas id="subject-accuracy-chart"></canvas></div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔬 Accuracy vs. Speed Scatter Plot (4-Quadrant)</h2>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Every dot is a question from your latest test. Top-right = optimal. Bottom-right = silly errors. Top-left = slow but correct. Bottom-left = concept blind spots.</p>
+            <div style="height:360px;position:relative;"><canvas id="scatter-chart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- 2. LOCAL UPLOAD VIEW -->
+    <div id="local-upload-view" class="view-panel section-container">
+        <div class="header-section"><h1>🧪 Local Sandbox</h1><p>Configure and launch an offline practice test with your own PDF and answer key.</p></div>
+        <div class="card">
+            <h2>⚙️ Configure Local Test</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>Test Title</label><input type="text" id="local-title" value="Self-Paced Practice Run"></div>
+                <div class="form-group"><label>Timer Limit (Minutes)</label><input type="number" id="local-duration" value="200"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Question Paper (PDF)</label><input type="file" id="local-qp" accept=".pdf"></div>
+                <div class="form-group">
+                    <label>Answer Key String (For Auto-Grading)</label>
+                    <input type="text" id="local-key-string" placeholder="e.g. 1,2,3,4,1,2... (comma separated)">
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">200 entries for a full paper — grading strictly follows the NEET rule (35 compulsory + best 10 of 15 per subject = 180 of 200 scored). Don't have the key yet? Leave this blank and add it from the result screen after the test.</p>
+                </div>
+            </div>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px; padding: 14px;" onclick="startLocalSandbox()">🚀 Launch Local Sandbox</button>
+        </div>
+    </div>
+
+    <!-- 3. ADMIN PANEL VIEW -->
+    <div id="admin-view" class="view-panel section-container">
+        <div class="header-section"><h1>📤 Admin Upload Panel</h1><p>Publish new cloud assessments for all students.</p></div>
+        <div class="card" style="border: 2px solid #fb923c; background: linear-gradient(135deg,#fff7ed,#ffffff);">
+            <h2 style="color: #ea580c; border-bottom-color: #fed7aa;">📤 Publish New Cloud Assessment</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>Official Test Title</label><input type="text" id="admin-test-title"></div>
+                <div class="form-group"><label>Total Duration (Minutes)</label><input type="number" id="admin-test-duration" value="200"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Question Paper PDF</label><input type="file" id="admin-qp-file" accept=".pdf"></div>
+                <div class="form-group">
+                    <label>Official Answer Key String <span style="font-weight:400; color:var(--text-muted);">(optional — can be added later, 200 comma-separated entries for a full paper)</span></label>
+                    <input type="text" id="admin-key-string" placeholder="Comma separated right answers">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Due Date <span style="font-weight:400; color:var(--text-muted);">(optional)</span></label>
+                    <input type="datetime-local" id="admin-test-duedate">
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Before this date, each student gets one graded attempt. After it passes, "Launch Exam" turns into unlimited "Reattempt" for practice — the paper never disappears. Leave blank for an always-open practice test.</p>
+                </div>
+            </div>
+            <button class="btn" style="background: linear-gradient(135deg,#f97316,#ea580c); width: 100%; margin-top: 10px; padding: 14px;" id="btn-admin-publish" onclick="window.publishMockTest()">Deploy Test to Cloud Database</button>
+        </div>
+
+        <div class="card">
+            <h2>📋 Published Cloud Tests</h2>
+            <div id="admin-test-list" class="test-grid" style="flex-wrap: wrap; overflow-x: visible;">
+                <p style="color: var(--text-muted); font-size: 14px;">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAM INTERFACE -->
+    <div id="exam-view">
+        <header class="exam-top-bar">
+            <div style="font-weight: 700; font-size: 16px;">Vinay Bhai CBT <span id="active-exam-title" style="margin-left:10px; font-weight:400;"></span></div>
+            <div class="timer-box" id="time-countdown">00:00:00</div>
+        </header>
+        <div class="exam-workspace">
+            <div class="pdf-panel" id="pdf-view-frame"></div>
+            <div class="control-panel">
+                <div class="q-card">
+                    <div id="current-q-label" style="font-size: 16px; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Question 1</div>
+                    <div class="options-row">
+                        <button class="opt-btn" id="opt-btn-1" onclick="setOption(1)">1</button>
+                        <button class="opt-btn" id="opt-btn-2" onclick="setOption(2)">2</button>
+                        <button class="opt-btn" id="opt-btn-3" onclick="setOption(3)">3</button>
+                        <button class="opt-btn" id="opt-btn-4" onclick="setOption(4)">4</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                        <button class="btn btn-success" style="font-size: 11px; padding: 10px;" onclick="saveNext()">Save & Next</button>
+                        <button class="btn" style="background: #64748b; font-size: 11px; padding: 10px;" onclick="clearResponse()">Clear</button>
+                        <button class="btn btn-warning" style="font-size: 11px; padding: 10px; grid-column: span 2;" onclick="markReview()">Mark for Review</button>
+                    </div>
+                    <button class="btn btn-danger" style="width: 100%; font-size: 12px; padding: 10px; margin-top: 10px;" onclick="triggerSubmission()">Submit Test</button>
+                </div>
+                
+                <div class="q-card" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 12px;">
+                    <div class="palette-scroll">
+                        <div class="palette-grid" id="palette-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT VIEW NATIVE -->
+    <div id="result-view">
+        <div class="score-banner" style="flex-direction: column; align-items: stretch;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 id="res-title" style="margin-bottom: 2px; font-size: 20px;">Test Result</h2>
+                    <div id="res-timestamp" style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Timestamp</div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a id="download-qp-btn" href="#" download="" style="display:none; padding: 6px 12px; font-size: 12px;" class="btn btn-outline">⬇️ Download QP PDF</a>
+                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="closeResults()">Return to Dashboard</button>
+                </div>
+            </div>
+            <div id="res-stats-container" class="stats-strip"></div>
+            <div class="grid-2" style="margin-top: 12px;">
+                <div style="height: 180px; position: relative;"><canvas id="result-doughnut"></canvas></div>
+                <div id="res-pacing-box" class="pacing-mini"></div>
+            </div>
+        </div>
+        
+        <div class="split-review-workspace">
+            <div class="review-left-panel" style="flex: 0 0 100%;">
+                <div class="result-grid-scroll">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="color: var(--text-main); font-size: 14px; font-weight: 700;">📋 Processed Result Breakdown</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="window.copyWrongResponses()">📋 Copy Wrong Responses</button>
+                            <button class="btn btn-danger" id="toggle-wrong-btn" style="padding: 4px 10px; font-size: 12px;" onclick="window.toggleWrongOnly()">Show Only Mistakes</button>
+                        </div>
+                    </div>
+
+                    <!-- RETROACTIVE ANSWER KEY: for tests submitted before a key was available -->
+                    <div id="key-update-section" style="margin-bottom: 20px; background: var(--bg-surface); padding: 14px; border-radius: 10px; border: 1px solid var(--border-light);">
+                        <label style="font-weight: 700; font-size: 13px; color: var(--text-main); display: block; margin-bottom: 8px;">🔑 Answer Key <span id="key-status-label" style="font-weight: 500; color: var(--text-muted);"></span></label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="key-update-input" placeholder="Comma separated, e.g. 1,2,3,4,1,2..." style="flex:1; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 13px;">
+                            <button class="btn btn-success" style="white-space: nowrap;" onclick="window.updateResultKey(event)">Save &amp; Rescore</button>
+                        </div>
+                    </div>
+
+                    <div id="weak-topics-container"></div>
+                    
+                    <!-- DEDICATED NOTE FOR EACH PROCESSED RESULT -->
+                    <div id="vault-note-section" style="margin-bottom: 20px; background: var(--bg-surface); padding: 14px; border-radius: 10px; border: 1px solid var(--border-light);">
+                        <label style="font-weight: 700; font-size: 13px; color: #854d0e; display: block; margin-bottom: 8px;">📝 Personal Note for this Result</label>
+                        <textarea id="vault-note-input" class="vault-notes" placeholder="Jot down why you got questions wrong, topics to revise, etc..."></textarea>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Tip: tag each question below with its own topic (e.g. "Kinematics", "Mole Concept") — saving here stores your tags too.</p>
+                        <button class="btn btn-outline" style="margin-top: 10px; width: 100%; border-color: #eab308; color: #a16207;" onclick="window.saveVaultNote(event)">💾 Save Notes &amp; Topic Tags</button>
+                    </div>
+                    
+                    <!-- NEGATIVE MARKING & PENALTY ANALYTICS -->
+                    <div id="penalty-analytics-section"></div>
+                    
+                    <div id="detailed-results-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE ARCHITECTURE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, orderBy, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: (window.env && window.env.VITE_FIREBASE_API_KEY) || "AIzaSyABILiRydStzChUOk1iAvwK5vIFv14eXNo",
+            authDomain: (window.env && window.env.VITE_FIREBASE_AUTH_DOMAIN) || "vinay-neet-cbt-747d7.firebaseapp.com",
+            projectId: (window.env && window.env.VITE_FIREBASE_PROJECT_ID) || "vinay-neet-cbt-747d7",
+        };
+
+        let app, auth, db, provider;
+        window.currentUser = null;
+        window.activeTestType = null;
+        window.activeCloudTestId = null;
+        window.activeHistoryDocId = null; 
+        window.showingWrongOnly = false;
+        window.currentAnswerKey = []; // Holds array of correct answers if provided
+        window.currentTopics = {}; // Holds user-entered {questionNumber: topicName} tags, never auto-guessed
+        window.currentSubjectTimingMetrics = {}; // Holds subject-wise time/speed metrics for the result being viewed
+        window.pendingResumeData = null; // Holds saved session data when the resume modal is shown
+        window.pendingResumeTestInfo = null; // Holds {testId, title, duration, qpUrl, keyString} for the resume modal
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            provider = new GoogleAuthProvider();
+            window.db = db;
+        } catch (err) { console.error(err); }
+
+        window.mockLogin = async () => { try { await signInWithPopup(auth, provider); } catch(err){} };
+        window.mockLogout = async () => { try { await signOut(auth); } catch(err){} };
+
+        // DARK MODE TOGGLE: switches the .dark class on <body> and persists the choice
+        // in localStorage. Chart.js instances are rebuilt on their next render, so no
+        // manual chart recoloring is needed — the CSS variables handle the rest.
+        window.toggleThemeMode = function() {
+            const isDark = document.body.classList.toggle('dark');
+            const btn = document.getElementById('theme-toggle-btn');
+            if (btn) btn.innerText = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+            localStorage.setItem('theme-preference', isDark ? 'dark' : 'light');
+        };
+
+        // Restore saved theme on load — runs before any view is rendered so there's
+        // no flash of the wrong theme.
+        if (localStorage.getItem('theme-preference') === 'dark') {
+            document.body.classList.add('dark');
+            setTimeout(() => {
+                const btn = document.getElementById('theme-toggle-btn');
+                if (btn) btn.innerText = "☀️ Light Mode";
+            }, 200);
+        }
+
+        // Best-effort safety net: if the exam view is open and the tab is closed/refreshed,
+        // try one last autosave so a cloud-test attempt isn't fully lost. Not guaranteed to
+        // finish (the browser can kill the request mid-flight), but far better than nothing.
+        window.addEventListener('beforeunload', () => {
+            if (document.getElementById('exam-view')?.classList.contains('active')) {
+                saveSessionSnapshot();
+            }
+        });
+
+        // VISIBILITY-BASED PAUSE & SAVE: when the student jumps to another tab or minimizes
+        // the browser during a cloud test, the exam is paused — the countdown stops, the
+        // current question's elapsed time is booked, and a snapshot is saved to Firebase.
+        // When the tab becomes visible again, the exam resumes from exactly where it paused.
+        let examPaused = false;
+        document.addEventListener('visibilitychange', () => {
+            const examActive = document.getElementById('exam-view')?.classList.contains('active');
+            if (!examActive) return;
+
+            if (document.hidden) {
+                // Student left the exam tab — pause everything and save
+                if (!examPaused) {
+                    examPaused = true;
+                    markTimeSpent();              // book the seconds on the current question
+                    clearInterval(examTimer);      // stop the countdown
+                    clearInterval(autosaveTimer);  // stop periodic autosave (we do one explicit save below)
+                    saveSessionSnapshot();         // persist current state to Firebase for cloud tests
+                }
+            } else {
+                // Student came back — resume from the paused moment
+                if (examPaused) {
+                    examPaused = false;
+                    qEnterTime = Date.now();       // restart the per-question clock from now
+                    // Restart the countdown from wherever timeLeft was frozen
+                    examTimer = setInterval(() => {
+                        if (timeLeft <= 0) { clearInterval(examTimer); triggerSubmission(true); return; }
+                        timeLeft--; updateTimerDisplay();
+                    }, 1000);
+                    // Restart periodic autosave for cloud tests
+                    if (window.activeTestType === 'cloud') {
+                        clearInterval(autosaveTimer);
+                        autosaveTimer = setInterval(saveSessionSnapshot, 20000);
+                    }
+                }
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            window.currentUser = user;
+            if (user) {
+                document.getElementById('guest-intercept-modal').style.display = 'none';
+                document.getElementById('auth-actions').style.display = 'none';
+                document.getElementById('user-profile-display').style.display = 'flex';
+                document.getElementById('user-name').innerText = user.displayName || "User";
+                if (user.email === "vinay8197764602@gmail.com") document.getElementById('admin-nav-tab').style.display = 'block';
+                window.loadOfficialCloudTests();
+                window.renderHistoryVault();
+                if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
+            } else {
+                document.getElementById('auth-actions').style.display = 'block';
+                document.getElementById('user-profile-display').style.display = 'none';
+                window.renderHistoryVault();
+            }
+        });
+
+        const CLOUDINARY_CLOUD_NAME = 'trrcj1h2';
+        const CLOUDINARY_PRESET = 'dowhatexcites';
+
+        async function uploadFileToCloudinary(file) {
+            if (!file) return null;
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_PRESET);
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, { method: "POST", body: formData });
+            return (await res.json()).secure_url;
+        }
+
+        window.publishMockTest = async function() {
+            if (!window.db) return;
+            const title = document.getElementById('admin-test-title').value.trim();
+            const duration = document.getElementById('admin-test-duration').value;
+            const qpFile = document.getElementById('admin-qp-file').files[0];
+            const keyString = document.getElementById('admin-key-string').value.trim();
+            const dueDateVal = document.getElementById('admin-test-duedate').value; // "" if left blank
+
+            if (!title || !qpFile) return alert("Title and QP PDF are required.");
+            const btn = document.getElementById('btn-admin-publish');
+            btn.innerText = "Deploying..."; btn.disabled = true;
+
+            try {
+                const qpURL = await uploadFileToCloudinary(qpFile);
+                await addDoc(collection(db, "cloud_tests"), {
+                    title: title, duration: parseInt(duration || "200", 10), 
+                    questionPaperUrl: qpURL, keyString: keyString,
+                    dueDate: dueDateVal ? new Date(dueDateVal).toISOString() : null,
+                    createdAt: new Date().toISOString()
+                });
+                alert("Published successfully!");
+                document.getElementById('admin-test-title').value = '';
+                document.getElementById('admin-key-string').value = '';
+                document.getElementById('admin-test-duedate').value = '';
+                window.loadAdminTests();
+                window.loadOfficialCloudTests();
+            } catch (error) { alert(error.message); } 
+            finally { btn.innerText = "Deploy Test to Cloud Database"; btn.disabled = false; }
+        };
+
+        window.loadAdminTests = async function() {
+            if (!db) return;
+            const container = document.getElementById('admin-test-list');
+            container.innerHTML = "";
+            const q = query(collection(db, "cloud_tests"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) { container.innerHTML = `<p style="color:var(--text-muted); font-size:14px;">No tests published yet.</p>`; return; }
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const dueLabel = data.dueDate ? `Due: ${new Date(data.dueDate).toLocaleString()}` : "Always open (no due date)";
+                container.innerHTML += `
+                    <div class="test-card">
+                        <h3>${data.title}</h3>
+                        <p>⏱️ ${data.duration} Mins</p>
+                        <p style="font-size:11px; color:var(--text-muted);">${dueLabel}</p>
+                        <p style="font-size:11px; color:var(--text-muted);">Key: ${data.keyString ? `${data.keyString.split(',').length} answers on file` : 'not uploaded yet'}</p>
+                        <button class="btn btn-outline" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="window.deleteCloudTest('${docSnap.id}', '${data.title.replace(/'/g,"\\'")}')">🗑️ Delete Test</button>
+                    </div>`;
+            });
+        };
+
+        window.deleteCloudTest = async function(testId, title) {
+            if (!confirm(`Delete "${title}" permanently? Students' already-saved results for it are NOT deleted — only the live test listing.`)) return;
+            await deleteDoc(doc(db, "cloud_tests", testId));
+            window.loadAdminTests();
+            window.loadOfficialCloudTests();
+        };
+
+        window.loadOfficialCloudTests = async function() {
+            if (!db || !window.currentUser) return;
+            const container = document.getElementById('available-tests-container');
+            container.innerHTML = "";
+            const q = query(collection(db, "cloud_tests"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) { container.innerHTML = `<p style="color: var(--text-muted); font-size: 14px; padding-left: 10px;">No cloud tests published yet.</p>`; return; }
+
+            for (const docSnap of querySnapshot.docs) {
+                const data = docSnap.data();
+                const testId = docSnap.id;
+                const now = new Date();
+                const due = data.dueDate ? new Date(data.dueDate) : null;
+                const pastDue = due ? now >= due : true; // no due date = always treated as open practice
+
+                let alreadyAttempted = false;
+                if (!pastDue) {
+                    const attemptSnap = await getDocs(query(collection(db, "users", window.currentUser.uid, "vault"), where("cloudTestId", "==", testId)));
+                    alreadyAttempted = !attemptSnap.empty;
+                }
+
+                // Check if there's a saved (unfinished) session for this cloud test
+                let hasSavedSession = false;
+                let sessionSummary = null;
+                const sessionSnap = await getDoc(doc(db, "users", window.currentUser.uid, "sessions", testId));
+                if (sessionSnap.exists()) {
+                    hasSavedSession = true;
+                    const sd = sessionSnap.data();
+                    const respCount = Object.keys(sd.responses || {}).length;
+                    const minsLeft = Math.floor((sd.timeLeft || 0) / 60);
+                    sessionSummary = { respCount, minsLeft, savedAt: sd.savedAt };
+                }
+
+                const dueLabel = due ? `Due ${due.toLocaleDateString()} ${due.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}` : 'Always open';
+                let actionHTML;
+                if (alreadyAttempted && !pastDue) {
+                    actionHTML = `<button class="btn btn-outline" style="width:100%; margin-top:auto;" disabled>✅ Attempted — reattempt unlocks after due date</button>`;
+                } else {
+                    const label = pastDue && alreadyAttempted ? "🔁 Reattempt (Practice)" : "Launch Exam";
+                    actionHTML = `<button class="btn" style="width:100%; margin-top:auto;" onclick="window.fetchAndStartCloudTest('${testId}')">${label}</button>`;
+                }
+
+                // Manual tick-mark checkbox (instead of auto) — lets the student personally
+                // mark a cloud test as "done / reviewed" rather than the system deciding.
+                const isChecked = alreadyAttempted ? 'checked' : '';
+                const tickHTML = `<input type="checkbox" class="tick-checkbox" title="Mark as reviewed (manual)" ${isChecked} onchange="window.toggleCloudTestTick('${testId}', this.checked)">`;
+
+                // If there's a saved unfinished session, show a small badge on the card
+                const sessionBadge = hasSavedSession
+                    ? `<div style="font-size:11px; color:var(--warning); font-weight:600; margin-top:6px; background:#fef3c7; padding:4px 8px; border-radius:6px; border:1px solid #fde68a;">⏸️ Unfinished attempt saved — ${sessionSummary.respCount} answered, ${sessionSummary.minsLeft}m left</div>`
+                    : '';
+
+                container.innerHTML += `
+                    <div class="test-card">
+                        ${tickHTML}
+                        <h3>${data.title}</h3>
+                        <p>⏱️ ${data.duration} Mins</p>
+                        <p style="font-size:11px; color:var(--text-muted);">${dueLabel}</p>
+                        ${sessionBadge}
+                        ${actionHTML}
+                    </div>`;
+            }
+        };
+
+        // Manual tick-mark toggle: stores the student's personal "reviewed" flag in a
+        // lightweight sub-collection so it persists across sessions without affecting vault records.
+        window.toggleCloudTestTick = async function(testId, checked) {
+            if (!window.currentUser || !window.db) return;
+            try {
+                await setDoc(doc(window.db, "users", window.currentUser.uid, "ticks", testId), {
+                    reviewed: checked, updatedAt: new Date().toISOString()
+                });
+            } catch (e) { /* best-effort */ }
+        };
+
+        window.fetchAndStartCloudTest = async function(testId) {
+            const docSnap = await getDoc(doc(db, "cloud_tests", testId));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                window.activeTestType = 'cloud';
+                window.activeCloudTestId = testId;
+
+                // Check for a saved (unfinished) session — if one exists, show the
+                // continue/retake modal instead of auto-launching.
+                const sessionSnap = await getDoc(doc(db, "users", window.currentUser.uid, "sessions", testId));
+                if (sessionSnap.exists()) {
+                    const sessionData = sessionSnap.data();
+                    window.pendingResumeData = sessionData;
+                    window.pendingResumeTestInfo = {
+                        testId, title: data.title, duration: data.duration,
+                        qpUrl: data.questionPaperUrl, keyString: data.keyString
+                    };
+                    window.showResumeModal(data.title, sessionData);
+                } else {
+                    // No saved session — start fresh
+                    window.startSandbox(data.title, data.duration, data.questionPaperUrl, data.keyString, null);
+                }
+            }
+        };
+
+        // ---- CONTINUE / RETAKE MODAL LOGIC ----
+        window.showResumeModal = function(title, sessionData) {
+            const modal = document.getElementById('resume-modal');
+            document.getElementById('resume-modal-title').innerText = `Resume "${title}"`;
+            const respCount = Object.keys(sessionData.responses || {}).length;
+            const minsLeft = Math.floor((sessionData.timeLeft || 0) / 60);
+            const secsLeft = (sessionData.timeLeft || 0) % 60;
+            const savedAt = sessionData.savedAt ? new Date(sessionData.savedAt).toLocaleString() : 'unknown time';
+            document.getElementById('resume-modal-info').innerHTML =
+                `Saved at: <b>${savedAt}</b><br>` +
+                `Questions answered: <b>${respCount}/200</b><br>` +
+                `Time remaining: <b>${minsLeft}m ${secsLeft}s</b>`;
+            modal.style.display = 'flex';
+        };
+
+        window.closeResumeModal = function() {
+            document.getElementById('resume-modal').style.display = 'none';
+            window.pendingResumeData = null;
+            window.pendingResumeTestInfo = null;
+        };
+
+        window.handleResumeChoice = async function(choice) {
+            const info = window.pendingResumeTestInfo;
+            const sessionData = window.pendingResumeData;
+            window.closeResumeModal();
+            if (!info) return;
+
+            if (choice === 'continue') {
+                // Resume from the saved session — pass sessionData so startSandbox restores it
+                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, sessionData);
+            } else {
+                // Retake from scratch — delete the old session first, then start fresh
+                await clearSessionSnapshot();
+                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, null);
+            }
+        };
+
+        window.startLocalSandbox = function() {
+            const title = document.getElementById('local-title').value;
+            const duration = parseInt(document.getElementById('local-duration').value) || 200;
+            const qpFile = document.getElementById('local-qp').files[0];
+            const keyString = document.getElementById('local-key-string').value.trim();
+
+            if (!qpFile) return alert("Please upload a Question Paper PDF.");
+            window.activeTestType = 'local';
+            window.activeCloudTestId = null;
+            window.startSandbox(title, duration, URL.createObjectURL(qpFile), keyString, null);
+        };
+
+        const totalQuestions = 200;
+        let responses = {}, states = {}, timeSpent = {}; 
+        let currentQ = 1, examTimer, timeLeft = 0; 
+        let qEnterTime = null;
+        let autosaveTimer = null;
+
+        // Books the seconds spent on whichever question is being left, into timeSpent[qNum].
+        // This is the core of the 2-pass / rapid-skip safe timing: every time the student
+        // navigates away from a question (or the exam is paused), the elapsed seconds are
+        // ADDED to that question's cumulative total. Jumping back-and-forth simply
+        // accumulates more seconds on each visit — no per-subject pause/play tracker needed.
+        function markTimeSpent() {
+            if (qEnterTime !== null && currentQ) {
+                const elapsed = Math.round((Date.now() - qEnterTime) / 1000);
+                timeSpent[currentQ] = (timeSpent[currentQ] || 0) + elapsed;
+            }
+            qEnterTime = Date.now();
+        }
+
+        // Autosave: only cloud tests get resumable sessions — a local-sandbox PDF is an
+        // in-memory blob URL anyway, so there's nothing durable to resume there.
+        async function saveSessionSnapshot() {
+            if (window.activeTestType !== 'cloud' || !window.activeCloudTestId || !window.currentUser || !window.db) return;
+            try {
+                await setDoc(doc(window.db, "users", window.currentUser.uid, "sessions", window.activeCloudTestId), {
+                    responses, states, timeSpent, timeLeft, savedAt: new Date().toISOString()
+                });
+            } catch (e) { /* best-effort — a missed autosave shouldn't interrupt the exam */ }
+        }
+
+        async function clearSessionSnapshot() {
+            if (window.activeTestType !== 'cloud' || !window.activeCloudTestId || !window.currentUser || !window.db) return;
+            try { await deleteDoc(doc(window.db, "users", window.currentUser.uid, "sessions", window.activeCloudTestId)); } catch (e) {}
+        }
+
+        // ============ SUBJECT TIMING METRICS (2-pass / rapid-skip safe) ============
+        // Maps question numbers to their NEET subject ranges and computes, per subject:
+        //   - totalSeconds: sum of timeSpent[qNum] for all questions in that subject's range
+        //   - visitedCount: how many unique question keys in that range have timeSpent > 0
+        //   - avgSpeedSeconds: totalSeconds / visitedCount (0 if no questions visited)
+        // Because timeSpent accumulates additively on every visit, this is inherently safe
+        // against students jumping back and forth between subjects multiple times.
+        function computeSubjectTimingMetrics(timingObj) {
+            const ranges = {
+                'Physics':   { start: 1,   end: 50  },
+                'Chemistry': { start: 51,  end: 100 },
+                'Botany':    { start: 101, end: 150 },
+                'Zoology':   { start: 151, end: 200 }
+            };
+            const metrics = {};
+            for (const [subject, range] of Object.entries(ranges)) {
+                let totalSeconds = 0;
+                let visitedCount = 0;
+                for (let q = range.start; q <= range.end; q++) {
+                    const secs = timingObj[q] || 0;
+                    if (secs > 0) {
+                        totalSeconds += secs;
+                        visitedCount++;
+                    }
+                }
+                metrics[subject] = {
+                    totalSeconds: totalSeconds,
+                    visitedCount: visitedCount,
+                    avgSpeedSeconds: visitedCount > 0 ? Math.round((totalSeconds / visitedCount) * 10) / 10 : 0
+                };
+            }
+            return metrics;
+        }
+
+        // Formats a total-seconds value into "Xm Ys" for the result UI.
+        function formatMinutesSeconds(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return `${m}m ${s}s`;
+        }
+
+        window.startSandbox = function(title, duration, pdfUrl, keyString, sessionData) {
+            window.currentAnswerKey = keyString ? keyString.split(',').map(s => s.trim()) : [];
+            if (window.currentAnswerKey.length > 0 && window.currentAnswerKey.length !== totalQuestions) {
+                alert(`⚠️ Heads up: the answer key has ${window.currentAnswerKey.length} entries but this test has ${totalQuestions} questions. Scoring may be off for the mismatched questions — you can fix the key later from the result screen.`);
+            }
+            
+            document.getElementById('active-exam-title').innerText = title;
+            document.getElementById('pdf-view-frame').innerHTML = `<iframe src="${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1"></iframe>`;
+            
+            responses = sessionData?.responses || {};
+            states = sessionData?.states || {};
+            timeSpent = sessionData?.timeSpent || {};
+            timeLeft = sessionData?.timeLeft || (duration * 60);
+            qEnterTime = null;
+            examPaused = false;
+            
+            if(!sessionData) for(let i=1; i<=totalQuestions; i++) states[i] = 'unseen';
+
+            updateTimerDisplay();
+            clearInterval(examTimer);
+            examTimer = setInterval(() => {
+                if (timeLeft <= 0) { clearInterval(examTimer); triggerSubmission(true); return; }
+                timeLeft--; updateTimerDisplay();
+            }, 1000);
+
+            clearInterval(autosaveTimer);
+            if (window.activeTestType === 'cloud') autosaveTimer = setInterval(saveSessionSnapshot, 20000);
+
+            buildPalette(); loadQuestion(1);
+            document.getElementById('exam-view').classList.add('active');
+        };
+
+        function updateTimerDisplay() {
+            const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+            const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('time-countdown').innerText = `${h}:${m}:${s}`;
+        }
+
+        function buildPalette() {
+            const grid = document.getElementById('palette-grid');
+            grid.innerHTML = '';
+            for(let i=1; i<=totalQuestions; i++) {
+                const btn = document.createElement('button');
+                btn.id = `pal-${i}`; btn.innerText = i;
+                btn.onclick = () => loadQuestion(i);
+                grid.appendChild(btn);
+            }
+            updatePaletteUI();
+        }
+
+        window.loadQuestion = function(qNum) {
+            markTimeSpent();
+            currentQ = qNum;
+            document.getElementById('current-q-label').innerText = `Question ${qNum}`;
+            document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+            if (responses[qNum]) document.getElementById(`opt-btn-${responses[qNum]}`)?.classList.add('selected');
+            if (states[qNum] === 'unseen') states[qNum] = 'not-answered';
+            updatePaletteUI();
+        };
+
+        window.setOption = function(val) {
+            document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById(`opt-btn-${val}`).classList.add('selected');
+            responses[currentQ] = val.toString();
+        };
+
+        window.saveNext = function() {
+            states[currentQ] = responses[currentQ] ? 'answered' : 'not-answered';
+            saveSessionSnapshot();
+            if (currentQ < totalQuestions) loadQuestion(currentQ + 1);
+            else updatePaletteUI();
+        };
+
+        window.markReview = function() {
+            states[currentQ] = responses[currentQ] ? 'ans-marked' : 'marked';
+            saveSessionSnapshot();
+            if (currentQ < totalQuestions) loadQuestion(currentQ + 1);
+            else updatePaletteUI();
+        };
+
+        window.clearResponse = function() {
+            delete responses[currentQ];
+            states[currentQ] = 'not-answered';
+            saveSessionSnapshot();
+            loadQuestion(currentQ);
+        };
+
+        function updatePaletteUI() {
+            for(let i=1; i<=totalQuestions; i++) {
+                const btn = document.getElementById(`pal-${i}`);
+                if (!btn) continue;
+                btn.className = `pal-btn ${states[i]}`;
+                if (i === currentQ) btn.classList.add('active');
+            }
+        }
+
+        window.triggerSubmission = async function(auto = false) {
+            const attempted = Object.keys(responses).length;
+            if (!auto && !confirm(`Attempted ${attempted}/${totalQuestions}. Finalize submission?`)) return;
+
+            markTimeSpent(); // book time for whichever question was open at submission
+            clearInterval(examTimer);
+            clearInterval(autosaveTimer);
+            document.getElementById('exam-view').classList.remove('active');
+            
+            const timestamp = new Date().toLocaleString();
+            window.currentResponses = responses;
+            window.currentTiming = timeSpent;
+
+            // Compute the subject-wise timing metrics from the raw timeSpent object.
+            // This is done once at submission so the processed result is permanently
+            // archived and doesn't need to be recomputed when viewing history later.
+            const subjectTimingMetrics = computeSubjectTimingMetrics(timeSpent);
+            window.currentSubjectTimingMetrics = subjectTimingMetrics;
+            
+            window.activeHistoryDocId = await window.saveToHistoryVault(
+                document.getElementById('active-exam-title').innerText, 
+                timestamp, attempted, window.currentAnswerKey, timeSpent,
+                window.activeTestType === 'cloud' ? window.activeCloudTestId : null,
+                subjectTimingMetrics
+            );
+            await clearSessionSnapshot(); // so relaunching this cloud test starts fresh, not mid-old-attempt
+            
+            document.getElementById('vault-note-input').value = "";
+            window.showingWrongOnly = false;
+            document.getElementById('toggle-wrong-btn').innerText = "Show Only Mistakes";
+
+            window.viewHistoricalSheet(window.activeHistoryDocId);
+        };
+
+        // Updated signature: now accepts subjectTimingMetrics as the 7th parameter and
+        // saves it as a structured field on the Firebase vault document so it is
+        // permanently archived alongside the raw timing object.
+        window.saveToHistoryVault = async function(title, timeStr, attempted, keyArr, timingObj, cloudTestId, subjectTimingMetrics) {
+            if (!window.currentUser || !window.db) return null;
+            try {
+                const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                let marks = null;
+                if (keyArr && keyArr.length > 0) {
+                    marks = 0;
+                    subjects.forEach(sub => { marks += calcSubjectStats(sub, window.currentResponses || {}, keyArr, true).marks; });
+                }
+                const docRef = await addDoc(collection(window.db, "users", window.currentUser.uid, "vault"), {
+                    title: title, timeStr: timeStr, attempted: attempted,
+                    responses: window.currentResponses || {}, 
+                    savedKey: keyArr || [],
+                    notes: "", 
+                    topics: {},
+                    timing: timingObj || {},
+                    subjectTimingMetrics: subjectTimingMetrics || {},
+                    marks: marks,
+                    cloudTestId: cloudTestId || null,
+                    createdAt: new Date().toISOString()
+                });
+                return docRef.id;
+            } catch (error) { return null; }
+        };
+
+        window.updateResultKey = async function(event) {
+            if (!window.activeHistoryDocId || !window.currentUser) return;
+            const raw = document.getElementById('key-update-input').value.trim();
+            if (!raw) return alert("Paste an answer key first (comma separated).");
+            const keyArr = raw.split(',').map(s => s.trim());
+            if (keyArr.length !== totalQuestions) {
+                if (!confirm(`This key has ${keyArr.length} entries but the test has ${totalQuestions} questions. Save anyway? (Questions past the key's length won't be scored.)`)) return;
+            }
+
+            const btn = event.target;
+            btn.innerText = "Rescoring...";
+
+            window.currentAnswerKey = keyArr;
+            const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+            let marks = 0;
+            subjects.forEach(sub => { marks += calcSubjectStats(sub, window.currentResponses || {}, keyArr, true).marks; });
+
+            await updateDoc(doc(window.db, "users", window.currentUser.uid, "vault", window.activeHistoryDocId), { savedKey: keyArr, marks: marks });
+
+            document.getElementById('key-status-label').innerText = `— on file (${keyArr.length} answers)`;
+            btn.innerText = "✅ Rescored!";
+            setTimeout(() => btn.innerText = "Save & Rescore", 1500);
+
+            renderResultGrid();       // redraw this result with real correct/wrong now visible
+            window.renderHistoryVault();  // refresh the score shown in the dashboard table
+            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub(); // refresh trend/mistake vault too
+        };
+
+        window.saveVaultNote = async function(event) {
+            if (!window.activeHistoryDocId || !window.currentUser) return;
+            const noteText = document.getElementById('vault-note-input').value;
+            // Gather every topic tag the user typed into the result grid
+            const topics = {};
+            document.querySelectorAll('.topic-input').forEach(inp => {
+                const q = inp.dataset.q;
+                if (inp.value.trim()) topics[q] = inp.value.trim();
+            });
+            window.currentTopics = topics;
+
+            const btn = event.target;
+            btn.innerText = "Saving...";
+            await updateDoc(doc(window.db, "users", window.currentUser.uid, "vault", window.activeHistoryDocId), { notes: noteText, topics: topics });
+            btn.innerText = "✅ Saved Successfully!";
+            setTimeout(() => btn.innerText = "💾 Save Notes & Topic Tags", 2000);
+        };
+
+        // Updated to load the saved subjectTimingMetrics from the document so the
+        // result breakdown shows the archived time/speed data when viewing history.
+        window.viewHistoricalSheet = async function(docId) {
+            const docSnap = await getDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                window.currentResponses = data.responses || {};
+                window.currentAnswerKey = data.savedKey || [];
+                window.currentTopics = data.topics || {};
+                window.currentTiming = data.timing || {};
+                // Use the archived metrics if present; for older records that predate
+                // this feature, compute them on-the-fly from the raw timing object.
+                window.currentSubjectTimingMetrics = data.subjectTimingMetrics && Object.keys(data.subjectTimingMetrics).length > 0
+                    ? data.subjectTimingMetrics
+                    : computeSubjectTimingMetrics(data.timing || {});
+                window.activeHistoryDocId = docId; 
+                
+                document.getElementById('res-timestamp').innerText = data.timeStr;
+                document.getElementById('res-title').innerText = data.title;
+                document.getElementById('vault-note-input').value = data.notes || "";
+                document.getElementById('key-update-input').value = (data.savedKey || []).join(',');
+                document.getElementById('key-status-label').innerText = (data.savedKey && data.savedKey.length > 0)
+                    ? `— on file (${data.savedKey.length} answers)` : '— not uploaded yet, scores are hidden';
+                
+                // Show the download button only for cloud-based tests — look up the cloud
+                // test document to get its question paper PDF URL.
+                const dlBtn = document.getElementById('download-qp-btn');
+                if (data.cloudTestId && window.db) {
+                    try {
+                        const cloudDoc = await getDoc(doc(window.db, 'cloud_tests', data.cloudTestId));
+                        if (cloudDoc.exists() && cloudDoc.data().questionPaperUrl) {
+                            dlBtn.href = cloudDoc.data().questionPaperUrl;
+                            dlBtn.download = (data.title || 'question-paper') + '.pdf';
+                            dlBtn.style.display = 'inline-flex';
+                        } else { dlBtn.style.display = 'none'; }
+                    } catch(e) { dlBtn.style.display = 'none'; }
+                } else { dlBtn.style.display = 'none'; }
+                
+                renderResultGrid();
+                document.getElementById('result-view').classList.add('active');
+                document.getElementById('result-view').scrollTop = 0;
+            }
+        };
+
+        window.renderHistoryVault = async function() {
+            const tbody = document.getElementById('history-rows');
+            if (!window.currentUser || !window.db) return;
+            const q = query(collection(window.db, "users", window.currentUser.uid, "vault"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+            let html = "";
+            snapshot.forEach(d => {
+                const h = d.data();
+                let scoreLabel = `Att: ${h.attempted}/200`;
+                if (typeof h.marks === 'number') {
+                    scoreLabel = `${h.marks}/720 (Att: ${h.attempted}/200)`;
+                } else if (h.savedKey && h.savedKey.length > 0) {
+                    const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                    let marks = 0;
+                    subjects.forEach(sub => { marks += calcSubjectStats(sub, h.responses || {}, h.savedKey, true).marks; });
+                    scoreLabel = `${marks}/720 (Att: ${h.attempted}/200)`;
+                }
+                html += `<tr>
+                    <td style="font-weight: 600;">${h.title}</td>
+                    <td style="color: var(--text-muted); font-size: 12px;">${h.timeStr}</td>
+                    <td>${scoreLabel}</td>
+                    <td style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="window.viewHistoricalSheet('${d.id}')">View Breakdown</button>
+                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px; color: var(--danger); border-color: var(--danger);" onclick="window.deleteVaultRecord('${d.id}', '${(h.title||'').replace(/'/g,"\\'")}')">🗑️ Delete</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="4" style="text-align: center;">No records found.</td></tr>`;
+        };
+
+        window.deleteVaultRecord = async function(docId, title) {
+            if (!window.currentUser || !window.db) return;
+            if (!confirm(`Delete the result "${title}"? This can't be undone.`)) return;
+            await deleteDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId));
+            window.renderHistoryVault();
+            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub(); // trend chart & mistake vault must drop this record too
+            if (typeof window.loadOfficialCloudTests === 'function') window.loadOfficialCloudTests(); // reattempt-lock status may change
+        };
+
+        // ============ ANALYTICS VAULT (trend chart + site-wide mistake vault) ============
+        // Everything here is built ONLY from responses + the answer key + the topic tags
+        // the user typed in themselves — there is no hardcoded chapter/topic database.
+        window.allVaultRecords = [];
+        let trendChartInstance = null;
+        let accuracyChartInstance = null;
+        let speedChartInstance = null;
+        let subjectScoreChartInstance = null;
+        let subjectAccuracyChartInstance = null;
+
+        window.loadAnalyticsHub = async function() {
+            if (!window.currentUser || !window.db) return;
+            const q = query(collection(window.db, "users", window.currentUser.uid, "vault"), orderBy("createdAt", "asc"));
+            const snapshot = await getDocs(q);
+            window.allVaultRecords = [];
+            snapshot.forEach(d => window.allVaultRecords.push({ id: d.id, ...d.data() }));
+
+            renderTrendChart();
+            renderLatestPacingOverview();
+            renderAccuracyTrendChart();
+            renderSubjectSpeedChart();
+            renderSubjectScoreChart();
+            renderSubjectAccuracyChart();
+        };
+
+        function setChartScrollWidth(canvas, dataCount) {
+            const minPointWidth = 80;
+            const wrapper = canvas.parentElement.parentElement;
+            const availWidth = wrapper ? wrapper.clientWidth : 600;
+            const chartWidth = Math.max(dataCount * minPointWidth, availWidth);
+            canvas.parentElement.style.width = chartWidth + 'px';
+        }
+
+        function renderTrendChart() {
+            const canvas = document.getElementById('trend-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const scored = window.allVaultRecords.filter(r => typeof r.marks === 'number');
+            if (trendChartInstance) trendChartInstance.destroy();
+            if (scored.length === 0) {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                canvas.parentElement.style.width = '100%';
+                return;
+            }
+            setChartScrollWidth(canvas, scored.length);
+            trendChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: scored.map((r, i) => `T${i + 1}`),
+                    datasets: [{
+                        label: 'Score (/720)', data: scored.map(r => r.marks),
+                        borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: -180, max: 720 } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function renderAccuracyTrendChart() {
+            const canvas = document.getElementById('accuracy-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const scored = window.allVaultRecords.filter(r => r.savedKey && r.savedKey.length > 0);
+            if (accuracyChartInstance) accuracyChartInstance.destroy();
+            if (scored.length === 0) {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                canvas.parentElement.style.width = '100%';
+                return;
+            }
+            // Accuracy = (correct / (correct + wrong)) * 100, computed per test using the
+            // same dynamic NTA evaluation so it stays consistent with the result breakdown.
+            const subjectRanges = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+            const accuracyData = scored.map(r => {
+                let totalCorrect = 0, totalWrong = 0;
+                subjectRanges.forEach(sub => {
+                    const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey, true);
+                    totalCorrect += stats.correct;
+                    totalWrong += stats.wrong;
+                });
+                const denom = totalCorrect + totalWrong;
+                return denom > 0 ? Math.round((totalCorrect / denom) * 1000) / 10 : 0;
+            });
+            setChartScrollWidth(canvas, scored.length);
+            accuracyChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: scored.map((r, i) => `T${i + 1}`),
+                    datasets: [{
+                        label: 'Accuracy %', data: accuracyData,
+                        borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function renderSubjectSpeedChart() {
+            const canvas = document.getElementById('speed-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const withTiming = window.allVaultRecords.filter(r =>
+                (r.subjectTimingMetrics && Object.keys(r.subjectTimingMetrics).length > 0) ||
+                (r.timing && Object.keys(r.timing).length > 0)
+            );
+            if (speedChartInstance) speedChartInstance.destroy();
+            if (withTiming.length === 0) {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                canvas.parentElement.style.width = '100%';
+                return;
+            }
+            const subjectNames = ['Physics', 'Chemistry', 'Botany', 'Zoology'];
+            const subjectRanges = { Physics: {s:1,e:50}, Chemistry: {s:51,e:100}, Botany: {s:101,e:150}, Zoology: {s:151,e:200} };
+            const subjectColors = ['#2563eb', '#16a34a', '#eab308', '#ef4444'];
+            const datasets = subjectNames.map((subj, idx) => ({
+                label: subj,
+                data: withTiming.map(r => {
+                    const metrics = r.subjectTimingMetrics && Object.keys(r.subjectTimingMetrics).length > 0
+                        ? r.subjectTimingMetrics : computeSubjectTimingMetrics(r.timing || {});
+                    const m = metrics[subj];
+                    if (!m || m.totalSeconds === 0) return 0;
+                    const rng = subjectRanges[subj];
+                    let answered = 0;
+                    const resp = r.responses || {};
+                    for (let q = rng.s; q <= rng.e; q++) { if (resp[q] && resp[q] !== '-') answered++; }
+                    return m.totalSeconds > 0 && answered > 0 ? Math.round((m.totalSeconds / answered) * 10) / 10 : 0;
+                }),
+                borderColor: subjectColors[idx], backgroundColor: subjectColors[idx] + '20',
+                tension: 0.3, fill: false
+            }));
+            setChartScrollWidth(canvas, withTiming.length);
+            speedChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: { labels: withTiming.map((r, i) => `T${i + 1}`), datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { beginAtZero: true, ticks: { callback: v => v.toFixed(1) + 's' } } },
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
+                }
+            });
+        }
+
+        function renderSubjectScoreChart() {
+            const canvas = document.getElementById('subject-score-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const scored = window.allVaultRecords.filter(r => typeof r.marks === 'number' || (r.savedKey && r.savedKey.length > 0));
+            if (subjectScoreChartInstance) subjectScoreChartInstance.destroy();
+            if (scored.length === 0) {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                canvas.parentElement.style.width = '100%';
+                return;
+            }
+            const subjectRanges = [{name:'Physics',start:1,end:50},{name:'Chemistry',start:51,end:100},{name:'Botany',start:101,end:150},{name:'Zoology',start:151,end:200}];
+            const subjectColors = { Physics: '#2563eb', Chemistry: '#16a34a', Botany: '#eab308', Zoology: '#ef4444' };
+            const datasets = subjectRanges.map(sub => ({
+                label: sub.name,
+                data: scored.map(r => {
+                    const hasKey = r.savedKey && r.savedKey.length > 0;
+                    const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey || [], hasKey);
+                    return hasKey ? stats.marks : null;
+                }),
+                borderColor: subjectColors[sub.name], backgroundColor: subjectColors[sub.name] + '20',
+                tension: 0.3, fill: false, spanGaps: true
+            }));
+            setChartScrollWidth(canvas, scored.length);
+            subjectScoreChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: { labels: scored.map((r, i) => `T${i + 1}`), datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: -45, max: 180 } },
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
+                }
+            });
+        }
+
+        function renderSubjectAccuracyChart() {
+            const canvas = document.getElementById('subject-accuracy-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const scored = window.allVaultRecords.filter(r => r.savedKey && r.savedKey.length > 0);
+            if (subjectAccuracyChartInstance) subjectAccuracyChartInstance.destroy();
+            if (scored.length === 0) {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                canvas.parentElement.style.width = '100%';
+                return;
+            }
+            const subjectRanges = [{name:'Physics',start:1,end:50},{name:'Chemistry',start:51,end:100},{name:'Botany',start:101,end:150},{name:'Zoology',start:151,end:200}];
+            const subjectColors = { Physics: '#2563eb', Chemistry: '#16a34a', Botany: '#eab308', Zoology: '#ef4444' };
+            const datasets = subjectRanges.map(sub => ({
+                label: sub.name,
+                data: scored.map(r => {
+                    const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey, true);
+                    const denom = stats.correct + stats.wrong;
+                    return denom > 0 ? Math.round((stats.correct / denom) * 1000) / 10 : 0;
+                }),
+                borderColor: subjectColors[sub.name], backgroundColor: subjectColors[sub.name] + '20',
+                tension: 0.3, fill: false, spanGaps: true
+            }));
+            setChartScrollWidth(canvas, scored.length);
+            subjectAccuracyChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: { labels: scored.map((r, i) => `T${i + 1}`), datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } },
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
+                }
+            });
+        }
+
+        function renderLatestPacingOverview() {
+            const box = document.getElementById('pacing-overview');
+            const latest = window.allVaultRecords[window.allVaultRecords.length - 1];
+            if (!latest || !latest.timing || Object.keys(latest.timing).length === 0) {
+                box.innerHTML = "Take a test with the timer running to see pacing stats here.";
+                return;
+            }
+            const entries = Object.entries(latest.timing);
+            const totalSec = entries.reduce((sum, [,s]) => sum + s, 0);
+            const avg = (totalSec / entries.length).toFixed(1);
+            const sinks = entries.filter(([,s]) => s > 100);
+            box.innerHTML = `From "<b>${latest.title}</b>":<br>
+                Total time on questions: <b>${Math.round(totalSec/60)} min</b><br>
+                Avg. time per visited question: <b>${avg}s</b><br>
+                Time-sinks (&gt;100s): <b style="color:var(--danger);">${sinks.length} questions</b>`;
+        }
+
+        // COPY WRONG RESPONSES: scans the currently-opened result record, extracts every
+        // question number flagged as wrong, and copies them as a clean comma-separated string.
+        window.copyWrongResponses = function() {
+            const resp = window.currentResponses || {};
+            const key = window.currentAnswerKey || [];
+            if (key.length === 0) { alert("No answer key on file — can't identify wrong responses."); return; }
+            const wrongQs = [];
+            for (let i = 1; i <= 200; i++) {
+                if (evalQuestion(i, resp, key, true) === 'wrong') wrongQs.push(i);
+            }
+            if (wrongQs.length === 0) { alert("No wrong responses found in this test!"); return; }
+            const text = wrongQs.join(', ');
+            navigator.clipboard.writeText(text)
+                .then(() => alert(`Copied ${wrongQs.length} wrong question numbers to clipboard.`))
+                .catch(() => alert(`Copy failed. Here are the numbers: ${text}`));
+        };
+
+        window.wipeHistory = async function() {
+            if(!confirm("⚠️ Delete ALL past records?")) return;
+            const q = await getDocs(collection(window.db, "users", window.currentUser.uid, "vault"));
+            q.forEach(async (d) => await deleteDoc(d.ref));
+            window.allVaultRecords = [];
+            window.renderHistoryVault();
+            if (typeof window.loadOfficialCloudTests === 'function') window.loadOfficialCloudTests(); // reattempt locks were tied to those records
+        };
+
+        window.toggleWrongOnly = function() {
+            window.showingWrongOnly = !window.showingWrongOnly;
+            document.getElementById('toggle-wrong-btn').innerText = window.showingWrongOnly ? "Show All Results" : "Show Only Mistakes";
+            renderResultGrid();
+        }
+
+        // ---- NTA-style question evaluation (+4 correct, -1 wrong, 0 unattempted) ----
+        function evalQuestion(i, resp, key, hasKey) {
+            const ans = resp[i] || '-';
+            if (ans === '-') return 'unattempted';
+            if (!hasKey) return 'attempted-ungraded';
+            const correctAns = key[i - 1];
+            return (ans === correctAns) ? 'correct' : 'wrong';
+        }
+
+        // DYNAMIC NTA EVALUATION ENGINE — chooses between whole-paper and Section B modes.
+        // Condition A (whole paper): max question ≤ 180 OR total answered ≤ 180 → grade every
+        //   response uniformly with no Section B drop omissions.
+        // Condition B (full 200-Q booklet): max question > 180 AND total answered > 180 → apply
+        //   classic NTA Section B safeguards: per subject, only the first 10 attempted questions
+        //   in the Section B range are scored; extras are shown but excluded.
+        function shouldApplySectionBRule(resp) {
+            const qNums = Object.keys(resp).map(k => parseInt(k, 10)).filter(k => !isNaN(k));
+            if (qNums.length === 0) return false;
+            const maxQ = Math.max(...qNums);
+            const totalAnswered = qNums.length;
+            return maxQ > 180 && totalAnswered > 180;
+        }
+
+        function calcSubjectStats(sub, resp, key, hasKey) {
+            const applySectionB = shouldApplySectionBRule(resp);
+            const aStart = sub.start, aEnd = sub.start + 34;
+            const bStart = sub.start + 35, bEnd = sub.end;
+            let correct = 0, wrong = 0, unattempted = 0;
+
+            // Section A: always all compulsory, always graded.
+            for (let i = aStart; i <= aEnd; i++) {
+                const st = evalQuestion(i, resp, key, hasKey);
+                if (st === 'correct') correct++;
+                else if (st === 'wrong') wrong++;
+                else if (st === 'unattempted') unattempted++;
+            }
+
+            let countedB = [], notCountedB = [];
+
+            if (applySectionB) {
+                // Condition B: NTA Section B rule — only first 10 attempted in Section B count.
+                const attemptedB = [];
+                for (let i = bStart; i <= bEnd; i++) if ((resp[i] || '-') !== '-') attemptedB.push(i);
+                countedB = attemptedB.slice(0, 10);
+                notCountedB = attemptedB.slice(10);
+                countedB.forEach(i => {
+                    const st = evalQuestion(i, resp, key, hasKey);
+                    if (st === 'correct') correct++;
+                    else if (st === 'wrong') wrong++;
+                });
+                unattempted += (bEnd - bStart + 1) - attemptedB.length;
+            } else {
+                // Condition A: whole paper — grade every Section B question uniformly.
+                for (let i = bStart; i <= bEnd; i++) {
+                    const st = evalQuestion(i, resp, key, hasKey);
+                    if (st === 'correct') correct++;
+                    else if (st === 'wrong') wrong++;
+                    else if (st === 'unattempted') unattempted++;
+                }
+            }
+
+            const marks = hasKey ? (correct * 4 - wrong * 1) : null;
+            return { correct, wrong, unattempted, marks, countedB, notCountedB };
+        }
+
+        window.updateTopicTag = function(qNum, val) {
+            window.currentTopics = window.currentTopics || {};
+            if (val.trim()) window.currentTopics[qNum] = val.trim();
+            else delete window.currentTopics[qNum];
+        };
+
+        let resultDoughnutInstance = null;
+        function renderResultDoughnut(correct, wrong, unattempted, notCounted) {
+            const canvas = document.getElementById('result-doughnut');
+            if (!canvas || typeof Chart === 'undefined') return;
+            if (resultDoughnutInstance) resultDoughnutInstance.destroy();
+            resultDoughnutInstance = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Wrong', 'Unattempted', 'Not Counted (Sec B extra)'],
+                    datasets: [{ data: [correct, wrong, unattempted, notCounted], backgroundColor: ['#16a34a', '#ef4444', '#94a3b8', '#a855f7'], borderWidth: 1 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } } }
+            });
+        }
+
+        function renderPacingBox() {
+            const box = document.getElementById('res-pacing-box');
+            const timing = window.currentTiming || {};
+            const entries = Object.entries(timing);
+            if (entries.length === 0) { box.innerHTML = `<i>No timing data recorded for this attempt.</i>`; return; }
+            const totalSec = entries.reduce((sum, [,s]) => sum + s, 0);
+            const avg = (totalSec / entries.length).toFixed(1);
+            const sinks = entries.filter(([,s]) => s > 100).sort((a,b) => b[1]-a[1]);
+            box.innerHTML = `Total time on questions: <b>${Math.round(totalSec/60)} min</b><br>
+                Avg. time per visited question: <b>${avg}s</b><br>
+                Time-sinks (&gt;100s spent): <b style="color:var(--danger);">${sinks.length}</b>
+                ${sinks.length ? `<br><span style="font-size:11px;">Slowest: ${sinks.slice(0,5).map(([q,s]) => `Q${q} (${s}s)`).join(', ')}</span>` : ''}`;
+        }
+
+        // Renders the subject-wise time & speed breakdown table beneath the main stats.
+        // Uses window.currentSubjectTimingMetrics (loaded from the archived document, or
+        // computed on-the-fly for older records). Shows nothing if no timing data exists.
+        function renderSubjectTimingBreakdown() {
+            const metrics = window.currentSubjectTimingMetrics || {};
+            if (Object.keys(metrics).length === 0) return '';
+
+            let rows = '';
+            const subjectOrder = ['Physics', 'Chemistry', 'Botany', 'Zoology'];
+            subjectOrder.forEach(subject => {
+                const m = metrics[subject];
+                if (!m) return;
+                const timeLabel = formatMinutesSeconds(m.totalSeconds || 0);
+                const speedLabel = m.visitedCount > 0 ? `${m.avgSpeedSeconds}s / question` : '—';
+                rows += `<tr>
+                    <td>${subject}</td>
+                    <td>${timeLabel}</td>
+                    <td>${m.visitedCount || 0}</td>
+                    <td>${speedLabel}</td>
+                </tr>`;
+            });
+
+            if (!rows) return '';
+
+            return `<table class="subject-timing-table">
+                <thead><tr>
+                    <th>Subject</th>
+                    <th>Total Time Spent</th>
+                    <th>Visited</th>
+                    <th>Speed / Question</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+        }
+
+        // Updated to include the subject-wise timing & speed breakdown table right under
+        // the main stat chips and score table. Works for both fresh submissions and
+        // historical records viewed via viewHistoricalSheet.
+        function renderScoreSummary(subjectStats, hasKey) {
+            const statsBox = document.getElementById('res-stats-container');
+            let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalMarks = 0, totalNotCounted = 0;
+            subjectStats.forEach(s => {
+                totalCorrect += s.stats.correct; totalWrong += s.stats.wrong; totalUnattempted += s.stats.unattempted;
+                totalNotCounted += s.stats.notCountedB.length;
+                if (hasKey) totalMarks += s.stats.marks;
+            });
+            renderResultDoughnut(totalCorrect, totalWrong, totalUnattempted, totalNotCounted);
+            renderPacingBox();
+
+            let chips = `<div class="stat-chip">Correct <b style="color:#16a34a;">${totalCorrect}</b></div>
+                         <div class="stat-chip">Wrong <b style="color:#ef4444;">${totalWrong}</b></div>
+                         <div class="stat-chip">Unattempted <b>${totalUnattempted}</b></div>`;
+            chips += hasKey
+                ? `<div class="stat-chip">Total Score <b style="color:var(--primary);">${totalMarks}</b> / 720</div>`
+                : `<div class="stat-chip" style="color:#a16207;">Upload an answer key to see marks (NTA: +4 / -1)</div>`;
+
+            let table = '';
+            if (hasKey) {
+                table = `<table class="subject-stats-table"><thead><tr><th>Subject</th><th>Correct</th><th>Wrong</th><th>Unatt.</th><th>Penalty</th><th>Marks</th></tr></thead><tbody>`;
+                subjectStats.forEach(s => {
+                    const penalty = s.stats.wrong * -1;
+                    table += `<tr><td>${s.name}</td><td>${s.stats.correct}</td><td>${s.stats.wrong}</td><td>${s.stats.unattempted}</td><td><span class="penalty-pill">${penalty}</span></td><td><b>${s.stats.marks}</b>/180</td></tr>`;
+                });
+                table += `</tbody></table>`;
+            }
+
+            // Subject-wise time & speed breakdown — rendered beneath the score table.
+            const timingBreakdown = renderSubjectTimingBreakdown();
+
+            statsBox.innerHTML = chips + table + timingBreakdown;
+            renderPenaltyAnalytics(hasKey, totalMarks, totalWrong);
+        }
+
+        function renderPenaltyAnalytics(hasKey, totalMarks, totalWrong) {
+            const section = document.getElementById('penalty-analytics-section');
+            if (!hasKey) { section.innerHTML = ''; return; }
+            const totalPenalty = totalWrong * -1;
+            const potentialScore = totalMarks + Math.abs(totalPenalty);
+            section.innerHTML = `
+                <div class="penalty-analytics-card">
+                    <h4>⚠️ Negative Marks Impact</h4>
+                    <div class="penalty-metrics-row">
+                        <div class="penalty-metric-box">
+                            <span class="penalty-metric-label">Total Penalty Marks Lost</span>
+                            <span class="penalty-metric-value" style="color:#ef4444;">${totalPenalty}</span>
+                        </div>
+                        <div class="penalty-metric-box">
+                            <span class="penalty-metric-label">Potential Correction Score</span>
+                            <span class="penalty-metric-value" style="color:#16a34a;">${potentialScore}</span>
+                            <span class="penalty-metric-subtext">Your score if you had left these questions blank instead of guessing.</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function renderWeakTopics(subjects, resp, key, hasKey, topics) {
+            const container = document.getElementById('weak-topics-container');
+            if (!hasKey) { container.innerHTML = ''; return; }
+            const tally = {};
+            subjects.forEach(sub => {
+                for (let i = sub.start; i <= sub.end; i++) {
+                    if (evalQuestion(i, resp, key, hasKey) === 'wrong') {
+                        const t = topics[i] || 'Untagged';
+                        tally[t] = (tally[t] || 0) + 1;
+                    }
+                }
+            });
+            const sorted = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+            if (sorted.length === 0) { container.innerHTML = ''; return; }
+
+            let rows = sorted.map(([topic, count]) =>
+                `<div class="weak-topic-row"><span>${topic}</span><span class="weak-topic-count">${count} wrong</span></div>`
+            ).join('');
+            container.innerHTML = `<div class="weak-topics-card">
+                <h4>🎯 Weak Areas (by the topics you tagged below)</h4>
+                ${rows}
+            </div>`;
+        }
+
+        function renderResultGrid() {
+            const container = document.getElementById('detailed-results-container');
+            container.innerHTML = '';
+            const subjects = [
+                { name: 'Physics', start: 1, end: 50 },
+                { name: 'Chemistry', start: 51, end: 100 },
+                { name: 'Botany', start: 101, end: 150 },
+                { name: 'Zoology', start: 151, end: 200 }
+            ];
+
+            const activeResp = window.currentResponses || {};
+            const key = window.currentAnswerKey || [];
+            const hasKey = key.length > 0;
+            const topics = window.currentTopics || {};
+            const applySectionB = shouldApplySectionBRule(activeResp);
+
+            const subjectStats = subjects.map(sub => ({ name: sub.name, stats: calcSubjectStats(sub, activeResp, key, hasKey) }));
+            renderScoreSummary(subjectStats, hasKey);
+            renderWeakTopics(subjects, activeResp, key, hasKey, topics);
+
+            subjects.forEach((sub, idx) => {
+                const countedB = new Set(subjectStats[idx].stats.countedB);
+                const notCountedB = new Set(subjectStats[idx].stats.notCountedB);
+                const sStats = subjectStats[idx].stats;
+                const sAttempted = sStats.correct + sStats.wrong;
+                const isHighGuesswork = hasKey && sAttempted > 0 && sStats.wrong > 0.2 * sAttempted;
+                let html = `<div class="subject-result-section"><div style="font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 10px;">${sub.name}</div>`;
+                if (isHighGuesswork) html += `<div class="guesswork-banner">⚠️ High Guesswork Detected: You are bleeding critical ranks here. Focus on eliminating un-sure attempts.</div>`;
+                let visibleCount = 0;
+                let sectionHtml = { A: '', B: '' };
+
+                for (let i = sub.start; i <= sub.end; i++) {
+                    const ans = activeResp[i] || '-';
+                    const correctAns = hasKey ? key[i - 1] : null;
+                    const inSectionB = i > sub.start + 34;
+
+                    let statusClass = "unattempted";
+                    if (ans !== '-') {
+                        if (hasKey && ans === correctAns) statusClass = "correct";
+                        else if (hasKey && ans !== correctAns) statusClass = "wrong";
+                        else statusClass = "res-box";
+                    }
+                    if (inSectionB && notCountedB.has(i)) statusClass += " not-counted";
+
+                    if (window.showingWrongOnly && !statusClass.includes("wrong")) continue;
+                    visibleCount++;
+
+                    const keyHTML = (hasKey && statusClass.includes("wrong")) ? `<div style="font-size: 10px; color: #16a34a; margin-top:4px;">Ans: ${correctAns}</div>` : '';
+                    const notCountedBadge = (inSectionB && notCountedB.has(i)) ? `<span class="badge-not-counted">Not counted</span>` : '';
+                    const topicVal = (topics[i] || '').replace(/"/g, '&quot;');
+
+                    const box = `<div class="res-box ${statusClass}">
+                                <div style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Q${i}</div>
+                                <div style="font-weight: 700; font-size: 14px;">${ans}</div>
+                                ${keyHTML}${notCountedBadge}
+                                <input type="text" class="topic-input" data-q="${i}" placeholder="Tag topic" value="${topicVal}" onchange="window.updateTopicTag(${i}, this.value)">
+                             </div>`;
+                    if (inSectionB) sectionHtml.B += box; else sectionHtml.A += box;
+                }
+
+                if (sectionHtml.A) html += `<div class="section-label">Section A (Q${sub.start}-${sub.start + 34}) — all compulsory</div><div class="result-grid">${sectionHtml.A}</div>`;
+                if (sectionHtml.B) html += `<div class="section-label">Section B (Q${sub.start + 35}-${sub.end})${applySectionB ? ' — attempt any 10, first 10 attempted are scored' : ' — all graded (whole paper mode)'}</div><div class="result-grid">${sectionHtml.B}</div>`;
+                html += `</div>`;
+                if (visibleCount > 0) container.innerHTML += html;
+            });
+            
+            if(container.innerHTML === '') container.innerHTML = '<p style="color:var(--text-muted); padding: 10px;">No mistakes found in this section!</p>';
+        }
+
+        window.closeResults = function() {
+            document.getElementById('result-view').classList.remove('active');
+            window.renderHistoryVault();
+        };
+
+        let scatterChartInstance = null;
+
+        window.switchMainView = function(viewId, tabElement) {
+            document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            tabElement.classList.add('active');
+            if (viewId === 'analytics-view' && typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
+        };
+
+        // ============ VINAY BHAI DASHBOARD FUNCTIONS ============
+
+        function getGreeting() {
+            const h = new Date().getHours();
+            if (h < 12) return 'Good morning';
+            if (h < 17) return 'Good afternoon';
+            return 'Good evening';
+        }
+
+        function updateGreeting() {
+            const el = document.getElementById('hero-greeting');
+            if (!el) return;
+            const name = window.currentUser ? (window.currentUser.displayName || 'Future Doctor') : 'Future Doctor';
+            el.innerText = `${getGreeting()}, ${name.split(' ')[0]}`;
+        }
+
+        window.renderHistoryVault = (function(orig) {
+            return async function() {
+                if (typeof orig === 'function') await orig();
+                renderAttemptsView();
+                renderOverviewMetrics();
+            };
+        })(window.renderHistoryVault);
+
+        function renderOverviewMetrics() {
+            const recs = window.allVaultRecords || [];
+            const scored = recs.filter(r => typeof r.marks === 'number');
+            const testsTaken = scored.length;
+            const questionsSolved = recs.reduce((sum, r) => sum + (r.attempted || 0), 0);
+            let totalCorrect = 0, totalWrong = 0;
+            scored.forEach(r => {
+                const subs = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                subs.forEach(sub => {
+                    const s = calcSubjectStats(sub, r.responses || {}, r.savedKey || [], true);
+                    totalCorrect += s.correct; totalWrong += s.wrong;
+                });
+            });
+            const accuracy = (totalCorrect + totalWrong) > 0 ? Math.round(totalCorrect / (totalCorrect + totalWrong) * 1000) / 10 : 0;
+            const bestScore = scored.length > 0 ? Math.max(...scored.map(r => r.marks)) : null;
+            const air = bestScore ? Math.max(1, Math.round(10000 - bestScore * 12)) : null;
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+            set('ov-accuracy', accuracy + '%');
+            set('ov-tests', testsTaken);
+            set('ov-questions', questionsSolved);
+            set('ov-air', air ? '~' + air.toLocaleString() : '—');
+            set('prof-accuracy', accuracy + '%');
+            set('prof-tests', testsTaken);
+            set('prof-questions', questionsSolved);
+            set('prof-best', bestScore !== null ? bestScore + '/720' : '—');
+            updateGreeting();
+        }
+
+        function renderAttemptsView() {
+            const tbody = document.getElementById('attempts-rows');
+            if (!tbody || !window.currentUser || !window.db) return;
+            const recs = (window.allVaultRecords || []).slice().sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+            if (recs.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No attempts yet.</td></tr>'; return; }
+            let html = '';
+            recs.forEach((r, i) => {
+                const hasKey = r.savedKey && r.savedKey.length > 0;
+                let totalC = 0, totalW = 0, accLabel = '—', scoreLabel = '—';
+                if (hasKey) {
+                    const subs = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                    subs.forEach(sub => { const s = calcSubjectStats(sub, r.responses || {}, r.savedKey, true); totalC += s.correct; totalW += s.wrong; });
+                    const denom = totalC + totalW;
+                    accLabel = denom > 0 ? Math.round(totalC / denom * 1000) / 10 + '%' : '—';
+                    scoreLabel = (typeof r.marks === 'number' ? r.marks : '—') + '/720';
+                }
+                const tag = r.cloudTestId ? '☁️ Cloud' : '🧪 Local';
+                const accBadge = hasKey ? `<span style="padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;background:${parseFloat(accLabel) >= 70 ? '#e8fbf2' : '#fef3c7'};color:${parseFloat(accLabel) >= 70 ? '#10b981' : '#d97706'}">${accLabel}</span>` : '—';
+                html += `<tr>
+                    <td style="font-weight:600;">${r.title || 'Test'}</td>
+                    <td style="color:var(--text-muted);font-size:12px;">${r.timeStr || ''}</td>
+                    <td>${tag}</td>
+                    <td><b>${scoreLabel}</b></td>
+                    <td>${accBadge}</td>
+                    <td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="window.viewHistoricalSheet('${r.id}')">View Breakdown</button></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ---- BROWSE TESTS: sequential naming + search + attempt-state routing ----
+        window._cloudTestCache = [];
+
+        window.loadOfficialCloudTests = (function(orig) {
+            return async function() {
+                if (typeof orig === 'function') await orig();
+                // Re-render into the browse view container with sequential T1/T2 naming
+                const browseContainer = document.getElementById('browse-tests-container');
+                if (!browseContainer || !window.db || !window.currentUser) return;
+                const q = query(collection(window.db, 'cloud_tests'), orderBy('createdAt', 'asc'));
+                const snap = await getDocs(q);
+                window._cloudTestCache = [];
+                snap.forEach(d => window._cloudTestCache.push({ id: d.id, ...d.data() }));
+                window.filterCloudTests();
+                const ovCount = document.getElementById('ov-test-count');
+                if (ovCount) ovCount.innerText = window._cloudTestCache.length + ' tests available';
+            };
+        })(window.loadOfficialCloudTests);
+
+        window.filterCloudTests = function() {
+            const browseContainer = document.getElementById('browse-tests-container');
+            const dashContainer = document.getElementById('available-tests-container');
+            const query_str = ((document.getElementById('browse-search-input') || {}).value || (document.getElementById('test-search-input') || {}).value || '').toLowerCase().trim();
+            const tests = window._cloudTestCache || [];
+            const filtered = tests.filter(t => {
+                if (!query_str) return true;
+                const seqName = `T${tests.indexOf(t) + 1}`;
+                return (t.title || '').toLowerCase().includes(query_str) || seqName.toLowerCase().includes(query_str);
+            });
+            const html = filtered.map(t => {
+                const idx = tests.indexOf(t);
+                const seqName = `Test ${idx + 1} (T${idx + 1})`;
+                return `<div class="test-card">
+                    <h3>${seqName}</h3>
+                    <p style="font-size:12px;color:var(--text-muted);margin:4px 0;">${t.title || ''}</p>
+                    <p>⏱️ ${t.duration} Mins · 720 Marks</p>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:#eaf2ff;color:#3b82f6;">NEET</span>
+                    <button class="btn" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.fetchAndStartCloudTest('${t.id}')">Start Test →</button>
+                </div>`;
+            }).join('');
+            const emptyHtml = '<p style="color:var(--text-muted);font-size:14px;">No tests match your search.</p>';
+            if (browseContainer) browseContainer.innerHTML = html || emptyHtml;
+            if (dashContainer) dashContainer.innerHTML = html || emptyHtml;
+        };
+
+        window.startLatestCloudTest = async function() {
+            const tests = window._cloudTestCache || [];
+            if (tests.length === 0) { alert('No cloud tests available yet. Check the Browse Tests tab.'); return; }
+            const latest = tests[tests.length - 1];
+            window.fetchAndStartCloudTest(latest.id);
+        };
+
+        // ---- LEADERBOARD ----
+        window.getCompetitors = function() { return JSON.parse(localStorage.getItem('vb-competitors') || '[]'); };
+        window.saveCompetitors = function(list) { localStorage.setItem('vb-competitors', JSON.stringify(list)); };
+
+        window.addCompetitor = function() {
+            const name = document.getElementById('comp-name').value.trim();
+            if (!name) return alert('Enter a competitor name.');
+            const entry = {
+                name,
+                test: document.getElementById('comp-test').value.trim() || '—',
+                phy: parseInt(document.getElementById('comp-phy').value) || 0,
+                chem: parseInt(document.getElementById('comp-chem').value) || 0,
+                bot: parseInt(document.getElementById('comp-bot').value) || 0,
+                zoo: parseInt(document.getElementById('comp-zoo').value) || 0,
+                total: (parseInt(document.getElementById('comp-phy').value) || 0) + (parseInt(document.getElementById('comp-chem').value) || 0) + (parseInt(document.getElementById('comp-bot').value) || 0) + (parseInt(document.getElementById('comp-zoo').value) || 0)
+            };
+            const list = window.getCompetitors();
+            list.push(entry);
+            window.saveCompetitors(list);
+            ['comp-name','comp-test','comp-phy','comp-chem','comp-bot','comp-zoo'].forEach(id => document.getElementById(id).value = '');
+            window.renderLeaderboard();
+        };
+
+        window.removeCompetitor = function(idx) {
+            const list = window.getCompetitors();
+            list.splice(idx, 1);
+            window.saveCompetitors(list);
+            window.renderLeaderboard();
+        };
+
+        window.renderLeaderboard = function() {
+            const tbody = document.getElementById('leaderboard-rows');
+            if (!tbody) return;
+            const comps = window.getCompetitors();
+            // Add "You" as the latest scored test
+            const recs = (window.allVaultRecords || []).filter(r => typeof r.marks === 'number');
+            const yourLatest = recs.length > 0 ? recs[recs.length - 1] : null;
+            let yourSubs = { phy: 0, chem: 0, bot: 0, zoo: 0 };
+            if (yourLatest) {
+                const subs = [{name:'phy',start:1,end:50},{name:'chem',start:51,end:100},{name:'bot',start:101,end:150},{name:'zoo',start:151,end:200}];
+                subs.forEach(sub => { yourSubs[sub.name] = calcSubjectStats(sub, yourLatest.responses || {}, yourLatest.savedKey || [], true).marks; });
+            }
+            const yourTotal = yourLatest ? yourLatest.marks : 0;
+            const allEntries = comps.map(c => ({ ...c, isYou: false }));
+            if (yourLatest) allEntries.push({ name: 'You', test: 'T' + recs.length, ...yourSubs, total: yourTotal, isYou: true });
+            allEntries.sort((a, b) => b.total - a.total);
+            if (allEntries.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">No entries yet. Add a competitor above.</td></tr>'; return; }
+            let html = '';
+            allEntries.forEach((e, i) => {
+                const rankBadge = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+                const youStyle = e.isYou ? 'background:#fff7ed;font-weight:700;' : '';
+                const removeBtn = e.isYou ? '' : `<button class="btn btn-outline" style="padding:2px 8px;font-size:10px;color:var(--danger);border-color:var(--danger);" onclick="window.removeCompetitor(${comps.indexOf(e)})">✕</button>`;
+                html += `<tr style="${youStyle}">
+                    <td>${rankBadge}</td>
+                    <td>${e.name}${e.isYou ? ' <span style="color:#f97316;">★</span>' : ''}</td>
+                    <td>${e.test}</td>
+                    <td>${e.phy}</td><td>${e.chem}</td><td>${e.bot}</td><td>${e.zoo}</td>
+                    <td><b>${e.total}/720</b></td>
+                    <td>${removeBtn}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        };
+
+        window.renderProfileStats = function() {
+            renderOverviewMetrics();
+        };
+
+        // ---- SCATTER PLOT (Accuracy vs Speed, 4-quadrant) ----
+        function renderScatterPlot() {
+            const canvas = document.getElementById('scatter-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            if (scatterChartInstance) scatterChartInstance.destroy();
+            const recs = (window.allVaultRecords || []).filter(r => r.timing && Object.keys(r.timing).length > 0 && r.savedKey && r.savedKey.length > 0);
+            if (recs.length === 0) {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+            const latest = recs[recs.length - 1];
+            const resp = latest.responses || {};
+            const key = latest.savedKey || [];
+            const timing = latest.timing || {};
+            const fastCorrect = [], slowCorrect = [], fastWrong = [], slowWrong = [];
+            const medianTime = 60; // seconds threshold for fast vs slow
+            for (let q = 1; q <= 200; q++) {
+                const t = timing[q] || 0;
+                if (t === 0) continue;
+                const ans = resp[q] || '-';
+                if (ans === '-') continue;
+                const isCorrect = ans === key[q - 1];
+                const isFast = t <= medianTime;
+                const point = { x: t, y: isCorrect ? 1 : 0 };
+                if (isFast && isCorrect) fastCorrect.push(point);
+                else if (!isFast && isCorrect) slowCorrect.push(point);
+                else if (isFast && !isCorrect) fastWrong.push(point);
+                else slowWrong.push(point);
+            }
+            const quadrantData = (data, color, label) => ({ label, data, backgroundColor: color + 'cc', borderColor: color, pointRadius: 5, pointHoverRadius: 7 });
+            scatterChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'scatter',
+                data: { datasets: [
+                    quadrantData(fastCorrect, '#10b981', 'Fast & Correct (Optimal)'),
+                    quadrantData(slowCorrect, '#3b82f6', 'Slow & Correct (Efficiency Leak)'),
+                    quadrantData(fastWrong, '#f59e0b', 'Fast & Incorrect (Silly Error)'),
+                    quadrantData(slowWrong, '#ef4444', 'Slow & Incorrect (Concept Blind Spot)')
+                ]},
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Time Spent (seconds)' }, min: 0 },
+                        y: { title: { display: true, text: 'Correct (1) / Wrong (0)' }, min: -0.3, max: 1.3, ticks: { stepSize: 1, callback: v => v === 1 ? 'Correct' : v === 0 ? 'Wrong' : '' } }
+                    },
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x}s` } } }
+                }
+            });
+        }
+
+        // Patch loadAnalyticsHub to also render the scatter plot
+        (function(origLoad) {
+            window.loadAnalyticsHub = async function() {
+                if (typeof origLoad === 'function') await origLoad();
+                renderScatterPlot();
+            };
+        })(window.loadAnalyticsHub);
+    </script>
+</body>
+</html>
