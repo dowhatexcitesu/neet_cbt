@@ -61,7 +61,6 @@
         .brand-logo { font-weight: 700; font-size: 18px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
         .brand-logo span { color: var(--primary); }
         .user-profile { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border-light);}
 
         .app-nav { background: var(--bg-surface); padding: 20px 16px; display: flex; flex-direction: column; gap: 6px; border-right: 1px solid var(--border-light); box-shadow: var(--shadow-sm); flex-shrink: 0; }
         .nav-tab { padding: 12px 16px; color: var(--text-muted); font-weight: 600; font-size: 14px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s;}
@@ -89,7 +88,7 @@
 
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--text-main);}
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 14px; background: var(--bg-body); transition: all 0.2s;}
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 14px; background: var(--bg-body); transition: all 0.2s; color: var(--text-main);}
         
         .btn { background: var(--primary); color: white; padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; justify-content: center; align-items: center; gap: 8px;}
         .btn:hover { filter: brightness(0.9); }
@@ -132,7 +131,7 @@
         .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .pal-btn { height: 35px; border-radius: 4px; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;}
         .pal-btn.active { outline: 2px solid #000; box-shadow: 0 0 0 3px #fde047; z-index: 2; }
-        .pal-btn.unseen { background: var(--bg-surface); border: 1px solid var(--opt-btn-border); }
+        .pal-btn.unseen { background: var(--bg-surface); border: 1px solid var(--opt-btn-border); color: var(--text-main); }
         .pal-btn.not-answered { background: #ef4444; color: white; border: none; }
         .pal-btn.answered { background: #22c55e; color: white; border: none; }
         .pal-btn.marked { background: #8b5cf6; color: white; border: none; }
@@ -150,19 +149,15 @@
         
         /* GRADING STYLES */
         .res-box { border: 1px solid var(--border-light); padding: 8px; border-radius: 6px; text-align: center; }
-        .res-box.correct { background: var(--correct-bg); border-color: var(--correct-border); }
-        .res-box.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); }
-        .res-box.unattempted { background: var(--bg-body); }
+        .res-box.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+        .res-box.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+        .res-box.unattempted { background: var(--bg-body); color: var(--text-muted); }
         .res-box.not-counted { opacity: 0.55; }
 
         /* SCORE SUMMARY */
         .stats-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .stat-chip { background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
         .stat-chip b { font-size: 15px; color: var(--text-main); margin-left: 4px; }
-        .subject-stats-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-        .subject-stats-table th, .subject-stats-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-light); text-align: center; }
-        .subject-stats-table th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 10px; }
-        .subject-stats-table td:first-child, .subject-stats-table th:first-child { text-align: left; }
 
         /* WEAK TOPICS */
         .weak-topics-card { background: var(--weak-card-bg); border: 1px solid var(--weak-card-border); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
@@ -177,42 +172,25 @@
         .topic-input { width: 100%; margin-top: 6px; font-size: 10px; padding: 3px 4px; border: 1px solid var(--border-light); border-radius: 4px; background: var(--bg-body); color: var(--text-main); text-align: center; }
         .badge-not-counted { display: block; font-size: 9px; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
-        /* MISTAKE VAULT (Analytics tab) */
-        .mistake-card { flex: 0 0 280px; background: var(--bg-body); border: 1px solid var(--border-light); border-left: 4px solid var(--danger); padding: 14px; border-radius: 10px; white-space: normal; }
-        .mistake-card .mc-topic { font-weight: 700; font-size: 14px; color: var(--text-main); margin-bottom: 4px; }
-        .mistake-card .mc-count { font-size: 12px; color: var(--danger); font-weight: 600; }
-        .mistake-card .mc-subject { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-
-        /* SCORE CIRCLE (result view) */
-        .score-circle-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; border: 8px solid var(--border-light); border-top-color: var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-        .score-circle .num { font-size: 24px; font-weight: 700; color: var(--text-main); }
-        .score-circle .den { font-size: 10px; color: var(--text-muted); }
-        .pacing-mini { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
-        .pacing-mini b { color: var(--text-main); }
-
-        /* SUBJECT TIMING METRICS TABLE (result view) */
+        /* SUBJECT TIMING METRICS TABLE */
         .subject-timing-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; }
         .subject-timing-table th { background: var(--bg-body); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 8px 12px; text-align: center; border-bottom: 1px solid var(--border-light); }
-        .subject-timing-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-light); text-align: center; }
+        .subject-timing-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-light); text-align: center; color: var(--text-main); }
         .subject-timing-table td:first-child { text-align: left; font-weight: 600; color: var(--text-main); }
-        .subject-timing-table tr:last-child td { border-bottom: none; }
 
-        /* MANUAL TICK MARK for cloud test cards */
+        /* MANUAL TICK MARK */
         .tick-checkbox { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; cursor: pointer; accent-color: var(--success); }
 
         /* CONTINUE / RETAKE MODAL */
         #resume-modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 300; align-items: center; justify-content: center; }
         .resume-card { background: var(--bg-surface); padding: 32px; border-radius: 16px; max-width: 460px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); border: 1px solid var(--border-light); }
-        .resume-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .resume-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
         .resume-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
         .resume-options { display: flex; flex-direction: column; gap: 12px; }
         .resume-info { background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 20px; text-align: left; }
         .resume-info b { color: var(--text-main); }
 
-        /* CHART SCROLL WRAPPER (analytics vault) — charts get a fixed-width inner
-           container inside a horizontally scrollable wrapper so they extend sideways
-           gracefully as the user accumulates 100+ tests instead of squishing. */
+        /* CHART SCROLL WRAPPER */
         .chart-scroll-wrapper { overflow-x: auto; overflow-y: hidden; border-radius: 8px; }
         .chart-scroll-inner { height: 240px; position: relative; min-width: 100%; }
 
@@ -237,10 +215,10 @@
         .card { padding: 26px; border-radius: 18px; box-shadow: 0 8px 26px rgba(15,23,42,.06); }
         .card h2 { border-bottom: 0; padding-bottom: 0; }
         .overview-hero { background: linear-gradient(115deg,#111b33 0%,#17243e 58%,#263d59 100%); color: #fff; border-radius: 22px; padding: 30px 34px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; box-shadow: 0 18px 34px rgba(15,23,42,.18); }
-        .overview-hero h1 { font-size: 30px; margin: 12px 0 8px; letter-spacing: -.8px; }
+        .overview-hero h1 { font-size: 30px; margin: 12px 0 8px; letter-spacing: -.8px; color: #ffffff;}
         .overview-hero p { color: #b7c4d9; line-height: 1.6; max-width: 580px; }
         .target-pill { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(249,115,22,.16); color: #fb923c; border: 1px solid rgba(251,146,60,.35); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
-        .hero-cta { background: linear-gradient(135deg,#f97316,#ea580c); box-shadow: 0 12px 24px rgba(249,115,22,.28); padding: 15px 22px; border-radius: 12px; white-space: nowrap; }
+        .hero-cta { background: linear-gradient(135deg,#f97316,#ea580c); box-shadow: 0 12px 24px rgba(249,115,22,.28); padding: 15px 22px; border-radius: 12px; white-space: nowrap; color: white; font-weight:700; border:none; cursor:pointer;}
         .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; margin-bottom: 24px; }
         .metric-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; display:flex; align-items:center; gap: 14px; box-shadow: 0 7px 18px rgba(15,23,42,.05); }
         .metric-icon { width: 46px; height: 46px; border-radius: 13px; display:grid; place-items:center; font-size: 21px; flex-shrink:0; }
@@ -248,17 +226,17 @@
         .metric-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: .05em; }
         .metric-value { color: var(--text-main); font-size: 26px; font-weight: 800; margin-top: 3px; }
         .test-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); overflow: visible; white-space: normal; }
-        .test-card { flex: none; min-height: 190px; border-radius: 15px; padding: 20px; background: #f8fafc; }
+        .test-card { flex: none; min-height: 190px; border-radius: 15px; padding: 20px; background: var(--bg-surface); }
         .test-card:hover { transform: translateY(-4px); border-color: #fb923c; box-shadow: 0 12px 24px rgba(249,115,22,.12); }
         .search-input { width:100%; padding: 13px 16px; border:1px solid var(--border-light); border-radius: 12px; background:var(--bg-body); color:var(--text-main); margin: 4px 0 16px; }
         .section-kicker { font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
         .leaderboard-form { display:grid; grid-template-columns: 1.5fr 1fr repeat(5,1fr) auto; gap: 8px; align-items:end; }
         .leaderboard-form input { min-width: 0; }
         .leaderboard-table { width:100%; border-collapse:collapse; margin-top:18px; font-size:13px; }
-        .leaderboard-table th,.leaderboard-table td { padding:12px; border-bottom:1px solid var(--border-light); text-align:left; }
+        .leaderboard-table th,.leaderboard-table td { padding:12px; border-bottom:1px solid var(--border-light); text-align:left; color:var(--text-main);}
         .leaderboard-table th { color:var(--text-muted); font-size:11px; text-transform:uppercase; }
         @media (max-width: 900px) { .metric-grid { grid-template-columns:repeat(2,1fr); } .test-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .overview-hero { align-items:flex-start; flex-direction:column; } .leaderboard-form { grid-template-columns:repeat(2,1fr); } }
-        @media (max-width: 640px) { .auth-bar { padding:0 16px; } .auth-bar .user-profile > div, .auth-bar #auth-actions { display:none !important; } .app-nav { width:70px; padding:20px 8px; } .app-nav::before { content:'VB'; padding:0 0 20px; text-align:center; color:#f97316; } .nav-group-label { display:none; } .nav-tab { font-size:0; text-align:center; padding:12px 4px; } .nav-tab:first-letter { font-size:18px; } .view-panel { width:calc(100vw - 70px); margin-left:70px; } .section-container { padding:24px 16px 60px; } .metric-grid,.test-grid { grid-template-columns:1fr; } .overview-hero { padding:24px; } .overview-hero h1 { font-size:24px; } }
+        @media (max-width: 640px) { .auth-bar { padding:0 16px; } .auth-bar #auth-actions { display:none !important; } .app-nav { width:70px; padding:20px 8px; } .app-nav::before { content:'VB'; padding:0 0 20px; text-align:center; color:#f97316; } .nav-group-label { display:none; } .nav-tab { font-size:0; text-align:center; padding:12px 4px; } .nav-tab:first-letter { font-size:18px; } .view-panel { width:calc(100vw - 70px); margin-left:70px; } .section-container { padding:24px 16px 60px; } .metric-grid,.test-grid { grid-template-columns:1fr; } .overview-hero { padding:24px; } .overview-hero h1 { font-size:24px; } }
 
         /* PENALTY ANALYTICS */
         .penalty-analytics-card { background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #ef4444; border-radius: 10px; padding: 14px; margin-bottom: 20px; }
@@ -268,8 +246,6 @@
         .penalty-metric-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
         .penalty-metric-value { font-size: 28px; font-weight: 700; }
         .penalty-metric-subtext { font-size: 11px; color: var(--text-muted); font-style: italic; }
-        .penalty-pill { display: inline-block; background: #fee2e2; color: #dc2626; font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
-        .guesswork-banner { background: #fffbeb; border: 1px solid #fcd34d; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 12px; font-weight: 600; color: #92400e; }
     </style>
     <script>
         window.mockLogin = window.mockLogin || function() { alert("Authentication module initializing. Please wait..."); };
@@ -316,16 +292,16 @@
 
     <nav class="app-nav">
         <div class="nav-group-label">Main Menu</div>
-        <div class="nav-tab active" id="tab-dashboard" onclick="switchMainView('dashboard-view', this)">🏠 Overview</div>
-        <div class="nav-tab" id="tab-attempts" onclick="switchMainView('attempts-view', this); window.renderHistoryVault();">📝 My Attempts</div>
-        <div class="nav-tab" id="tab-analytics" onclick="switchMainView('analytics-view', this); window.loadAnalyticsHub();">📊 Analytics</div>
+        <div class="nav-tab active" id="tab-dashboard" onclick="window.switchMainView('dashboard-view', this)">🏠 Overview</div>
+        <div class="nav-tab" id="tab-attempts" onclick="window.switchMainView('attempts-view', this); window.renderHistoryVault();">📝 My Attempts</div>
+        <div class="nav-tab" id="tab-analytics" onclick="window.switchMainView('analytics-view', this); window.loadAnalyticsHub();">📊 Analytics</div>
         <div class="nav-group-label">Practice & Tests</div>
-        <div class="nav-tab" id="tab-browse" onclick="switchMainView('browse-view', this); window.loadOfficialCloudTests();">📚 Browse Tests</div>
-        <div class="nav-tab" id="tab-leaderboard" onclick="switchMainView('leaderboard-view', this); window.renderLeaderboard();">🏆 Rank Leaderboard</div>
-        <div class="nav-tab" id="tab-upload" onclick="switchMainView('local-upload-view', this)">🧪 Local Sandbox</div>
+        <div class="nav-tab" id="tab-browse" onclick="window.switchMainView('browse-view', this); window.loadOfficialCloudTests();">📚 Browse Tests</div>
+        <div class="nav-tab" id="tab-leaderboard" onclick="window.switchMainView('leaderboard-view', this); window.renderLeaderboard();">🏆 Rank Leaderboard</div>
+        <div class="nav-tab" id="tab-upload" onclick="window.switchMainView('local-upload-view', this)">🧪 Local Sandbox</div>
         <div class="nav-group-label">Account & Admin</div>
-        <div class="nav-tab admin-only" id="admin-nav-tab" onclick="switchMainView('admin-view', this); window.loadAdminTests();">📤 Admin Upload Panel</div>
-        <div class="nav-tab" id="tab-profile" onclick="switchMainView('profile-view', this); window.renderProfileStats();">👤 Profile & Stats</div>
+        <div class="nav-tab admin-only" id="admin-nav-tab" onclick="window.switchMainView('admin-view', this); window.loadAdminTests();">📤 Admin Upload Panel</div>
+        <div class="nav-tab" id="tab-profile" onclick="window.switchMainView('profile-view', this); window.renderHistoryVault();">👤 Profile & Stats</div>
         <div class="nav-tab" onclick="window.mockLogout()">🚪 Logout</div>
     </nav>
 
@@ -361,7 +337,7 @@
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="margin:0;border:0;padding:0;">📊 Recent Performance Snapshot</h2>
-                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: var(--danger);" onclick="wipeHistory()">Wipe Vault Data</button>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: var(--danger);" onclick="window.wipeHistory()">Wipe Vault Data</button>
             </div>
             <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 12px;">
                 <table class="history-table">
@@ -432,7 +408,7 @@
         </div>
     </div>
 
-    <!-- 1B. ANALYTICS VAULT VIEW (trend + accuracy + speed charts, sourced entirely from Firestore) -->
+    <!-- 1B. ANALYTICS VAULT VIEW -->
     <div id="analytics-view" class="view-panel section-container">
         <div class="header-section"><h1>📊 Performance Analytics Vault</h1><p>Track your score trend, accuracy, and subject-wise speed across every saved attempt.</p></div>
 
@@ -472,8 +448,8 @@
         </div>
 
         <div class="card">
-            <h2>🔬 Accuracy vs. Speed Scatter Plot (4-Quadrant)</h2>
-            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Every dot is a question from your latest test. Top-right = optimal. Bottom-right = silly errors. Top-left = slow but correct. Bottom-left = concept blind spots.</p>
+            <h2>🔬 Question Pacing Scatter Plot</h2>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Every dot is a question from your latest test. Green = Correct, Red = Wrong, Gray = Unattempted.</p>
             <div style="height:360px;position:relative;"><canvas id="scatter-chart"></canvas></div>
         </div>
     </div>
@@ -495,7 +471,7 @@
                     <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">200 entries for a full paper — grading strictly follows the NEET rule (35 compulsory + best 10 of 15 per subject = 180 of 200 scored). Don't have the key yet? Leave this blank and add it from the result screen after the test.</p>
                 </div>
             </div>
-            <button class="btn btn-success" style="width: 100%; margin-top: 10px; padding: 14px;" onclick="startLocalSandbox()">🚀 Launch Local Sandbox</button>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px; padding: 14px;" onclick="window.startLocalSandbox()">🚀 Launch Local Sandbox</button>
         </div>
     </div>
 
@@ -545,17 +521,17 @@
                 <div class="q-card">
                     <div id="current-q-label" style="font-size: 16px; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Question 1</div>
                     <div class="options-row">
-                        <button class="opt-btn" id="opt-btn-1" onclick="setOption(1)">1</button>
-                        <button class="opt-btn" id="opt-btn-2" onclick="setOption(2)">2</button>
-                        <button class="opt-btn" id="opt-btn-3" onclick="setOption(3)">3</button>
-                        <button class="opt-btn" id="opt-btn-4" onclick="setOption(4)">4</button>
+                        <button class="opt-btn" id="opt-btn-1" onclick="window.setOption(1)">1</button>
+                        <button class="opt-btn" id="opt-btn-2" onclick="window.setOption(2)">2</button>
+                        <button class="opt-btn" id="opt-btn-3" onclick="window.setOption(3)">3</button>
+                        <button class="opt-btn" id="opt-btn-4" onclick="window.setOption(4)">4</button>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                        <button class="btn btn-success" style="font-size: 11px; padding: 10px;" onclick="saveNext()">Save & Next</button>
-                        <button class="btn" style="background: #64748b; font-size: 11px; padding: 10px;" onclick="clearResponse()">Clear</button>
-                        <button class="btn btn-warning" style="font-size: 11px; padding: 10px; grid-column: span 2;" onclick="markReview()">Mark for Review</button>
+                        <button class="btn btn-success" style="font-size: 11px; padding: 10px;" onclick="window.saveNext()">Save & Next</button>
+                        <button class="btn" style="background: #64748b; font-size: 11px; padding: 10px;" onclick="window.clearResponse()">Clear</button>
+                        <button class="btn btn-warning" style="font-size: 11px; padding: 10px; grid-column: span 2;" onclick="window.markReview()">Mark for Review</button>
                     </div>
-                    <button class="btn btn-danger" style="width: 100%; font-size: 12px; padding: 10px; margin-top: 10px;" onclick="triggerSubmission()">Submit Test</button>
+                    <button class="btn btn-danger" style="width: 100%; font-size: 12px; padding: 10px; margin-top: 10px;" onclick="window.triggerSubmission()">Submit Test</button>
                 </div>
                 
                 <div class="q-card" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 12px;">
@@ -577,7 +553,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
                     <a id="download-qp-btn" href="#" download="" style="display:none; padding: 6px 12px; font-size: 12px;" class="btn btn-outline">⬇️ Download QP PDF</a>
-                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="closeResults()">Return to Dashboard</button>
+                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="window.closeResults()">Return to Dashboard</button>
                 </div>
             </div>
             <div id="res-stats-container" class="stats-strip"></div>
@@ -599,7 +575,7 @@
                         </div>
                     </div>
 
-                    <!-- RETROACTIVE ANSWER KEY: for tests submitted before a key was available -->
+                    <!-- RETROACTIVE ANSWER KEY -->
                     <div id="key-update-section" style="margin-bottom: 20px; background: var(--bg-surface); padding: 14px; border-radius: 10px; border: 1px solid var(--border-light);">
                         <label style="font-weight: 700; font-size: 13px; color: var(--text-main); display: block; margin-bottom: 8px;">🔑 Answer Key <span id="key-status-label" style="font-weight: 500; color: var(--text-muted);"></span></label>
                         <div style="display: flex; gap: 8px;">
@@ -645,11 +621,11 @@
         window.activeCloudTestId = null;
         window.activeHistoryDocId = null; 
         window.showingWrongOnly = false;
-        window.currentAnswerKey = []; // Holds array of correct answers if provided
-        window.currentTopics = {}; // Holds user-entered {questionNumber: topicName} tags, never auto-guessed
-        window.currentSubjectTimingMetrics = {}; // Holds subject-wise time/speed metrics for the result being viewed
-        window.pendingResumeData = null; // Holds saved session data when the resume modal is shown
-        window.pendingResumeTestInfo = null; // Holds {testId, title, duration, qpUrl, keyString} for the resume modal
+        window.currentAnswerKey = [];
+        window.currentTopics = {};
+        window.currentSubjectTimingMetrics = {};
+        window.pendingResumeData = null;
+        window.pendingResumeTestInfo = null;
 
         try {
             app = initializeApp(firebaseConfig);
@@ -662,9 +638,6 @@
         window.mockLogin = async () => { try { await signInWithPopup(auth, provider); } catch(err){} };
         window.mockLogout = async () => { try { await signOut(auth); } catch(err){} };
 
-        // DARK MODE TOGGLE: switches the .dark class on <body> and persists the choice
-        // in localStorage. Chart.js instances are rebuilt on their next render, so no
-        // manual chart recoloring is needed — the CSS variables handle the rest.
         window.toggleThemeMode = function() {
             const isDark = document.body.classList.toggle('dark');
             const btn = document.getElementById('theme-toggle-btn');
@@ -672,8 +645,6 @@
             localStorage.setItem('theme-preference', isDark ? 'dark' : 'light');
         };
 
-        // Restore saved theme on load — runs before any view is rendered so there's
-        // no flash of the wrong theme.
         if (localStorage.getItem('theme-preference') === 'dark') {
             document.body.classList.add('dark');
             setTimeout(() => {
@@ -682,44 +653,33 @@
             }, 200);
         }
 
-        // Best-effort safety net: if the exam view is open and the tab is closed/refreshed,
-        // try one last autosave so a cloud-test attempt isn't fully lost. Not guaranteed to
-        // finish (the browser can kill the request mid-flight), but far better than nothing.
         window.addEventListener('beforeunload', () => {
             if (document.getElementById('exam-view')?.classList.contains('active')) {
                 saveSessionSnapshot();
             }
         });
 
-        // VISIBILITY-BASED PAUSE & SAVE: when the student jumps to another tab or minimizes
-        // the browser during a cloud test, the exam is paused — the countdown stops, the
-        // current question's elapsed time is booked, and a snapshot is saved to Firebase.
-        // When the tab becomes visible again, the exam resumes from exactly where it paused.
         let examPaused = false;
         document.addEventListener('visibilitychange', () => {
             const examActive = document.getElementById('exam-view')?.classList.contains('active');
             if (!examActive) return;
 
             if (document.hidden) {
-                // Student left the exam tab — pause everything and save
                 if (!examPaused) {
                     examPaused = true;
-                    markTimeSpent();              // book the seconds on the current question
-                    clearInterval(examTimer);      // stop the countdown
-                    clearInterval(autosaveTimer);  // stop periodic autosave (we do one explicit save below)
-                    saveSessionSnapshot();         // persist current state to Firebase for cloud tests
+                    markTimeSpent();
+                    clearInterval(examTimer);
+                    clearInterval(autosaveTimer);
+                    saveSessionSnapshot();
                 }
             } else {
-                // Student came back — resume from the paused moment
                 if (examPaused) {
                     examPaused = false;
-                    qEnterTime = Date.now();       // restart the per-question clock from now
-                    // Restart the countdown from wherever timeLeft was frozen
+                    qEnterTime = Date.now();
                     examTimer = setInterval(() => {
                         if (timeLeft <= 0) { clearInterval(examTimer); triggerSubmission(true); return; }
                         timeLeft--; updateTimerDisplay();
                     }, 1000);
-                    // Restart periodic autosave for cloud tests
                     if (window.activeTestType === 'cloud') {
                         clearInterval(autosaveTimer);
                         autosaveTimer = setInterval(saveSessionSnapshot, 20000);
@@ -764,7 +724,7 @@
             const duration = document.getElementById('admin-test-duration').value;
             const qpFile = document.getElementById('admin-qp-file').files[0];
             const keyString = document.getElementById('admin-key-string').value.trim();
-            const dueDateVal = document.getElementById('admin-test-duedate').value; // "" if left blank
+            const dueDateVal = document.getElementById('admin-test-duedate').value;
 
             if (!title || !qpFile) return alert("Title and QP PDF are required.");
             const btn = document.getElementById('btn-admin-publish');
@@ -820,17 +780,27 @@
         window.loadOfficialCloudTests = async function() {
             if (!db || !window.currentUser) return;
             const container = document.getElementById('available-tests-container');
+            const browseContainer = document.getElementById('browse-tests-container');
             container.innerHTML = "";
+            if (browseContainer) browseContainer.innerHTML = "";
+            
             const q = query(collection(db, "cloud_tests"), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) { container.innerHTML = `<p style="color: var(--text-muted); font-size: 14px; padding-left: 10px;">No cloud tests published yet.</p>`; return; }
+            if (querySnapshot.empty) { 
+                const emptyHTML = `<p style="color: var(--text-muted); font-size: 14px; padding-left: 10px;">No cloud tests published yet.</p>`;
+                container.innerHTML = emptyHTML;
+                if (browseContainer) browseContainer.innerHTML = emptyHTML;
+                return; 
+            }
 
+            let testCount = 0;
             for (const docSnap of querySnapshot.docs) {
+                testCount++;
                 const data = docSnap.data();
                 const testId = docSnap.id;
                 const now = new Date();
                 const due = data.dueDate ? new Date(data.dueDate) : null;
-                const pastDue = due ? now >= due : true; // no due date = always treated as open practice
+                const pastDue = due ? now >= due : true;
 
                 let alreadyAttempted = false;
                 if (!pastDue) {
@@ -838,7 +808,6 @@
                     alreadyAttempted = !attemptSnap.empty;
                 }
 
-                // Check if there's a saved (unfinished) session for this cloud test
                 let hasSavedSession = false;
                 let sessionSummary = null;
                 const sessionSnap = await getDoc(doc(db, "users", window.currentUser.uid, "sessions", testId));
@@ -859,17 +828,15 @@
                     actionHTML = `<button class="btn" style="width:100%; margin-top:auto;" onclick="window.fetchAndStartCloudTest('${testId}')">${label}</button>`;
                 }
 
-                // Manual tick-mark checkbox (instead of auto) — lets the student personally
-                // mark a cloud test as "done / reviewed" rather than the system deciding.
-                const isChecked = alreadyAttempted ? 'checked' : '';
+                const tickDoc = await getDoc(doc(db, "users", window.currentUser.uid, "ticks", testId));
+                const isChecked = tickDoc.exists() && tickDoc.data().reviewed ? 'checked' : '';
                 const tickHTML = `<input type="checkbox" class="tick-checkbox" title="Mark as reviewed (manual)" ${isChecked} onchange="window.toggleCloudTestTick('${testId}', this.checked)">`;
 
-                // If there's a saved unfinished session, show a small badge on the card
                 const sessionBadge = hasSavedSession
-                    ? `<div style="font-size:11px; color:var(--warning); font-weight:600; margin-top:6px; background:#fef3c7; padding:4px 8px; border-radius:6px; border:1px solid #fde68a;">⏸️ Unfinished attempt saved — ${sessionSummary.respCount} answered, ${sessionSummary.minsLeft}m left</div>`
+                    ? `<div style="font-size:11px; color:var(--warning); font-weight:600; margin-top:6px; background:var(--session-badge-bg); padding:4px 8px; border-radius:6px; border:1px solid var(--session-badge-border);">⏸️ Unfinished attempt saved — ${sessionSummary.respCount} answered, ${sessionSummary.minsLeft}m left</div>`
                     : '';
 
-                container.innerHTML += `
+                const cardHTML = `
                     <div class="test-card">
                         ${tickHTML}
                         <h3>${data.title}</h3>
@@ -878,18 +845,22 @@
                         ${sessionBadge}
                         ${actionHTML}
                     </div>`;
+
+                container.innerHTML += cardHTML;
+                if (browseContainer) browseContainer.innerHTML += cardHTML;
             }
+
+            const countEl = document.getElementById('ov-test-count');
+            if (countEl) countEl.innerText = `${testCount} Available`;
         };
 
-        // Manual tick-mark toggle: stores the student's personal "reviewed" flag in a
-        // lightweight sub-collection so it persists across sessions without affecting vault records.
         window.toggleCloudTestTick = async function(testId, checked) {
             if (!window.currentUser || !window.db) return;
             try {
                 await setDoc(doc(window.db, "users", window.currentUser.uid, "ticks", testId), {
                     reviewed: checked, updatedAt: new Date().toISOString()
                 });
-            } catch (e) { /* best-effort */ }
+            } catch (e) { }
         };
 
         window.fetchAndStartCloudTest = async function(testId) {
@@ -899,8 +870,6 @@
                 window.activeTestType = 'cloud';
                 window.activeCloudTestId = testId;
 
-                // Check for a saved (unfinished) session — if one exists, show the
-                // continue/retake modal instead of auto-launching.
                 const sessionSnap = await getDoc(doc(db, "users", window.currentUser.uid, "sessions", testId));
                 if (sessionSnap.exists()) {
                     const sessionData = sessionSnap.data();
@@ -911,13 +880,11 @@
                     };
                     window.showResumeModal(data.title, sessionData);
                 } else {
-                    // No saved session — start fresh
                     window.startSandbox(data.title, data.duration, data.questionPaperUrl, data.keyString, null);
                 }
             }
         };
 
-        // ---- CONTINUE / RETAKE MODAL LOGIC ----
         window.showResumeModal = function(title, sessionData) {
             const modal = document.getElementById('resume-modal');
             document.getElementById('resume-modal-title').innerText = `Resume "${title}"`;
@@ -945,10 +912,8 @@
             if (!info) return;
 
             if (choice === 'continue') {
-                // Resume from the saved session — pass sessionData so startSandbox restores it
                 window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, sessionData);
             } else {
-                // Retake from scratch — delete the old session first, then start fresh
                 await clearSessionSnapshot();
                 window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, null);
             }
@@ -972,11 +937,6 @@
         let qEnterTime = null;
         let autosaveTimer = null;
 
-        // Books the seconds spent on whichever question is being left, into timeSpent[qNum].
-        // This is the core of the 2-pass / rapid-skip safe timing: every time the student
-        // navigates away from a question (or the exam is paused), the elapsed seconds are
-        // ADDED to that question's cumulative total. Jumping back-and-forth simply
-        // accumulates more seconds on each visit — no per-subject pause/play tracker needed.
         function markTimeSpent() {
             if (qEnterTime !== null && currentQ) {
                 const elapsed = Math.round((Date.now() - qEnterTime) / 1000);
@@ -985,15 +945,13 @@
             qEnterTime = Date.now();
         }
 
-        // Autosave: only cloud tests get resumable sessions — a local-sandbox PDF is an
-        // in-memory blob URL anyway, so there's nothing durable to resume there.
         async function saveSessionSnapshot() {
             if (window.activeTestType !== 'cloud' || !window.activeCloudTestId || !window.currentUser || !window.db) return;
             try {
                 await setDoc(doc(window.db, "users", window.currentUser.uid, "sessions", window.activeCloudTestId), {
                     responses, states, timeSpent, timeLeft, savedAt: new Date().toISOString()
                 });
-            } catch (e) { /* best-effort — a missed autosave shouldn't interrupt the exam */ }
+            } catch (e) { }
         }
 
         async function clearSessionSnapshot() {
@@ -1001,13 +959,6 @@
             try { await deleteDoc(doc(window.db, "users", window.currentUser.uid, "sessions", window.activeCloudTestId)); } catch (e) {}
         }
 
-        // ============ SUBJECT TIMING METRICS (2-pass / rapid-skip safe) ============
-        // Maps question numbers to their NEET subject ranges and computes, per subject:
-        //   - totalSeconds: sum of timeSpent[qNum] for all questions in that subject's range
-        //   - visitedCount: how many unique question keys in that range have timeSpent > 0
-        //   - avgSpeedSeconds: totalSeconds / visitedCount (0 if no questions visited)
-        // Because timeSpent accumulates additively on every visit, this is inherently safe
-        // against students jumping back and forth between subjects multiple times.
         function computeSubjectTimingMetrics(timingObj) {
             const ranges = {
                 'Physics':   { start: 1,   end: 50  },
@@ -1035,7 +986,6 @@
             return metrics;
         }
 
-        // Formats a total-seconds value into "Xm Ys" for the result UI.
         function formatMinutesSeconds(totalSeconds) {
             const m = Math.floor(totalSeconds / 60);
             const s = totalSeconds % 60;
@@ -1045,7 +995,7 @@
         window.startSandbox = function(title, duration, pdfUrl, keyString, sessionData) {
             window.currentAnswerKey = keyString ? keyString.split(',').map(s => s.trim()) : [];
             if (window.currentAnswerKey.length > 0 && window.currentAnswerKey.length !== totalQuestions) {
-                alert(`⚠️ Heads up: the answer key has ${window.currentAnswerKey.length} entries but this test has ${totalQuestions} questions. Scoring may be off for the mismatched questions — you can fix the key later from the result screen.`);
+                alert(`⚠️ Heads up: the answer key has ${window.currentAnswerKey.length} entries but this test has ${totalQuestions} questions. You can fix the key later from the result screen.`);
             }
             
             document.getElementById('active-exam-title').innerText = title;
@@ -1063,14 +1013,14 @@
             updateTimerDisplay();
             clearInterval(examTimer);
             examTimer = setInterval(() => {
-                if (timeLeft <= 0) { clearInterval(examTimer); triggerSubmission(true); return; }
+                if (timeLeft <= 0) { clearInterval(examTimer); window.triggerSubmission(true); return; }
                 timeLeft--; updateTimerDisplay();
             }, 1000);
 
             clearInterval(autosaveTimer);
             if (window.activeTestType === 'cloud') autosaveTimer = setInterval(saveSessionSnapshot, 20000);
 
-            buildPalette(); loadQuestion(1);
+            buildPalette(); window.loadQuestion(1);
             document.getElementById('exam-view').classList.add('active');
         };
 
@@ -1087,7 +1037,7 @@
             for(let i=1; i<=totalQuestions; i++) {
                 const btn = document.createElement('button');
                 btn.id = `pal-${i}`; btn.innerText = i;
-                btn.onclick = () => loadQuestion(i);
+                btn.onclick = () => window.loadQuestion(i);
                 grid.appendChild(btn);
             }
             updatePaletteUI();
@@ -1112,14 +1062,14 @@
         window.saveNext = function() {
             states[currentQ] = responses[currentQ] ? 'answered' : 'not-answered';
             saveSessionSnapshot();
-            if (currentQ < totalQuestions) loadQuestion(currentQ + 1);
+            if (currentQ < totalQuestions) window.loadQuestion(currentQ + 1);
             else updatePaletteUI();
         };
 
         window.markReview = function() {
             states[currentQ] = responses[currentQ] ? 'ans-marked' : 'marked';
             saveSessionSnapshot();
-            if (currentQ < totalQuestions) loadQuestion(currentQ + 1);
+            if (currentQ < totalQuestions) window.loadQuestion(currentQ + 1);
             else updatePaletteUI();
         };
 
@@ -1127,7 +1077,7 @@
             delete responses[currentQ];
             states[currentQ] = 'not-answered';
             saveSessionSnapshot();
-            loadQuestion(currentQ);
+            window.loadQuestion(currentQ);
         };
 
         function updatePaletteUI() {
@@ -1143,7 +1093,7 @@
             const attempted = Object.keys(responses).length;
             if (!auto && !confirm(`Attempted ${attempted}/${totalQuestions}. Finalize submission?`)) return;
 
-            markTimeSpent(); // book time for whichever question was open at submission
+            markTimeSpent();
             clearInterval(examTimer);
             clearInterval(autosaveTimer);
             document.getElementById('exam-view').classList.remove('active');
@@ -1152,9 +1102,6 @@
             window.currentResponses = responses;
             window.currentTiming = timeSpent;
 
-            // Compute the subject-wise timing metrics from the raw timeSpent object.
-            // This is done once at submission so the processed result is permanently
-            // archived and doesn't need to be recomputed when viewing history later.
             const subjectTimingMetrics = computeSubjectTimingMetrics(timeSpent);
             window.currentSubjectTimingMetrics = subjectTimingMetrics;
             
@@ -1164,7 +1111,7 @@
                 window.activeTestType === 'cloud' ? window.activeCloudTestId : null,
                 subjectTimingMetrics
             );
-            await clearSessionSnapshot(); // so relaunching this cloud test starts fresh, not mid-old-attempt
+            await clearSessionSnapshot();
             
             document.getElementById('vault-note-input').value = "";
             window.showingWrongOnly = false;
@@ -1173,9 +1120,6 @@
             window.viewHistoricalSheet(window.activeHistoryDocId);
         };
 
-        // Updated signature: now accepts subjectTimingMetrics as the 7th parameter and
-        // saves it as a structured field on the Firebase vault document so it is
-        // permanently archived alongside the raw timing object.
         window.saveToHistoryVault = async function(title, timeStr, attempted, keyArr, timingObj, cloudTestId, subjectTimingMetrics) {
             if (!window.currentUser || !window.db) return null;
             try {
@@ -1207,7 +1151,7 @@
             if (!raw) return alert("Paste an answer key first (comma separated).");
             const keyArr = raw.split(',').map(s => s.trim());
             if (keyArr.length !== totalQuestions) {
-                if (!confirm(`This key has ${keyArr.length} entries but the test has ${totalQuestions} questions. Save anyway? (Questions past the key's length won't be scored.)`)) return;
+                if (!confirm(`This key has ${keyArr.length} entries but the test has ${totalQuestions} questions. Save anyway?`)) return;
             }
 
             const btn = event.target;
@@ -1224,15 +1168,14 @@
             btn.innerText = "✅ Rescored!";
             setTimeout(() => btn.innerText = "Save & Rescore", 1500);
 
-            renderResultGrid();       // redraw this result with real correct/wrong now visible
-            window.renderHistoryVault();  // refresh the score shown in the dashboard table
-            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub(); // refresh trend/mistake vault too
+            window.renderResultGrid();
+            window.renderHistoryVault();
+            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
         };
 
         window.saveVaultNote = async function(event) {
             if (!window.activeHistoryDocId || !window.currentUser) return;
             const noteText = document.getElementById('vault-note-input').value;
-            // Gather every topic tag the user typed into the result grid
             const topics = {};
             document.querySelectorAll('.topic-input').forEach(inp => {
                 const q = inp.dataset.q;
@@ -1247,8 +1190,6 @@
             setTimeout(() => btn.innerText = "💾 Save Notes & Topic Tags", 2000);
         };
 
-        // Updated to load the saved subjectTimingMetrics from the document so the
-        // result breakdown shows the archived time/speed data when viewing history.
         window.viewHistoricalSheet = async function(docId) {
             const docSnap = await getDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId));
             if (docSnap.exists()) {
@@ -1257,8 +1198,6 @@
                 window.currentAnswerKey = data.savedKey || [];
                 window.currentTopics = data.topics || {};
                 window.currentTiming = data.timing || {};
-                // Use the archived metrics if present; for older records that predate
-                // this feature, compute them on-the-fly from the raw timing object.
                 window.currentSubjectTimingMetrics = data.subjectTimingMetrics && Object.keys(data.subjectTimingMetrics).length > 0
                     ? data.subjectTimingMetrics
                     : computeSubjectTimingMetrics(data.timing || {});
@@ -1271,8 +1210,6 @@
                 document.getElementById('key-status-label').innerText = (data.savedKey && data.savedKey.length > 0)
                     ? `— on file (${data.savedKey.length} answers)` : '— not uploaded yet, scores are hidden';
                 
-                // Show the download button only for cloud-based tests — look up the cloud
-                // test document to get its question paper PDF URL.
                 const dlBtn = document.getElementById('download-qp-btn');
                 if (data.cloudTestId && window.db) {
                     try {
@@ -1285,528 +1222,83 @@
                     } catch(e) { dlBtn.style.display = 'none'; }
                 } else { dlBtn.style.display = 'none'; }
                 
-                renderResultGrid();
+                window.renderResultGrid();
                 document.getElementById('result-view').classList.add('active');
                 document.getElementById('result-view').scrollTop = 0;
             }
         };
 
-        window.renderHistoryVault = async function() {
-            const tbody = document.getElementById('history-rows');
-            if (!window.currentUser || !window.db) return;
-            const q = query(collection(window.db, "users", window.currentUser.uid, "vault"), orderBy("createdAt", "desc"));
-            const snapshot = await getDocs(q);
-            let html = "";
-            snapshot.forEach(d => {
-                const h = d.data();
-                let scoreLabel = `Att: ${h.attempted}/200`;
-                if (typeof h.marks === 'number') {
-                    scoreLabel = `${h.marks}/720 (Att: ${h.attempted}/200)`;
-                } else if (h.savedKey && h.savedKey.length > 0) {
-                    const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
-                    let marks = 0;
-                    subjects.forEach(sub => { marks += calcSubjectStats(sub, h.responses || {}, h.savedKey, true).marks; });
-                    scoreLabel = `${marks}/720 (Att: ${h.attempted}/200)`;
-                }
-                html += `<tr>
-                    <td style="font-weight: 600;">${h.title}</td>
-                    <td style="color: var(--text-muted); font-size: 12px;">${h.timeStr}</td>
-                    <td>${scoreLabel}</td>
-                    <td style="display:flex; gap:6px; flex-wrap:wrap;">
-                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="window.viewHistoricalSheet('${d.id}')">View Breakdown</button>
-                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px; color: var(--danger); border-color: var(--danger);" onclick="window.deleteVaultRecord('${d.id}', '${(h.title||'').replace(/'/g,"\\'")}')">🗑️ Delete</button>
-                    </td>
-                </tr>`;
-            });
-            tbody.innerHTML = html || `<tr><td colspan="4" style="text-align: center;">No records found.</td></tr>`;
-        };
+        let chartDoughnut = null;
 
-        window.deleteVaultRecord = async function(docId, title) {
-            if (!window.currentUser || !window.db) return;
-            if (!confirm(`Delete the result "${title}"? This can't be undone.`)) return;
-            await deleteDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId));
-            window.renderHistoryVault();
-            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub(); // trend chart & mistake vault must drop this record too
-            if (typeof window.loadOfficialCloudTests === 'function') window.loadOfficialCloudTests(); // reattempt-lock status may change
-        };
-
-        // ============ ANALYTICS VAULT (trend chart + site-wide mistake vault) ============
-        // Everything here is built ONLY from responses + the answer key + the topic tags
-        // the user typed in themselves — there is no hardcoded chapter/topic database.
-        window.allVaultRecords = [];
-        let trendChartInstance = null;
-        let accuracyChartInstance = null;
-        let speedChartInstance = null;
-        let subjectScoreChartInstance = null;
-        let subjectAccuracyChartInstance = null;
-
-        window.loadAnalyticsHub = async function() {
-            if (!window.currentUser || !window.db) return;
-            const q = query(collection(window.db, "users", window.currentUser.uid, "vault"), orderBy("createdAt", "asc"));
-            const snapshot = await getDocs(q);
-            window.allVaultRecords = [];
-            snapshot.forEach(d => window.allVaultRecords.push({ id: d.id, ...d.data() }));
-
-            renderTrendChart();
-            renderLatestPacingOverview();
-            renderAccuracyTrendChart();
-            renderSubjectSpeedChart();
-            renderSubjectScoreChart();
-            renderSubjectAccuracyChart();
-        };
-
-        function setChartScrollWidth(canvas, dataCount) {
-            const minPointWidth = 80;
-            const wrapper = canvas.parentElement.parentElement;
-            const availWidth = wrapper ? wrapper.clientWidth : 600;
-            const chartWidth = Math.max(dataCount * minPointWidth, availWidth);
-            canvas.parentElement.style.width = chartWidth + 'px';
-        }
-
-        function renderTrendChart() {
-            const canvas = document.getElementById('trend-chart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            const scored = window.allVaultRecords.filter(r => typeof r.marks === 'number');
-            if (trendChartInstance) trendChartInstance.destroy();
-            if (scored.length === 0) {
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                canvas.parentElement.style.width = '100%';
-                return;
-            }
-            setChartScrollWidth(canvas, scored.length);
-            trendChartInstance = new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: scored.map((r, i) => `T${i + 1}`),
-                    datasets: [{
-                        label: 'Score (/720)', data: scored.map(r => r.marks),
-                        borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.3
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: -180, max: 720 } }, plugins: { legend: { display: false } } }
-            });
-        }
-
-        function renderAccuracyTrendChart() {
-            const canvas = document.getElementById('accuracy-chart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            const scored = window.allVaultRecords.filter(r => r.savedKey && r.savedKey.length > 0);
-            if (accuracyChartInstance) accuracyChartInstance.destroy();
-            if (scored.length === 0) {
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                canvas.parentElement.style.width = '100%';
-                return;
-            }
-            // Accuracy = (correct / (correct + wrong)) * 100, computed per test using the
-            // same dynamic NTA evaluation so it stays consistent with the result breakdown.
-            const subjectRanges = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
-            const accuracyData = scored.map(r => {
-                let totalCorrect = 0, totalWrong = 0;
-                subjectRanges.forEach(sub => {
-                    const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey, true);
-                    totalCorrect += stats.correct;
-                    totalWrong += stats.wrong;
-                });
-                const denom = totalCorrect + totalWrong;
-                return denom > 0 ? Math.round((totalCorrect / denom) * 1000) / 10 : 0;
-            });
-            setChartScrollWidth(canvas, scored.length);
-            accuracyChartInstance = new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: scored.map((r, i) => `T${i + 1}`),
-                    datasets: [{
-                        label: 'Accuracy %', data: accuracyData,
-                        borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.3
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } }, plugins: { legend: { display: false } } }
-            });
-        }
-
-        function renderSubjectSpeedChart() {
-            const canvas = document.getElementById('speed-chart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            const withTiming = window.allVaultRecords.filter(r =>
-                (r.subjectTimingMetrics && Object.keys(r.subjectTimingMetrics).length > 0) ||
-                (r.timing && Object.keys(r.timing).length > 0)
-            );
-            if (speedChartInstance) speedChartInstance.destroy();
-            if (withTiming.length === 0) {
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                canvas.parentElement.style.width = '100%';
-                return;
-            }
-            const subjectNames = ['Physics', 'Chemistry', 'Botany', 'Zoology'];
-            const subjectRanges = { Physics: {s:1,e:50}, Chemistry: {s:51,e:100}, Botany: {s:101,e:150}, Zoology: {s:151,e:200} };
-            const subjectColors = ['#2563eb', '#16a34a', '#eab308', '#ef4444'];
-            const datasets = subjectNames.map((subj, idx) => ({
-                label: subj,
-                data: withTiming.map(r => {
-                    const metrics = r.subjectTimingMetrics && Object.keys(r.subjectTimingMetrics).length > 0
-                        ? r.subjectTimingMetrics : computeSubjectTimingMetrics(r.timing || {});
-                    const m = metrics[subj];
-                    if (!m || m.totalSeconds === 0) return 0;
-                    const rng = subjectRanges[subj];
-                    let answered = 0;
-                    const resp = r.responses || {};
-                    for (let q = rng.s; q <= rng.e; q++) { if (resp[q] && resp[q] !== '-') answered++; }
-                    return m.totalSeconds > 0 && answered > 0 ? Math.round((m.totalSeconds / answered) * 10) / 10 : 0;
-                }),
-                borderColor: subjectColors[idx], backgroundColor: subjectColors[idx] + '20',
-                tension: 0.3, fill: false
-            }));
-            setChartScrollWidth(canvas, withTiming.length);
-            speedChartInstance = new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: { labels: withTiming.map((r, i) => `T${i + 1}`), datasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { beginAtZero: true, ticks: { callback: v => v.toFixed(1) + 's' } } },
-                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
-                }
-            });
-        }
-
-        function renderSubjectScoreChart() {
-            const canvas = document.getElementById('subject-score-chart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            const scored = window.allVaultRecords.filter(r => typeof r.marks === 'number' || (r.savedKey && r.savedKey.length > 0));
-            if (subjectScoreChartInstance) subjectScoreChartInstance.destroy();
-            if (scored.length === 0) {
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                canvas.parentElement.style.width = '100%';
-                return;
-            }
-            const subjectRanges = [{name:'Physics',start:1,end:50},{name:'Chemistry',start:51,end:100},{name:'Botany',start:101,end:150},{name:'Zoology',start:151,end:200}];
-            const subjectColors = { Physics: '#2563eb', Chemistry: '#16a34a', Botany: '#eab308', Zoology: '#ef4444' };
-            const datasets = subjectRanges.map(sub => ({
-                label: sub.name,
-                data: scored.map(r => {
-                    const hasKey = r.savedKey && r.savedKey.length > 0;
-                    const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey || [], hasKey);
-                    return hasKey ? stats.marks : null;
-                }),
-                borderColor: subjectColors[sub.name], backgroundColor: subjectColors[sub.name] + '20',
-                tension: 0.3, fill: false, spanGaps: true
-            }));
-            setChartScrollWidth(canvas, scored.length);
-            subjectScoreChartInstance = new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: { labels: scored.map((r, i) => `T${i + 1}`), datasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: -45, max: 180 } },
-                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
-                }
-            });
-        }
-
-        function renderSubjectAccuracyChart() {
-            const canvas = document.getElementById('subject-accuracy-chart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            const scored = window.allVaultRecords.filter(r => r.savedKey && r.savedKey.length > 0);
-            if (subjectAccuracyChartInstance) subjectAccuracyChartInstance.destroy();
-            if (scored.length === 0) {
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                canvas.parentElement.style.width = '100%';
-                return;
-            }
-            const subjectRanges = [{name:'Physics',start:1,end:50},{name:'Chemistry',start:51,end:100},{name:'Botany',start:101,end:150},{name:'Zoology',start:151,end:200}];
-            const subjectColors = { Physics: '#2563eb', Chemistry: '#16a34a', Botany: '#eab308', Zoology: '#ef4444' };
-            const datasets = subjectRanges.map(sub => ({
-                label: sub.name,
-                data: scored.map(r => {
-                    const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey, true);
-                    const denom = stats.correct + stats.wrong;
-                    return denom > 0 ? Math.round((stats.correct / denom) * 1000) / 10 : 0;
-                }),
-                borderColor: subjectColors[sub.name], backgroundColor: subjectColors[sub.name] + '20',
-                tension: 0.3, fill: false, spanGaps: true
-            }));
-            setChartScrollWidth(canvas, scored.length);
-            subjectAccuracyChartInstance = new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: { labels: scored.map((r, i) => `T${i + 1}`), datasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } },
-                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
-                }
-            });
-        }
-
-        function renderLatestPacingOverview() {
-            const box = document.getElementById('pacing-overview');
-            const latest = window.allVaultRecords[window.allVaultRecords.length - 1];
-            if (!latest || !latest.timing || Object.keys(latest.timing).length === 0) {
-                box.innerHTML = "Take a test with the timer running to see pacing stats here.";
-                return;
-            }
-            const entries = Object.entries(latest.timing);
-            const totalSec = entries.reduce((sum, [,s]) => sum + s, 0);
-            const avg = (totalSec / entries.length).toFixed(1);
-            const sinks = entries.filter(([,s]) => s > 100);
-            box.innerHTML = `From "<b>${latest.title}</b>":<br>
-                Total time on questions: <b>${Math.round(totalSec/60)} min</b><br>
-                Avg. time per visited question: <b>${avg}s</b><br>
-                Time-sinks (&gt;100s): <b style="color:var(--danger);">${sinks.length} questions</b>`;
-        }
-
-        // COPY WRONG RESPONSES: scans the currently-opened result record, extracts every
-        // question number flagged as wrong, and copies them as a clean comma-separated string.
-        window.copyWrongResponses = function() {
-            const resp = window.currentResponses || {};
-            const key = window.currentAnswerKey || [];
-            if (key.length === 0) { alert("No answer key on file — can't identify wrong responses."); return; }
-            const wrongQs = [];
-            for (let i = 1; i <= 200; i++) {
-                if (evalQuestion(i, resp, key, true) === 'wrong') wrongQs.push(i);
-            }
-            if (wrongQs.length === 0) { alert("No wrong responses found in this test!"); return; }
-            const text = wrongQs.join(', ');
-            navigator.clipboard.writeText(text)
-                .then(() => alert(`Copied ${wrongQs.length} wrong question numbers to clipboard.`))
-                .catch(() => alert(`Copy failed. Here are the numbers: ${text}`));
-        };
-
-        window.wipeHistory = async function() {
-            if(!confirm("⚠️ Delete ALL past records?")) return;
-            const q = await getDocs(collection(window.db, "users", window.currentUser.uid, "vault"));
-            q.forEach(async (d) => await deleteDoc(d.ref));
-            window.allVaultRecords = [];
-            window.renderHistoryVault();
-            if (typeof window.loadOfficialCloudTests === 'function') window.loadOfficialCloudTests(); // reattempt locks were tied to those records
-        };
-
-        window.toggleWrongOnly = function() {
-            window.showingWrongOnly = !window.showingWrongOnly;
-            document.getElementById('toggle-wrong-btn').innerText = window.showingWrongOnly ? "Show All Results" : "Show Only Mistakes";
-            renderResultGrid();
-        }
-
-        // ---- NTA-style question evaluation (+4 correct, -1 wrong, 0 unattempted) ----
-        function evalQuestion(i, resp, key, hasKey) {
-            const ans = resp[i] || '-';
-            if (ans === '-') return 'unattempted';
-            if (!hasKey) return 'attempted-ungraded';
-            const correctAns = key[i - 1];
-            return (ans === correctAns) ? 'correct' : 'wrong';
-        }
-
-        // DYNAMIC NTA EVALUATION ENGINE — chooses between whole-paper and Section B modes.
-        // Condition A (whole paper): max question ≤ 180 OR total answered ≤ 180 → grade every
-        //   response uniformly with no Section B drop omissions.
-        // Condition B (full 200-Q booklet): max question > 180 AND total answered > 180 → apply
-        //   classic NTA Section B safeguards: per subject, only the first 10 attempted questions
-        //   in the Section B range are scored; extras are shown but excluded.
-        function shouldApplySectionBRule(resp) {
-            const qNums = Object.keys(resp).map(k => parseInt(k, 10)).filter(k => !isNaN(k));
-            if (qNums.length === 0) return false;
-            const maxQ = Math.max(...qNums);
-            const totalAnswered = qNums.length;
-            return maxQ > 180 && totalAnswered > 180;
-        }
-
-        function calcSubjectStats(sub, resp, key, hasKey) {
-            const applySectionB = shouldApplySectionBRule(resp);
-            const aStart = sub.start, aEnd = sub.start + 34;
-            const bStart = sub.start + 35, bEnd = sub.end;
-            let correct = 0, wrong = 0, unattempted = 0;
-
-            // Section A: always all compulsory, always graded.
-            for (let i = aStart; i <= aEnd; i++) {
-                const st = evalQuestion(i, resp, key, hasKey);
-                if (st === 'correct') correct++;
-                else if (st === 'wrong') wrong++;
-                else if (st === 'unattempted') unattempted++;
-            }
-
-            let countedB = [], notCountedB = [];
-
-            if (applySectionB) {
-                // Condition B: NTA Section B rule — only first 10 attempted in Section B count.
-                const attemptedB = [];
-                for (let i = bStart; i <= bEnd; i++) if ((resp[i] || '-') !== '-') attemptedB.push(i);
-                countedB = attemptedB.slice(0, 10);
-                notCountedB = attemptedB.slice(10);
-                countedB.forEach(i => {
-                    const st = evalQuestion(i, resp, key, hasKey);
-                    if (st === 'correct') correct++;
-                    else if (st === 'wrong') wrong++;
-                });
-                unattempted += (bEnd - bStart + 1) - attemptedB.length;
-            } else {
-                // Condition A: whole paper — grade every Section B question uniformly.
-                for (let i = bStart; i <= bEnd; i++) {
-                    const st = evalQuestion(i, resp, key, hasKey);
-                    if (st === 'correct') correct++;
-                    else if (st === 'wrong') wrong++;
-                    else if (st === 'unattempted') unattempted++;
+        function calcSubjectStats(sub, resp, keyArr, applyNEETRule = true) {
+            let correct = 0, wrong = 0, unattempted = 0, notCounted = 0, marks = 0;
+            const secAEnd = sub.start + 34;
+            const secBStart = sub.start + 35;
+            
+            for (let q = sub.start; q <= secAEnd; q++) {
+                const uAns = resp[q];
+                const cAns = keyArr[q - 1];
+                if (!uAns) {
+                    unattempted++;
+                } else if (keyArr.length > 0 && cAns) {
+                    if (uAns.toString() === cAns.toString()) { correct++; marks += 4; }
+                    else { wrong++; marks -= 1; }
+                } else {
+                    correct++;
                 }
             }
-
-            const marks = hasKey ? (correct * 4 - wrong * 1) : null;
-            return { correct, wrong, unattempted, marks, countedB, notCountedB };
-        }
-
-        window.updateTopicTag = function(qNum, val) {
-            window.currentTopics = window.currentTopics || {};
-            if (val.trim()) window.currentTopics[qNum] = val.trim();
-            else delete window.currentTopics[qNum];
-        };
-
-        let resultDoughnutInstance = null;
-        function renderResultDoughnut(correct, wrong, unattempted, notCounted) {
-            const canvas = document.getElementById('result-doughnut');
-            if (!canvas || typeof Chart === 'undefined') return;
-            if (resultDoughnutInstance) resultDoughnutInstance.destroy();
-            resultDoughnutInstance = new Chart(canvas.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Correct', 'Wrong', 'Unattempted', 'Not Counted (Sec B extra)'],
-                    datasets: [{ data: [correct, wrong, unattempted, notCounted], backgroundColor: ['#16a34a', '#ef4444', '#94a3b8', '#a855f7'], borderWidth: 1 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } } }
-            });
-        }
-
-        function renderPacingBox() {
-            const box = document.getElementById('res-pacing-box');
-            const timing = window.currentTiming || {};
-            const entries = Object.entries(timing);
-            if (entries.length === 0) { box.innerHTML = `<i>No timing data recorded for this attempt.</i>`; return; }
-            const totalSec = entries.reduce((sum, [,s]) => sum + s, 0);
-            const avg = (totalSec / entries.length).toFixed(1);
-            const sinks = entries.filter(([,s]) => s > 100).sort((a,b) => b[1]-a[1]);
-            box.innerHTML = `Total time on questions: <b>${Math.round(totalSec/60)} min</b><br>
-                Avg. time per visited question: <b>${avg}s</b><br>
-                Time-sinks (&gt;100s spent): <b style="color:var(--danger);">${sinks.length}</b>
-                ${sinks.length ? `<br><span style="font-size:11px;">Slowest: ${sinks.slice(0,5).map(([q,s]) => `Q${q} (${s}s)`).join(', ')}</span>` : ''}`;
-        }
-
-        // Renders the subject-wise time & speed breakdown table beneath the main stats.
-        // Uses window.currentSubjectTimingMetrics (loaded from the archived document, or
-        // computed on-the-fly for older records). Shows nothing if no timing data exists.
-        function renderSubjectTimingBreakdown() {
-            const metrics = window.currentSubjectTimingMetrics || {};
-            if (Object.keys(metrics).length === 0) return '';
-
-            let rows = '';
-            const subjectOrder = ['Physics', 'Chemistry', 'Botany', 'Zoology'];
-            subjectOrder.forEach(subject => {
-                const m = metrics[subject];
-                if (!m) return;
-                const timeLabel = formatMinutesSeconds(m.totalSeconds || 0);
-                const speedLabel = m.visitedCount > 0 ? `${m.avgSpeedSeconds}s / question` : '—';
-                rows += `<tr>
-                    <td>${subject}</td>
-                    <td>${timeLabel}</td>
-                    <td>${m.visitedCount || 0}</td>
-                    <td>${speedLabel}</td>
-                </tr>`;
-            });
-
-            if (!rows) return '';
-
-            return `<table class="subject-timing-table">
-                <thead><tr>
-                    <th>Subject</th>
-                    <th>Total Time Spent</th>
-                    <th>Visited</th>
-                    <th>Speed / Question</th>
-                </tr></thead>
-                <tbody>${rows}</tbody>
-            </table>`;
-        }
-
-        // Updated to include the subject-wise timing & speed breakdown table right under
-        // the main stat chips and score table. Works for both fresh submissions and
-        // historical records viewed via viewHistoricalSheet.
-        function renderScoreSummary(subjectStats, hasKey) {
-            const statsBox = document.getElementById('res-stats-container');
-            let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalMarks = 0, totalNotCounted = 0;
-            subjectStats.forEach(s => {
-                totalCorrect += s.stats.correct; totalWrong += s.stats.wrong; totalUnattempted += s.stats.unattempted;
-                totalNotCounted += s.stats.notCountedB.length;
-                if (hasKey) totalMarks += s.stats.marks;
-            });
-            renderResultDoughnut(totalCorrect, totalWrong, totalUnattempted, totalNotCounted);
-            renderPacingBox();
-
-            let chips = `<div class="stat-chip">Correct <b style="color:#16a34a;">${totalCorrect}</b></div>
-                         <div class="stat-chip">Wrong <b style="color:#ef4444;">${totalWrong}</b></div>
-                         <div class="stat-chip">Unattempted <b>${totalUnattempted}</b></div>`;
-            chips += hasKey
-                ? `<div class="stat-chip">Total Score <b style="color:var(--primary);">${totalMarks}</b> / 720</div>`
-                : `<div class="stat-chip" style="color:#a16207;">Upload an answer key to see marks (NTA: +4 / -1)</div>`;
-
-            let table = '';
-            if (hasKey) {
-                table = `<table class="subject-stats-table"><thead><tr><th>Subject</th><th>Correct</th><th>Wrong</th><th>Unatt.</th><th>Penalty</th><th>Marks</th></tr></thead><tbody>`;
-                subjectStats.forEach(s => {
-                    const penalty = s.stats.wrong * -1;
-                    table += `<tr><td>${s.name}</td><td>${s.stats.correct}</td><td>${s.stats.wrong}</td><td>${s.stats.unattempted}</td><td><span class="penalty-pill">${penalty}</span></td><td><b>${s.stats.marks}</b>/180</td></tr>`;
-                });
-                table += `</tbody></table>`;
+            
+            let secBQuestions = [];
+            for (let q = secBStart; q <= sub.end; q++) {
+                secBQuestions.push({ q, uAns: resp[q], cAns: keyArr[q - 1] });
             }
-
-            // Subject-wise time & speed breakdown — rendered beneath the score table.
-            const timingBreakdown = renderSubjectTimingBreakdown();
-
-            statsBox.innerHTML = chips + table + timingBreakdown;
-            renderPenaltyAnalytics(hasKey, totalMarks, totalWrong);
-        }
-
-        function renderPenaltyAnalytics(hasKey, totalMarks, totalWrong) {
-            const section = document.getElementById('penalty-analytics-section');
-            if (!hasKey) { section.innerHTML = ''; return; }
-            const totalPenalty = totalWrong * -1;
-            const potentialScore = totalMarks + Math.abs(totalPenalty);
-            section.innerHTML = `
-                <div class="penalty-analytics-card">
-                    <h4>⚠️ Negative Marks Impact</h4>
-                    <div class="penalty-metrics-row">
-                        <div class="penalty-metric-box">
-                            <span class="penalty-metric-label">Total Penalty Marks Lost</span>
-                            <span class="penalty-metric-value" style="color:#ef4444;">${totalPenalty}</span>
-                        </div>
-                        <div class="penalty-metric-box">
-                            <span class="penalty-metric-label">Potential Correction Score</span>
-                            <span class="penalty-metric-value" style="color:#16a34a;">${potentialScore}</span>
-                            <span class="penalty-metric-subtext">Your score if you had left these questions blank instead of guessing.</span>
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        function renderWeakTopics(subjects, resp, key, hasKey, topics) {
-            const container = document.getElementById('weak-topics-container');
-            if (!hasKey) { container.innerHTML = ''; return; }
-            const tally = {};
-            subjects.forEach(sub => {
-                for (let i = sub.start; i <= sub.end; i++) {
-                    if (evalQuestion(i, resp, key, hasKey) === 'wrong') {
-                        const t = topics[i] || 'Untagged';
-                        tally[t] = (tally[t] || 0) + 1;
+            
+            if (applyNEETRule) {
+                let attemptedSecB = secBQuestions.filter(item => item.uAns);
+                if (keyArr.length > 0) {
+                    attemptedSecB.sort((a, b) => {
+                        const scoreA = (a.uAns.toString() === a.cAns?.toString()) ? 4 : -1;
+                        const scoreB = (b.uAns.toString() === b.cAns?.toString()) ? 4 : -1;
+                        return scoreB - scoreA;
+                    });
+                }
+                const countedSet = new Set(attemptedSecB.slice(0, 10).map(i => i.q));
+                
+                for (let item of secBQuestions) {
+                    if (!item.uAns) {
+                        unattempted++;
+                    } else if (countedSet.has(item.q)) {
+                        if (keyArr.length > 0 && item.cAns) {
+                            if (item.uAns.toString() === item.cAns.toString()) { correct++; marks += 4; }
+                            else { wrong++; marks -= 1; }
+                        } else {
+                            correct++;
+                        }
+                    } else {
+                        notCounted++;
                     }
                 }
-            });
-            const sorted = Object.entries(tally).sort((a, b) => b[1] - a[1]);
-            if (sorted.length === 0) { container.innerHTML = ''; return; }
-
-            let rows = sorted.map(([topic, count]) =>
-                `<div class="weak-topic-row"><span>${topic}</span><span class="weak-topic-count">${count} wrong</span></div>`
-            ).join('');
-            container.innerHTML = `<div class="weak-topics-card">
-                <h4>🎯 Weak Areas (by the topics you tagged below)</h4>
-                ${rows}
-            </div>`;
+            } else {
+                for (let item of secBQuestions) {
+                    if (!item.uAns) {
+                        unattempted++;
+                    } else if (keyArr.length > 0 && item.cAns) {
+                        if (item.uAns.toString() === item.cAns.toString()) { correct++; marks += 4; }
+                        else { wrong++; marks -= 1; }
+                    } else {
+                        correct++;
+                    }
+                }
+            }
+            
+            return { correct, wrong, unattempted, notCounted, marks, totalAttempted: (correct + wrong) };
         }
 
-        function renderResultGrid() {
-            const container = document.getElementById('detailed-results-container');
-            container.innerHTML = '';
+        window.renderResultGrid = function() {
+            const keyArr = window.currentAnswerKey || [];
+            const resp = window.currentResponses || {};
+            const topics = window.currentTopics || {};
+            const hasKey = keyArr.length > 0;
             const subjects = [
                 { name: 'Physics', start: 1, end: 50 },
                 { name: 'Chemistry', start: 51, end: 100 },
@@ -1814,339 +1306,609 @@
                 { name: 'Zoology', start: 151, end: 200 }
             ];
 
-            const activeResp = window.currentResponses || {};
-            const key = window.currentAnswerKey || [];
-            const hasKey = key.length > 0;
-            const topics = window.currentTopics || {};
-            const applySectionB = shouldApplySectionBRule(activeResp);
-
-            const subjectStats = subjects.map(sub => ({ name: sub.name, stats: calcSubjectStats(sub, activeResp, key, hasKey) }));
-            renderScoreSummary(subjectStats, hasKey);
-            renderWeakTopics(subjects, activeResp, key, hasKey, topics);
-
-            subjects.forEach((sub, idx) => {
-                const countedB = new Set(subjectStats[idx].stats.countedB);
-                const notCountedB = new Set(subjectStats[idx].stats.notCountedB);
-                const sStats = subjectStats[idx].stats;
-                const sAttempted = sStats.correct + sStats.wrong;
-                const isHighGuesswork = hasKey && sAttempted > 0 && sStats.wrong > 0.2 * sAttempted;
-                let html = `<div class="subject-result-section"><div style="font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 10px;">${sub.name}</div>`;
-                if (isHighGuesswork) html += `<div class="guesswork-banner">⚠️ High Guesswork Detected: You are bleeding critical ranks here. Focus on eliminating un-sure attempts.</div>`;
-                let visibleCount = 0;
-                let sectionHtml = { A: '', B: '' };
-
-                for (let i = sub.start; i <= sub.end; i++) {
-                    const ans = activeResp[i] || '-';
-                    const correctAns = hasKey ? key[i - 1] : null;
-                    const inSectionB = i > sub.start + 34;
-
-                    let statusClass = "unattempted";
-                    if (ans !== '-') {
-                        if (hasKey && ans === correctAns) statusClass = "correct";
-                        else if (hasKey && ans !== correctAns) statusClass = "wrong";
-                        else statusClass = "res-box";
-                    }
-                    if (inSectionB && notCountedB.has(i)) statusClass += " not-counted";
-
-                    if (window.showingWrongOnly && !statusClass.includes("wrong")) continue;
-                    visibleCount++;
-
-                    const keyHTML = (hasKey && statusClass.includes("wrong")) ? `<div style="font-size: 10px; color: #16a34a; margin-top:4px;">Ans: ${correctAns}</div>` : '';
-                    const notCountedBadge = (inSectionB && notCountedB.has(i)) ? `<span class="badge-not-counted">Not counted</span>` : '';
-                    const topicVal = (topics[i] || '').replace(/"/g, '&quot;');
-
-                    const box = `<div class="res-box ${statusClass}">
-                                <div style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Q${i}</div>
-                                <div style="font-weight: 700; font-size: 14px;">${ans}</div>
-                                ${keyHTML}${notCountedBadge}
-                                <input type="text" class="topic-input" data-q="${i}" placeholder="Tag topic" value="${topicVal}" onchange="window.updateTopicTag(${i}, this.value)">
-                             </div>`;
-                    if (inSectionB) sectionHtml.B += box; else sectionHtml.A += box;
-                }
-
-                if (sectionHtml.A) html += `<div class="section-label">Section A (Q${sub.start}-${sub.start + 34}) — all compulsory</div><div class="result-grid">${sectionHtml.A}</div>`;
-                if (sectionHtml.B) html += `<div class="section-label">Section B (Q${sub.start + 35}-${sub.end})${applySectionB ? ' — attempt any 10, first 10 attempted are scored' : ' — all graded (whole paper mode)'}</div><div class="result-grid">${sectionHtml.B}</div>`;
-                html += `</div>`;
-                if (visibleCount > 0) container.innerHTML += html;
-            });
+            let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalMarks = 0, totalAttempted = 0;
             
-            if(container.innerHTML === '') container.innerHTML = '<p style="color:var(--text-muted); padding: 10px;">No mistakes found in this section!</p>';
+            subjects.forEach(sub => {
+                const stats = calcSubjectStats(sub, resp, keyArr, true);
+                totalCorrect += stats.correct;
+                totalWrong += stats.wrong;
+                totalUnattempted += stats.unattempted;
+                totalMarks += stats.marks;
+                totalAttempted += stats.totalAttempted;
+            });
+
+            const statsContainer = document.getElementById('res-stats-container');
+            const accuracy = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
+            statsContainer.innerHTML = `
+                <div class="stat-chip">Total Marks: <b>${hasKey ? totalMarks + ' / 720' : 'Key N/A'}</b></div>
+                <div class="stat-chip">Attempted: <b>${totalAttempted} / 200</b></div>
+                <div class="stat-chip">Correct: <b style="color:var(--success);">${hasKey ? totalCorrect : '—'}</b></div>
+                <div class="stat-chip">Wrong: <b style="color:var(--danger);">${hasKey ? totalWrong : '—'}</b></div>
+                <div class="stat-chip">Accuracy: <b>${hasKey ? accuracy + '%' : '—'}</b></div>
+            `;
+
+            if (chartDoughnut) chartDoughnut.destroy();
+            const ctx = document.getElementById('result-doughnut').getContext('2d');
+            chartDoughnut = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Wrong', 'Unattempted'],
+                    datasets: [{
+                        data: hasKey ? [totalCorrect, totalWrong, totalUnattempted] : [totalAttempted, 0, 200 - totalAttempted],
+                        backgroundColor: ['#16a34a', '#ef4444', '#cbd5e1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+
+            const pacingBox = document.getElementById('res-pacing-box');
+            const metrics = window.currentSubjectTimingMetrics || {};
+            let timingRows = '';
+            subjects.forEach(sub => {
+                const m = metrics[sub.name] || { totalSeconds: 0, visitedCount: 0, avgSpeedSeconds: 0 };
+                timingRows += `<tr><td>${sub.name}</td><td>${formatMinutesSeconds(m.totalSeconds)}</td><td>${m.avgSpeedSeconds}s</td></tr>`;
+            });
+            pacingBox.innerHTML = `
+                <table class="subject-timing-table">
+                    <thead><tr><th>Subject</th><th>Time Spent</th><th>Avg Speed/Q</th></tr></thead>
+                    <tbody>${timingRows}</tbody>
+                </table>
+            `;
+
+            const weakContainer = document.getElementById('weak-topics-container');
+            let weakHTML = '';
+            const wrongByTopic = {};
+            if (hasKey) {
+                for (let q = 1; q <= 200; q++) {
+                    const uAns = resp[q];
+                    const cAns = keyArr[q - 1];
+                    if (uAns && cAns && uAns.toString() !== cAns.toString()) {
+                        const topic = topics[q] || (q <= 50 ? 'Physics' : q <= 100 ? 'Chemistry' : q <= 150 ? 'Botany' : 'Zoology');
+                        wrongByTopic[topic] = (wrongByTopic[topic] || 0) + 1;
+                    }
+                }
+                const weakList = Object.entries(wrongByTopic).sort((a,b) => b[1] - a[1]);
+                if (weakList.length > 0) {
+                    weakHTML = `<div class="weak-topics-card"><h4>⚠️ High Error Areas / Topics</h4>`;
+                    weakList.forEach(([topic, cnt]) => {
+                        weakHTML += `<div class="weak-topic-row"><span>${topic}</span><span class="weak-topic-count">${cnt} wrong</span></div>`;
+                    });
+                    weakHTML += `</div>`;
+                }
+            }
+            weakContainer.innerHTML = weakHTML;
+
+            const penaltySection = document.getElementById('penalty-analytics-section');
+            if (hasKey && totalWrong > 0) {
+                const marksLostNegative = totalWrong * 1;
+                const marksLostUnattempted = totalUnattempted * 4;
+                penaltySection.innerHTML = `
+                    <div class="penalty-analytics-card">
+                        <h4>🔴 Negative Marking & Score Leakage Breakdown</h4>
+                        <div class="penalty-metrics-row">
+                            <div class="penalty-metric-box">
+                                <span class="penalty-metric-label">Direct Negative Penalty</span>
+                                <span class="penalty-metric-value" style="color:#ef4444;">-${marksLostNegative}</span>
+                                <span class="penalty-metric-subtext">${totalWrong} wrong responses (-1 each)</span>
+                            </div>
+                            <div class="penalty-metric-box">
+                                <span class="penalty-metric-label">Potential Marks Left On Table</span>
+                                <span class="penalty-metric-value" style="color:#f59e0b;">+${marksLostUnattempted}</span>
+                                <span class="penalty-metric-subtext">${totalUnattempted} unattempted questions</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                penaltySection.innerHTML = '';
+            }
+
+            const detailedContainer = document.getElementById('detailed-results-container');
+            let detailedHTML = '';
+
+            subjects.forEach(sub => {
+                const secAEnd = sub.start + 34;
+                const secBStart = sub.start + 35;
+                let subGridHTML = `<div class="subject-result-section"><h3 style="margin-bottom:10px;">${sub.name}</h3>`;
+
+                subGridHTML += `<div class="section-label">Section A (Q${sub.start} - Q${secAEnd})</div><div class="result-grid">`;
+                for (let q = sub.start; q <= secAEnd; q++) {
+                    subGridHTML += renderQuestionBox(q, resp[q], keyArr[q - 1], false, topics[q]);
+                }
+                subGridHTML += `</div>`;
+
+                subGridHTML += `<div class="section-label">Section B (Q${secBStart} - Q${sub.end}) — Best 10 Counted</div><div class="result-grid">`;
+                
+                let secBQuestions = [];
+                for (let q = secBStart; q <= sub.end; q++) {
+                    secBQuestions.push({ q, uAns: resp[q], cAns: keyArr[q - 1] });
+                }
+                let attemptedSecB = secBQuestions.filter(item => item.uAns);
+                if (hasKey) {
+                    attemptedSecB.sort((a, b) => {
+                        const scoreA = (a.uAns.toString() === a.cAns?.toString()) ? 4 : -1;
+                        const scoreB = (b.uAns.toString() === b.cAns?.toString()) ? 4 : -1;
+                        return scoreB - scoreA;
+                    });
+                }
+                const countedSet = new Set(attemptedSecB.slice(0, 10).map(i => i.q));
+
+                for (let q = secBStart; q <= sub.end; q++) {
+                    const isNotCounted = resp[q] && !countedSet.has(q);
+                    subGridHTML += renderQuestionBox(q, resp[q], keyArr[q - 1], isNotCounted, topics[q]);
+                }
+                subGridHTML += `</div></div>`;
+
+                detailedHTML += subGridHTML;
+            });
+
+            detailedContainer.innerHTML = detailedHTML;
+        };
+
+        function renderQuestionBox(qNum, uAns, cAns, isNotCounted, topic) {
+            const hasKey = window.currentAnswerKey && window.currentAnswerKey.length > 0;
+            let boxClass = 'unattempted';
+            let label = 'Unattempted';
+
+            if (uAns) {
+                if (hasKey && cAns) {
+                    if (uAns.toString() === cAns.toString()) {
+                        boxClass = 'correct';
+                        label = `Your: ${uAns} ✓`;
+                    } else {
+                        boxClass = 'wrong';
+                        label = `Your: ${uAns} (Ans: ${cAns})`;
+                    }
+                } else {
+                    boxClass = 'correct';
+                    label = `Your: ${uAns}`;
+                }
+            }
+
+            if (isNotCounted) {
+                boxClass += ' not-counted';
+            }
+
+            if (window.showingWrongOnly && boxClass.indexOf('wrong') === -1) {
+                return '';
+            }
+
+            const notCountedBadge = isNotCounted ? `<span class="badge-not-counted">Exceeded 10 limit</span>` : '';
+
+            return `
+                <div class="res-box ${boxClass}">
+                    <div style="font-size:11px; font-weight:700;">Q${qNum}</div>
+                    <div style="font-size:10px; margin-top:2px;">${label}</div>
+                    ${notCountedBadge}
+                    <input type="text" class="topic-input" data-q="${qNum}" placeholder="Topic tag" value="${topic || ''}">
+                </div>
+            `;
         }
 
         window.closeResults = function() {
             document.getElementById('result-view').classList.remove('active');
             window.renderHistoryVault();
+            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
         };
 
-        let scatterChartInstance = null;
+        window.copyWrongResponses = function() {
+            const keyArr = window.currentAnswerKey || [];
+            const resp = window.currentResponses || {};
+            if (!keyArr || keyArr.length === 0) return alert("No answer key on file to identify wrong responses.");
 
-        window.switchMainView = function(viewId, tabElement) {
-            document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            tabElement.classList.add('active');
-            if (viewId === 'analytics-view' && typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
-        };
-
-        // ============ VINAY BHAI DASHBOARD FUNCTIONS ============
-
-        function getGreeting() {
-            const h = new Date().getHours();
-            if (h < 12) return 'Good morning';
-            if (h < 17) return 'Good afternoon';
-            return 'Good evening';
-        }
-
-        function updateGreeting() {
-            const el = document.getElementById('hero-greeting');
-            if (!el) return;
-            const name = window.currentUser ? (window.currentUser.displayName || 'Future Doctor') : 'Future Doctor';
-            el.innerText = `${getGreeting()}, ${name.split(' ')[0]}`;
-        }
-
-        window.renderHistoryVault = (function(orig) {
-            return async function() {
-                if (typeof orig === 'function') await orig();
-                renderAttemptsView();
-                renderOverviewMetrics();
-            };
-        })(window.renderHistoryVault);
-
-        function renderOverviewMetrics() {
-            const recs = window.allVaultRecords || [];
-            const scored = recs.filter(r => typeof r.marks === 'number');
-            const testsTaken = scored.length;
-            const questionsSolved = recs.reduce((sum, r) => sum + (r.attempted || 0), 0);
-            let totalCorrect = 0, totalWrong = 0;
-            scored.forEach(r => {
-                const subs = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
-                subs.forEach(sub => {
-                    const s = calcSubjectStats(sub, r.responses || {}, r.savedKey || [], true);
-                    totalCorrect += s.correct; totalWrong += s.wrong;
-                });
-            });
-            const accuracy = (totalCorrect + totalWrong) > 0 ? Math.round(totalCorrect / (totalCorrect + totalWrong) * 1000) / 10 : 0;
-            const bestScore = scored.length > 0 ? Math.max(...scored.map(r => r.marks)) : null;
-            const air = bestScore ? Math.max(1, Math.round(10000 - bestScore * 12)) : null;
-
-            const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
-            set('ov-accuracy', accuracy + '%');
-            set('ov-tests', testsTaken);
-            set('ov-questions', questionsSolved);
-            set('ov-air', air ? '~' + air.toLocaleString() : '—');
-            set('prof-accuracy', accuracy + '%');
-            set('prof-tests', testsTaken);
-            set('prof-questions', questionsSolved);
-            set('prof-best', bestScore !== null ? bestScore + '/720' : '—');
-            updateGreeting();
-        }
-
-        function renderAttemptsView() {
-            const tbody = document.getElementById('attempts-rows');
-            if (!tbody || !window.currentUser || !window.db) return;
-            const recs = (window.allVaultRecords || []).slice().sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-            if (recs.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No attempts yet.</td></tr>'; return; }
-            let html = '';
-            recs.forEach((r, i) => {
-                const hasKey = r.savedKey && r.savedKey.length > 0;
-                let totalC = 0, totalW = 0, accLabel = '—', scoreLabel = '—';
-                if (hasKey) {
-                    const subs = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
-                    subs.forEach(sub => { const s = calcSubjectStats(sub, r.responses || {}, r.savedKey, true); totalC += s.correct; totalW += s.wrong; });
-                    const denom = totalC + totalW;
-                    accLabel = denom > 0 ? Math.round(totalC / denom * 1000) / 10 + '%' : '—';
-                    scoreLabel = (typeof r.marks === 'number' ? r.marks : '—') + '/720';
+            let wrongList = [];
+            for (let q = 1; q <= 200; q++) {
+                const uAns = resp[q];
+                const cAns = keyArr[q - 1];
+                if (uAns && cAns && uAns.toString() !== cAns.toString()) {
+                    wrongList.push(`Q${q}: Your Ans ${uAns}, Correct ${cAns}`);
                 }
-                const tag = r.cloudTestId ? '☁️ Cloud' : '🧪 Local';
-                const accBadge = hasKey ? `<span style="padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;background:${parseFloat(accLabel) >= 70 ? '#e8fbf2' : '#fef3c7'};color:${parseFloat(accLabel) >= 70 ? '#10b981' : '#d97706'}">${accLabel}</span>` : '—';
-                html += `<tr>
-                    <td style="font-weight:600;">${r.title || 'Test'}</td>
-                    <td style="color:var(--text-muted);font-size:12px;">${r.timeStr || ''}</td>
-                    <td>${tag}</td>
-                    <td><b>${scoreLabel}</b></td>
-                    <td>${accBadge}</td>
-                    <td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="window.viewHistoricalSheet('${r.id}')">View Breakdown</button></td>
-                </tr>`;
+            }
+            if (wrongList.length === 0) return alert("No wrong responses found!");
+
+            navigator.clipboard.writeText(wrongList.join('\n')).then(() => {
+                alert(`Copied ${wrongList.length} wrong response(s) to clipboard!`);
             });
-            tbody.innerHTML = html;
-        }
+        };
 
-        // ---- BROWSE TESTS: sequential naming + search + attempt-state routing ----
-        window._cloudTestCache = [];
+        window.toggleWrongOnly = function() {
+            window.showingWrongOnly = !window.showingWrongOnly;
+            const btn = document.getElementById('toggle-wrong-btn');
+            btn.innerText = window.showingWrongOnly ? "Show All Questions" : "Show Only Mistakes";
+            window.renderResultGrid();
+        };
 
-        window.loadOfficialCloudTests = (function(orig) {
-            return async function() {
-                if (typeof orig === 'function') await orig();
-                // Re-render into the browse view container with sequential T1/T2 naming
-                const browseContainer = document.getElementById('browse-tests-container');
-                if (!browseContainer || !window.db || !window.currentUser) return;
-                const q = query(collection(window.db, 'cloud_tests'), orderBy('createdAt', 'asc'));
-                const snap = await getDocs(q);
-                window._cloudTestCache = [];
-                snap.forEach(d => window._cloudTestCache.push({ id: d.id, ...d.data() }));
-                window.filterCloudTests();
-                const ovCount = document.getElementById('ov-test-count');
-                if (ovCount) ovCount.innerText = window._cloudTestCache.length + ' tests available';
-            };
-        })(window.loadOfficialCloudTests);
+        window.switchMainView = function(viewId, tabElem) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add('active');
+            if (tabElem) tabElem.classList.add('active');
+        };
 
-        window.filterCloudTests = function() {
-            const browseContainer = document.getElementById('browse-tests-container');
-            const dashContainer = document.getElementById('available-tests-container');
-            const query_str = ((document.getElementById('browse-search-input') || {}).value || (document.getElementById('test-search-input') || {}).value || '').toLowerCase().trim();
-            const tests = window._cloudTestCache || [];
-            const filtered = tests.filter(t => {
-                if (!query_str) return true;
-                const seqName = `T${tests.indexOf(t) + 1}`;
-                return (t.title || '').toLowerCase().includes(query_str) || seqName.toLowerCase().includes(query_str);
+        window.renderHistoryVault = async function() {
+            if (!window.db || !window.currentUser) return;
+            const historyTable = document.getElementById('history-rows');
+            const attemptsTable = document.getElementById('attempts-rows');
+
+            const q = query(collection(window.db, "users", window.currentUser.uid, "vault"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+
+            if (snapshot.empty) {
+                historyTable.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No attempts saved yet.</td></tr>`;
+                if(attemptsTable) attemptsTable.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No attempts saved yet.</td></tr>`;
+                document.getElementById('ov-accuracy').innerText = "—";
+                document.getElementById('ov-tests').innerText = "0";
+                document.getElementById('ov-questions').innerText = "0";
+                document.getElementById('ov-air').innerText = "—";
+                return;
+            }
+
+            let totalTests = 0, totalQuestionsSolved = 0, totalCorrect = 0, totalAttempted = 0, bestScore = 0;
+            let historyHTML = '', attemptsHTML = '';
+
+            snapshot.docs.forEach((docSnap, index) => {
+                const d = docSnap.data();
+                const docId = docSnap.id;
+                totalTests++;
+
+                const respCount = Object.keys(d.responses || {}).length;
+                totalQuestionsSolved += respCount;
+
+                const keyArr = d.savedKey || [];
+                let scoreDisplay = "Key N/A";
+                let accuracyDisplay = "—";
+
+                if (keyArr && keyArr.length > 0) {
+                    const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                    let marks = 0, correct = 0, attempted = 0;
+                    subjects.forEach(sub => {
+                        const stats = calcSubjectStats(sub, d.responses || {}, keyArr, true);
+                        marks += stats.marks;
+                        correct += stats.correct;
+                        attempted += stats.totalAttempted;
+                    });
+                    scoreDisplay = `${marks} / 720`;
+                    if (marks > bestScore) bestScore = marks;
+                    totalCorrect += correct;
+                    totalAttempted += attempted;
+                    accuracyDisplay = attempted > 0 ? Math.round((correct / attempted) * 100) + "%" : "—";
+                }
+
+                const dateStr = d.timeStr || (d.createdAt ? new Date(d.createdAt).toLocaleDateString() : 'N/A');
+                const tag = `Attempt #${snapshot.docs.length - index}`;
+
+                historyHTML += `
+                    <tr>
+                        <td><b>${d.title}</b></td>
+                        <td>${dateStr}</td>
+                        <td><b>${scoreDisplay}</b> (${respCount}/200)</td>
+                        <td>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="window.viewHistoricalSheet('${docId}')">📊 View Analysis</button>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px; color:var(--danger); border-color:var(--danger);" onclick="window.deleteHistoryItem('${docId}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+
+                attemptsHTML += `
+                    <tr>
+                        <td><b>${d.title}</b></td>
+                        <td>${dateStr}</td>
+                        <td><span style="background:var(--bg-body); padding:2px 8px; border-radius:6px; border:1px solid var(--border-light); font-size:11px;">${tag}</span></td>
+                        <td><b>${scoreDisplay}</b></td>
+                        <td><span style="color:${parseFloat(accuracyDisplay) >= 70 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${accuracyDisplay}</span></td>
+                        <td>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="window.viewHistoricalSheet('${docId}')">View</button>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px; color:var(--danger); border-color:var(--danger);" onclick="window.deleteHistoryItem('${docId}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
             });
-            const html = filtered.map(t => {
-                const idx = tests.indexOf(t);
-                const seqName = `Test ${idx + 1} (T${idx + 1})`;
-                return `<div class="test-card">
-                    <h3>${seqName}</h3>
-                    <p style="font-size:12px;color:var(--text-muted);margin:4px 0;">${t.title || ''}</p>
-                    <p>⏱️ ${t.duration} Mins · 720 Marks</p>
-                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:#eaf2ff;color:#3b82f6;">NEET</span>
-                    <button class="btn" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.fetchAndStartCloudTest('${t.id}')">Start Test →</button>
-                </div>`;
-            }).join('');
-            const emptyHtml = '<p style="color:var(--text-muted);font-size:14px;">No tests match your search.</p>';
-            if (browseContainer) browseContainer.innerHTML = html || emptyHtml;
-            if (dashContainer) dashContainer.innerHTML = html || emptyHtml;
+
+            historyTable.innerHTML = historyHTML;
+            if (attemptsTable) attemptsTable.innerHTML = attemptsHTML;
+
+            const overallAccuracy = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) + "%" : "—";
+            document.getElementById('ov-accuracy').innerText = overallAccuracy;
+            document.getElementById('ov-tests').innerText = totalTests;
+            document.getElementById('ov-questions').innerText = totalQuestionsSolved;
+            
+            let predictedAIR = "—";
+            if (bestScore > 0) {
+                if (bestScore >= 700) predictedAIR = "AIR < 100";
+                else if (bestScore >= 650) predictedAIR = "AIR 100 - 1,500";
+                else if (bestScore >= 600) predictedAIR = "AIR 1,500 - 10,000";
+                else if (bestScore >= 500) predictedAIR = "AIR 10,000 - 50,000";
+                else predictedAIR = "AIR > 50,000";
+            }
+            document.getElementById('ov-air').innerText = predictedAIR;
+
+            const profAcc = document.getElementById('prof-accuracy');
+            if (profAcc) {
+                profAcc.innerText = overallAccuracy;
+                document.getElementById('prof-tests').innerText = totalTests;
+                document.getElementById('prof-questions').innerText = totalQuestionsSolved;
+                document.getElementById('prof-best').innerText = bestScore > 0 ? `${bestScore} / 720` : '—';
+            }
+        };
+
+        window.deleteHistoryItem = async function(docId) {
+            if (!confirm("Delete this saved test attempt permanently?")) return;
+            await deleteDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId));
+            window.renderHistoryVault();
+            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
+        };
+
+        window.wipeHistory = async function() {
+            if (!window.currentUser || !window.db) return;
+            if (!confirm("⚠️ Are you sure you want to WIPE all saved attempt data from your vault? This cannot be undone!")) return;
+            const snapshot = await getDocs(collection(window.db, "users", window.currentUser.uid, "vault"));
+            for (const docSnap of snapshot.docs) {
+                await deleteDoc(docSnap.ref);
+            }
+            alert("Vault data wiped successfully!");
+            window.renderHistoryVault();
+            if (typeof window.loadAnalyticsHub === 'function') window.loadAnalyticsHub();
         };
 
         window.startLatestCloudTest = async function() {
-            const tests = window._cloudTestCache || [];
-            if (tests.length === 0) { alert('No cloud tests available yet. Check the Browse Tests tab.'); return; }
-            const latest = tests[tests.length - 1];
-            window.fetchAndStartCloudTest(latest.id);
+            if (!window.db) return;
+            const q = query(collection(window.db, "cloud_tests"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) return alert("No cloud tests published yet.");
+            const latestDoc = snapshot.docs[0];
+            window.fetchAndStartCloudTest(latestDoc.id);
         };
 
-        // ---- LEADERBOARD ----
-        window.getCompetitors = function() { return JSON.parse(localStorage.getItem('vb-competitors') || '[]'); };
-        window.saveCompetitors = function(list) { localStorage.setItem('vb-competitors', JSON.stringify(list)); };
+        window.filterCloudTests = function() {
+            const term1 = (document.getElementById('test-search-input')?.value || '').toLowerCase();
+            const term2 = (document.getElementById('browse-search-input')?.value || '').toLowerCase();
+            const term = term1 || term2;
+
+            document.querySelectorAll('.test-card').forEach(card => {
+                const title = card.querySelector('h3')?.innerText.toLowerCase() || '';
+                card.style.display = title.includes(term) ? 'flex' : 'none';
+            });
+        };
+
+        window.competitors = JSON.parse(localStorage.getItem('vb_competitors') || '[]');
 
         window.addCompetitor = function() {
             const name = document.getElementById('comp-name').value.trim();
-            if (!name) return alert('Enter a competitor name.');
-            const entry = {
-                name,
-                test: document.getElementById('comp-test').value.trim() || '—',
-                phy: parseInt(document.getElementById('comp-phy').value) || 0,
-                chem: parseInt(document.getElementById('comp-chem').value) || 0,
-                bot: parseInt(document.getElementById('comp-bot').value) || 0,
-                zoo: parseInt(document.getElementById('comp-zoo').value) || 0,
-                total: (parseInt(document.getElementById('comp-phy').value) || 0) + (parseInt(document.getElementById('comp-chem').value) || 0) + (parseInt(document.getElementById('comp-bot').value) || 0) + (parseInt(document.getElementById('comp-zoo').value) || 0)
-            };
-            const list = window.getCompetitors();
-            list.push(entry);
-            window.saveCompetitors(list);
-            ['comp-name','comp-test','comp-phy','comp-chem','comp-bot','comp-zoo'].forEach(id => document.getElementById(id).value = '');
-            window.renderLeaderboard();
-        };
+            const test = document.getElementById('comp-test').value.trim();
+            const phy = parseInt(document.getElementById('comp-phy').value) || 0;
+            const chem = parseInt(document.getElementById('comp-chem').value) || 0;
+            const bot = parseInt(document.getElementById('comp-bot').value) || 0;
+            const zoo = parseInt(document.getElementById('comp-zoo').value) || 0;
 
-        window.removeCompetitor = function(idx) {
-            const list = window.getCompetitors();
-            list.splice(idx, 1);
-            window.saveCompetitors(list);
+            if (!name || !test) return alert("Please enter competitor name and test name.");
+
+            const total = phy + chem + bot + zoo;
+            window.competitors.push({ name, test, phy, chem, bot, zoo, total });
+            localStorage.setItem('vb_competitors', JSON.stringify(window.competitors));
+
+            document.getElementById('comp-name').value = '';
+            document.getElementById('comp-test').value = '';
+            document.getElementById('comp-phy').value = '';
+            document.getElementById('comp-chem').value = '';
+            document.getElementById('comp-bot').value = '';
+            document.getElementById('comp-zoo').value = '';
+
             window.renderLeaderboard();
         };
 
         window.renderLeaderboard = function() {
             const tbody = document.getElementById('leaderboard-rows');
             if (!tbody) return;
-            const comps = window.getCompetitors();
-            // Add "You" as the latest scored test
-            const recs = (window.allVaultRecords || []).filter(r => typeof r.marks === 'number');
-            const yourLatest = recs.length > 0 ? recs[recs.length - 1] : null;
-            let yourSubs = { phy: 0, chem: 0, bot: 0, zoo: 0 };
-            if (yourLatest) {
-                const subs = [{name:'phy',start:1,end:50},{name:'chem',start:51,end:100},{name:'bot',start:101,end:150},{name:'zoo',start:151,end:200}];
-                subs.forEach(sub => { yourSubs[sub.name] = calcSubjectStats(sub, yourLatest.responses || {}, yourLatest.savedKey || [], true).marks; });
-            }
-            const yourTotal = yourLatest ? yourLatest.marks : 0;
-            const allEntries = comps.map(c => ({ ...c, isYou: false }));
-            if (yourLatest) allEntries.push({ name: 'You', test: 'T' + recs.length, ...yourSubs, total: yourTotal, isYou: true });
-            allEntries.sort((a, b) => b.total - a.total);
-            if (allEntries.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">No entries yet. Add a competitor above.</td></tr>'; return; }
-            let html = '';
-            allEntries.forEach((e, i) => {
-                const rankBadge = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
-                const youStyle = e.isYou ? 'background:#fff7ed;font-weight:700;' : '';
-                const removeBtn = e.isYou ? '' : `<button class="btn btn-outline" style="padding:2px 8px;font-size:10px;color:var(--danger);border-color:var(--danger);" onclick="window.removeCompetitor(${comps.indexOf(e)})">✕</button>`;
-                html += `<tr style="${youStyle}">
-                    <td>${rankBadge}</td>
-                    <td>${e.name}${e.isYou ? ' <span style="color:#f97316;">★</span>' : ''}</td>
-                    <td>${e.test}</td>
-                    <td>${e.phy}</td><td>${e.chem}</td><td>${e.bot}</td><td>${e.zoo}</td>
-                    <td><b>${e.total}/720</b></td>
-                    <td>${removeBtn}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-        };
 
-        window.renderProfileStats = function() {
-            renderOverviewMetrics();
-        };
+            let list = [...window.competitors];
+            list.sort((a, b) => b.total - a.total);
 
-        // ---- SCATTER PLOT (Accuracy vs Speed, 4-quadrant) ----
-        function renderScatterPlot() {
-            const canvas = document.getElementById('scatter-chart');
-            if (!canvas || typeof Chart === 'undefined') return;
-            if (scatterChartInstance) scatterChartInstance.destroy();
-            const recs = (window.allVaultRecords || []).filter(r => r.timing && Object.keys(r.timing).length > 0 && r.savedKey && r.savedKey.length > 0);
-            if (recs.length === 0) {
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted);">No competitors logged yet.</td></tr>`;
                 return;
             }
-            const latest = recs[recs.length - 1];
-            const resp = latest.responses || {};
-            const key = latest.savedKey || [];
-            const timing = latest.timing || {};
-            const fastCorrect = [], slowCorrect = [], fastWrong = [], slowWrong = [];
-            const medianTime = 60; // seconds threshold for fast vs slow
-            for (let q = 1; q <= 200; q++) {
-                const t = timing[q] || 0;
-                if (t === 0) continue;
-                const ans = resp[q] || '-';
-                if (ans === '-') continue;
-                const isCorrect = ans === key[q - 1];
-                const isFast = t <= medianTime;
-                const point = { x: t, y: isCorrect ? 1 : 0 };
-                if (isFast && isCorrect) fastCorrect.push(point);
-                else if (!isFast && isCorrect) slowCorrect.push(point);
-                else if (isFast && !isCorrect) fastWrong.push(point);
-                else slowWrong.push(point);
-            }
-            const quadrantData = (data, color, label) => ({ label, data, backgroundColor: color + 'cc', borderColor: color, pointRadius: 5, pointHoverRadius: 7 });
-            scatterChartInstance = new Chart(canvas.getContext('2d'), {
-                type: 'scatter',
-                data: { datasets: [
-                    quadrantData(fastCorrect, '#10b981', 'Fast & Correct (Optimal)'),
-                    quadrantData(slowCorrect, '#3b82f6', 'Slow & Correct (Efficiency Leak)'),
-                    quadrantData(fastWrong, '#f59e0b', 'Fast & Incorrect (Silly Error)'),
-                    quadrantData(slowWrong, '#ef4444', 'Slow & Incorrect (Concept Blind Spot)')
-                ]},
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: { title: { display: true, text: 'Time Spent (seconds)' }, min: 0 },
-                        y: { title: { display: true, text: 'Correct (1) / Wrong (0)' }, min: -0.3, max: 1.3, ticks: { stepSize: 1, callback: v => v === 1 ? 'Correct' : v === 0 ? 'Wrong' : '' } }
-                    },
-                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x}s` } } }
+
+            let rows = '';
+            list.forEach((item, idx) => {
+                rows += `
+                    <tr>
+                        <td><b>#${idx + 1}</b></td>
+                        <td><b>${item.name}</b></td>
+                        <td>${item.test}</td>
+                        <td>${item.phy}</td>
+                        <td>${item.chem}</td>
+                        <td>${item.bot}</td>
+                        <td>${item.zoo}</td>
+                        <td><b style="color:var(--primary);">${item.total} / 720</b></td>
+                        <td><button class="btn btn-outline" style="padding:2px 6px; font-size:11px; color:var(--danger);" onclick="window.removeCompetitor(${idx})">✕</button></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = rows;
+        };
+
+        window.removeCompetitor = function(idx) {
+            window.competitors.splice(idx, 1);
+            localStorage.setItem('vb_competitors', JSON.stringify(window.competitors));
+            window.renderLeaderboard();
+        };
+
+        let chartTrend = null, chartAccuracy = null, chartSpeed = null;
+        let chartSubScore = null, chartSubAcc = null, chartScatter = null;
+
+        window.loadAnalyticsHub = async function() {
+            if (!window.db || !window.currentUser) return;
+            const q = query(collection(window.db, "users", window.currentUser.uid, "vault"), orderBy("createdAt", "asc"));
+            const snapshot = await getDocs(q);
+
+            if (snapshot.empty) return;
+
+            const labels = [];
+            const scoreData = [];
+            const accuracyData = [];
+            const phyScores = [], chemScores = [], botScores = [], zooScores = [];
+            const phyAcc = [], chemAcc = [], botAcc = [], zooAcc = [];
+            let latestDocData = null;
+
+            snapshot.docs.forEach((docSnap, i) => {
+                const d = docSnap.data();
+                latestDocData = d;
+                const name = d.title || `Test ${i + 1}`;
+                labels.push(name);
+
+                const keyArr = d.savedKey || [];
+                const resp = d.responses || {};
+
+                if (keyArr.length > 0) {
+                    const phy = calcSubjectStats({start:1,end:50}, resp, keyArr, true);
+                    const chem = calcSubjectStats({start:51,end:100}, resp, keyArr, true);
+                    const bot = calcSubjectStats({start:101,end:150}, resp, keyArr, true);
+                    const zoo = calcSubjectStats({start:151,end:200}, resp, keyArr, true);
+
+                    const totalM = phy.marks + chem.marks + bot.marks + zoo.marks;
+                    const totalC = phy.correct + chem.correct + bot.correct + zoo.correct;
+                    const totalA = phy.totalAttempted + chem.totalAttempted + bot.totalAttempted + zoo.totalAttempted;
+
+                    scoreData.push(totalM);
+                    accuracyData.push(totalA > 0 ? Math.round((totalC / totalA) * 100) : 0);
+
+                    phyScores.push(phy.marks); chemScores.push(chem.marks); botScores.push(bot.marks); zooScores.push(zoo.marks);
+                    phyAcc.push(phy.totalAttempted > 0 ? Math.round((phy.correct / phy.totalAttempted) * 100) : 0);
+                    chemAcc.push(chem.totalAttempted > 0 ? Math.round((chem.correct / chem.totalAttempted) * 100) : 0);
+                    botAcc.push(bot.totalAttempted > 0 ? Math.round((bot.correct / bot.totalAttempted) * 100) : 0);
+                    zooAcc.push(zoo.totalAttempted > 0 ? Math.round((zoo.correct / zoo.totalAttempted) * 100) : 0);
+                } else {
+                    scoreData.push(0);
+                    accuracyData.push(0);
+                    phyScores.push(0); chemScores.push(0); botScores.push(0); zooScores.push(0);
+                    phyAcc.push(0); chemAcc.push(0); botAcc.push(0); zooAcc.push(0);
                 }
             });
-        }
 
-        // Patch loadAnalyticsHub to also render the scatter plot
-        (function(origLoad) {
-            window.loadAnalyticsHub = async function() {
-                if (typeof origLoad === 'function') await origLoad();
-                renderScatterPlot();
-            };
-        })(window.loadAnalyticsHub);
+            if (chartTrend) chartTrend.destroy();
+            chartTrend = new Chart(document.getElementById('trend-chart').getContext('2d'), {
+                type: 'line',
+                data: { labels, datasets: [{ label: 'Score (out of 720)', data: scoreData, borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.1)', fill: true, tension: 0.3 }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            if (chartAccuracy) chartAccuracy.destroy();
+            chartAccuracy = new Chart(document.getElementById('accuracy-chart').getContext('2d'), {
+                type: 'line',
+                data: { labels, datasets: [{ label: 'Accuracy %', data: accuracyData, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.3 }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            if (chartSubScore) chartSubScore.destroy();
+            chartSubScore = new Chart(document.getElementById('subject-score-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Physics', data: phyScores, borderColor: '#3b82f6', tension: 0.2 },
+                        { label: 'Chemistry', data: chemScores, borderColor: '#ef4444', tension: 0.2 },
+                        { label: 'Botany', data: botScores, borderColor: '#16a34a', tension: 0.2 },
+                        { label: 'Zoology', data: zooScores, borderColor: '#8b5cf6', tension: 0.2 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            if (chartSubAcc) chartSubAcc.destroy();
+            chartSubAcc = new Chart(document.getElementById('subject-accuracy-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Physics %', data: phyAcc, borderColor: '#3b82f6', tension: 0.2 },
+                        { label: 'Chemistry %', data: chemAcc, borderColor: '#ef4444', tension: 0.2 },
+                        { label: 'Botany %', data: botAcc, borderColor: '#16a34a', tension: 0.2 },
+                        { label: 'Zoology %', data: zooAcc, borderColor: '#8b5cf6', tension: 0.2 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            if (latestDocData) {
+                const scatterPoints = [];
+                const resp = latestDocData.responses || {};
+                const timing = latestDocData.timing || {};
+                const keyArr = latestDocData.savedKey || [];
+
+                for (let q = 1; q <= 200; q++) {
+                    const timeSec = timing[q] || 0;
+                    const uAns = resp[q];
+                    const cAns = keyArr[q - 1];
+                    let status = 'Unattempted';
+                    let color = '#cbd5e1';
+
+                    if (uAns) {
+                        if (keyArr.length > 0 && cAns) {
+                            if (uAns.toString() === cAns.toString()) { status = 'Correct'; color = '#16a34a'; }
+                            else { status = 'Wrong'; color = '#ef4444'; }
+                        } else { status = 'Attempted'; color = '#3b82f6'; }
+                    }
+
+                    if (timeSec > 0 || uAns) {
+                        scatterPoints.push({ x: timeSec, y: q, status, backgroundColor: color });
+                    }
+                }
+
+                if (chartScatter) chartScatter.destroy();
+                chartScatter = new Chart(document.getElementById('scatter-chart').getContext('2d'), {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Question Pacing (s vs Q#)',
+                            data: scatterPoints,
+                            pointBackgroundColor: scatterPoints.map(p => p.backgroundColor),
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Time Spent (Seconds)' } },
+                            y: { title: { display: true, text: 'Question Number' } }
+                        }
+                    }
+                });
+
+                const latestMetrics = latestDocData.subjectTimingMetrics || computeSubjectTimingMetrics(timing);
+                if (chartSpeed) chartSpeed.destroy();
+                chartSpeed = new Chart(document.getElementById('speed-chart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Physics', 'Chemistry', 'Botany', 'Zoology'],
+                        datasets: [{
+                            label: 'Avg Speed (s/Q)',
+                            data: [
+                                latestMetrics.Physics?.avgSpeedSeconds || 0,
+                                latestMetrics.Chemistry?.avgSpeedSeconds || 0,
+                                latestMetrics.Botany?.avgSpeedSeconds || 0,
+                                latestMetrics.Zoology?.avgSpeedSeconds || 0
+                            ],
+                            backgroundColor: ['#3b82f6', '#ef4444', '#16a34a', '#8b5cf6']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                const pacingEl = document.getElementById('pacing-overview');
+                if (pacingEl) {
+                    pacingEl.innerHTML = `
+                        <b>Latest Test: ${latestDocData.title}</b><br>
+                        Physics Avg Speed: <b>${latestMetrics.Physics?.avgSpeedSeconds || 0}s / Q</b> (${formatMinutesSeconds(latestMetrics.Physics?.totalSeconds || 0)})<br>
+                        Chemistry Avg Speed: <b>${latestMetrics.Chemistry?.avgSpeedSeconds || 0}s / Q</b> (${formatMinutesSeconds(latestMetrics.Chemistry?.totalSeconds || 0)})<br>
+                        Botany Avg Speed: <b>${latestMetrics.Botany?.avgSpeedSeconds || 0}s / Q</b> (${formatMinutesSeconds(latestMetrics.Botany?.totalSeconds || 0)})<br>
+                        Zoology Avg Speed: <b>${latestMetrics.Zoology?.avgSpeedSeconds || 0}s / Q</b> (${formatMinutesSeconds(latestMetrics.Zoology?.totalSeconds || 0)})
+                    `;
+                }
+            }
+        };
     </script>
 </body>
 </html>
