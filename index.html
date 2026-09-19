@@ -319,6 +319,54 @@
         .pal-btn:hover { transform: scale(1.08); }
         .pal-btn.ans-marked { background: #8b5cf6; box-shadow: inset 0 -5px 0 #22c55e; }
         @media (max-width: 1100px) { .control-panel { width: 38%; flex: 0 0 38%; } .pdf-panel { width: 62%; flex: 0 0 62%; } .palette-grid { grid-template-columns: repeat(5, 1fr); } }
+
+        /* ===== Custom subject range accordion ===== */
+        .range-accordion { border: 1px solid var(--border-light); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; background: var(--bg-surface); }
+        .range-accordion summary { cursor: pointer; font-weight: 700; font-size: 13px; color: var(--text-main); }
+        .range-hint { font-size: 11px; color: var(--text-muted); margin: 8px 0; }
+        .range-grid { display: grid; gap: 8px; }
+        .range-row { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 8px; align-items: center; }
+        .range-row span { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        .range-row input { padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 12px; background: var(--bg-surface); color: var(--text-main); }
+
+        /* ===== Anti-cheat lockout ===== */
+        #exam-view.exam-locked .exam-workspace { filter: blur(18px); pointer-events: none; user-select: none; }
+        #anticheat-modal { display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(8, 14, 30, 0.88); align-items: center; justify-content: center; padding: 20px; }
+        .anticheat-card { background: var(--bg-surface); border: 2px solid var(--danger); border-radius: 16px; max-width: 520px; width: 100%; padding: 26px; text-align: center; box-shadow: var(--shadow-md); }
+        .anticheat-card h2 { font-size: 19px; color: var(--danger); margin-bottom: 10px; }
+        .anticheat-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .anticheat-meta { font-size: 11px; font-weight: 700; color: var(--warning); margin-top: 10px; }
+        .anticheat-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+
+        /* ===== Interactive Fullscreen Review Mode ===== */
+        #review-mode-workspace { display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 90000; background: var(--bg-body); flex-direction: column; }
+        #review-mode-workspace.active { display: flex; }
+        .review-mode-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: var(--exam-bar-bg); color: #fff; flex: 0 0 auto; }
+        .review-mode-bar h3 { font-size: 15px; font-weight: 700; }
+        .review-mode-bar .review-sub { font-size: 11px; opacity: 0.8; }
+        .review-save-chip { font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 8px; }
+        .review-split { flex: 1 1 auto; display: flex; min-height: 0; }
+        .review-pdf-pane { flex: 0 0 55%; position: sticky; top: 0; height: 100%; background: var(--exam-workspace-bg); border-right: 1px solid var(--border-light); }
+        .review-pdf-pane iframe { width: 100%; height: 100%; border: 0; display: block; }
+        .review-pdf-empty { display: flex; height: 100%; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); padding: 20px; text-align: center; }
+        .review-q-pane { flex: 0 0 45%; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .review-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-left: 5px solid var(--danger); border-radius: 12px; padding: 14px; box-shadow: var(--shadow-sm); }
+        .review-card.blank { border-left-color: #94a3b8; }
+        .review-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .review-card-head b { font-size: 14px; color: var(--text-main); }
+        .review-pill { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+        .review-pill.wrong { background: var(--wrong-bg); color: var(--wrong-text); }
+        .review-pill.blank { background: var(--control-panel-bg); color: var(--text-muted); }
+        .review-answers { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+        .review-answers b { color: var(--text-main); }
+        .review-card input, .review-card textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 12px; background: var(--bg-surface); color: var(--text-main); margin-bottom: 8px; }
+        .review-card textarea { min-height: 70px; resize: vertical; }
+        .review-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 10px; }
+        @media (max-width: 900px) {
+            .review-split { flex-direction: column; }
+            .review-pdf-pane { flex: 0 0 45%; position: relative; }
+            .review-q-pane { flex: 1 1 auto; }
+        }
     </style>
     <script>
         window.mockLogin = window.mockLogin || function() { alert("Authentication module initializing. Please wait..."); };
@@ -534,14 +582,33 @@
             <h2>⚙️ Configure Local Test</h2>
             <div class="grid-2">
                 <div class="form-group"><label>Test Title</label><input type="text" id="local-title" value="Self-Paced Practice Run"></div>
-                <div class="form-group"><label>Timer Limit (Minutes)</label><input type="number" id="local-duration" value="200"></div>
+                <div class="form-group"><label>Timer Limit (Minutes)</label><input type="number" id="local-duration" value="180" oninput="window.syncTemplateInfo('local')"><small id="local-template-info" style="display:block;margin-top:6px;color:var(--text-muted);font-size:12px;">Auto: 180 Questions · 720 Marks · P/C/B/Z 45/45/45/45</small></div>
             </div>
             <div class="grid-2">
                 <div class="form-group"><label>Question Paper (PDF)</label><input type="file" id="local-qp" accept=".pdf"></div>
+                <details class="range-accordion" id="local-range-accordion" style="display:none;">
+                    <summary>⚙️ Configure Custom Subject Ranges</summary>
+                    <p class="range-hint">Leave blank to auto-detect (180 = 4×45 compulsory, 200 = 4×50 with NTA Section B). Filled values override both patterns.</p>
+                    <div class="range-grid">
+                        <div class="range-row"><span>Physics</span>
+                            <input type="number" min="1" id="local-physics-start" placeholder="Start Q">
+                            <input type="number" min="1" id="local-physics-end" placeholder="End Q"></div>
+                        <div class="range-row"><span>Chemistry</span>
+                            <input type="number" min="1" id="local-chemistry-start" placeholder="Start Q">
+                            <input type="number" min="1" id="local-chemistry-end" placeholder="End Q"></div>
+                        <div class="range-row"><span>Botany</span>
+                            <input type="number" min="1" id="local-botany-start" placeholder="Start Q">
+                            <input type="number" min="1" id="local-botany-end" placeholder="End Q"></div>
+                        <div class="range-row"><span>Zoology</span>
+                            <input type="number" min="1" id="local-zoology-start" placeholder="Start Q">
+                            <input type="number" min="1" id="local-zoology-end" placeholder="End Q"></div>
+                    </div>
+                </details>
+
                 <div class="form-group">
                     <label>Answer Key String (For Auto-Grading)</label>
                     <input type="text" id="local-key-string" placeholder="e.g. 1,2,3,4,1,2... (comma separated)">
-                    <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">200 entries for a full paper — grading strictly follows the NEET rule (35 compulsory + best 10 of 15 per subject = 180 of 200 scored). Don't have the key yet? Leave this blank and add it from the result screen after the test.</p>
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">One entry per question (matches the question count shown above). 200-question papers follow the NEET rule (35 compulsory + best 10 of 15 per subject = 180 of 200 scored, max 720). Don't have the key yet? Leave this blank and add it from the result screen after the test.</p>
                 </div>
             </div>
             <button class="btn btn-success" style="width: 100%; margin-top: 10px; padding: 14px;" onclick="startLocalSandbox()">🚀 Launch Local Sandbox</button>
@@ -555,10 +622,29 @@
             <h2 style="color: #ea580c; border-bottom-color: #fed7aa;">📤 Publish New Cloud Assessment</h2>
             <div class="grid-2">
                 <div class="form-group"><label>Official Test Title</label><input type="text" id="admin-test-title"></div>
-                <div class="form-group"><label>Total Duration (Minutes)</label><input type="number" id="admin-test-duration" value="200"></div>
+                <div class="form-group"><label>Total Duration (Minutes)</label><input type="number" id="admin-test-duration" value="180" oninput="window.syncTemplateInfo('admin')"><small id="admin-template-info" style="display:block;margin-top:6px;color:var(--text-muted);font-size:12px;">Auto: 180 Questions · 720 Marks · P/C/B/Z 45/45/45/45</small></div>
             </div>
             <div class="grid-2">
                 <div class="form-group"><label>Question Paper PDF</label><input type="file" id="admin-qp-file" accept=".pdf"></div>
+                <details class="range-accordion" id="admin-range-accordion">
+                    <summary>⚙️ Configure Custom Subject Ranges (optional override)</summary>
+                    <p class="range-hint">Auto-filled from the duration you set above — no action needed. Only edit these if you want to override the automatic P/C/B/Z split; your edits then replace the auto layout entirely.</p>
+                    <div class="range-grid">
+                        <div class="range-row"><span>Physics</span>
+                            <input type="number" min="1" id="admin-physics-start" placeholder="Start Q">
+                            <input type="number" min="1" id="admin-physics-end" placeholder="End Q"></div>
+                        <div class="range-row"><span>Chemistry</span>
+                            <input type="number" min="1" id="admin-chemistry-start" placeholder="Start Q">
+                            <input type="number" min="1" id="admin-chemistry-end" placeholder="End Q"></div>
+                        <div class="range-row"><span>Botany</span>
+                            <input type="number" min="1" id="admin-botany-start" placeholder="Start Q">
+                            <input type="number" min="1" id="admin-botany-end" placeholder="End Q"></div>
+                        <div class="range-row"><span>Zoology</span>
+                            <input type="number" min="1" id="admin-zoology-start" placeholder="Start Q">
+                            <input type="number" min="1" id="admin-zoology-end" placeholder="End Q"></div>
+                    </div>
+                </details>
+
                 <div class="form-group">
                     <label>Official Answer Key String <span style="font-weight:400; color:var(--text-muted);">(optional — can be added later, 200 comma-separated entries for a full paper)</span></label>
                     <input type="text" id="admin-key-string" placeholder="Comma separated right answers">
@@ -646,6 +732,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
                     <a id="download-qp-btn" href="#" download="" style="display:none; padding: 6px 12px; font-size: 12px;" class="btn btn-outline">⬇️ Download QP PDF</a>
+                    <button class="btn" id="launch-review-btn" style="padding: 6px 12px; font-size: 12px; background: linear-gradient(135deg,#f97316,#ea580c);" onclick="window.launchReviewMode()">🔍 Launch Interactive Review Mode</button>
                     <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="closeResults()">Return to Dashboard</button>
                 </div>
             </div>
@@ -760,42 +847,83 @@
             }
         });
 
-        // VISIBILITY-BASED PAUSE & SAVE: when the student jumps to another tab or minimizes
-        // the browser during a cloud test, the exam is paused — the countdown stops, the
-        // current question's elapsed time is booked, and a snapshot is saved to Firebase.
-        // When the tab becomes visible again, the exam resumes from exactly where it paused.
-        let examPaused = false;
-        document.addEventListener('visibilitychange', () => {
-            const examActive = document.getElementById('exam-view')?.classList.contains('active');
-            if (!examActive) return;
+        // ============ LIVE ASSESSMENT ANTI-CHEAT & INPUT LOCK ============
+        // Active only while the exam workspace is open. Tab switches, window blur,
+        // and capture/print shortcuts freeze the workspace behind an un-dismissible
+        // overlay. The countdown deliberately keeps running during a lockout.
+        let examPaused = false; // retained for compatibility; the clock never pauses now
+        window.antiCheatArmed = false;
+        window.antiCheatLocked = false;
+        window.antiCheatStrikes = 0;
 
-            if (document.hidden) {
-                // Student left the exam tab — pause everything and save
-                if (!examPaused) {
-                    examPaused = true;
-                    markTimeSpent();              // book the seconds on the current question
-                    clearInterval(examTimer);      // stop the countdown
-                    clearInterval(autosaveTimer);  // stop periodic autosave (we do one explicit save below)
-                    saveSessionSnapshot();         // persist current state to Firebase for cloud tests
-                }
-            } else {
-                // Student came back — resume from the paused moment
-                if (examPaused) {
-                    examPaused = false;
-                    qEnterTime = Date.now();       // restart the per-question clock from now
-                    // Restart the countdown from wherever timeLeft was frozen
-                    examTimer = setInterval(() => {
-                        if (timeLeft <= 0) { clearInterval(examTimer); triggerSubmission(true); return; }
-                        timeLeft--; updateTimerDisplay();
-                    }, 1000);
-                    // Restart periodic autosave for cloud tests
-                    if (window.activeTestType === 'cloud') {
-                        clearInterval(autosaveTimer);
-                        autosaveTimer = setInterval(saveSessionSnapshot, 20000);
-                    }
-                }
-            }
+        function examIsLive() {
+            return !!document.getElementById('exam-view')?.classList.contains('active');
+        }
+
+        window.armAntiCheat = function() {
+            window.antiCheatArmed = true;
+            window.antiCheatStrikes = 0;
+            window.releaseAntiCheatLock(true);
+        };
+
+        window.disarmAntiCheat = function() {
+            window.antiCheatArmed = false;
+            window.releaseAntiCheatLock(true);
+        };
+
+        window.triggerAntiCheatLock = function(reason) {
+            if (!window.antiCheatArmed || !examIsLive() || window.antiCheatLocked) return;
+            window.antiCheatLocked = true;
+            window.antiCheatStrikes++;
+            markTimeSpent();
+            saveSessionSnapshot();
+            const modal = document.getElementById('anticheat-modal');
+            const info = document.getElementById('anticheat-reason');
+            if (info) info.innerText = `Trigger: ${reason} · Warning #${window.antiCheatStrikes}`;
+            document.getElementById('exam-view')?.classList.add('exam-locked');
+            if (modal) modal.style.display = 'flex';
+        };
+
+        window.releaseAntiCheatLock = function(silent) {
+            window.antiCheatLocked = false;
+            const modal = document.getElementById('anticheat-modal');
+            if (modal) modal.style.display = 'none';
+            document.getElementById('exam-view')?.classList.remove('exam-locked');
+            if (!silent) qEnterTime = Date.now();
+        };
+
+        window.antiCheatSubmitNow = function() {
+            window.releaseAntiCheatLock(true);
+            window.antiCheatArmed = false;
+            window.triggerSubmission(true); // force-bypass confirmations
+        };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) window.triggerAntiCheatLock('Tab switched / window minimised');
         });
+        // A blur caused by clicking into our own question-paper iframe is not interference.
+        window.addEventListener('blur', () => {
+            setTimeout(() => {
+                const ae = document.activeElement;
+                if (ae && ae.tagName === 'IFRAME' && ae.closest('#exam-view')) return;
+                window.triggerAntiCheatLock('Window focus lost');
+            }, 250);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!window.antiCheatArmed || !examIsLive()) return;
+            const k = (e.key || '').toLowerCase();
+            const captureCombo =
+                k === 'printscreen' ||
+                ((e.metaKey || e.ctrlKey) && e.shiftKey && ['3','4','5','s'].includes(k)) ||
+                ((e.metaKey || e.ctrlKey) && ['p','s'].includes(k)) ||
+                (e.metaKey && k === 'tab') ||
+                (e.altKey && k === 'tab');
+            if (captureCombo) {
+                e.preventDefault();
+                window.triggerAntiCheatLock('Screen capture / print shortcut detected');
+            }
+        }, true);
 
         onAuthStateChanged(auth, (user) => {
             window.currentUser = user;
@@ -842,8 +970,11 @@
             try {
                 const qpURL = await uploadFileToCloudinary(qpFile);
                 await addDoc(collection(db, "cloud_tests"), {
-                    title: title, duration: parseInt(duration || "200", 10), 
+                    title: title, duration: parseInt(duration || "180", 10), 
                     questionPaperUrl: qpURL, keyString: keyString,
+                    customRanges: window.readCustomRanges('admin'),
+                    totalQuestions: window.templateForDuration(duration).total,
+                    totalMarks: window.templateForDuration(duration).marks,
                     dueDate: dueDateVal ? new Date(dueDateVal).toISOString() : null,
                     createdAt: new Date().toISOString()
                 });
@@ -976,12 +1107,12 @@
                     window.pendingResumeData = sessionData;
                     window.pendingResumeTestInfo = {
                         testId, title: data.title, duration: data.duration,
-                        qpUrl: data.questionPaperUrl, keyString: data.keyString
+                        qpUrl: data.questionPaperUrl, keyString: data.keyString, customRanges: data.customRanges || null
                     };
                     window.showResumeModal(data.title, sessionData);
                 } else {
                     // No saved session — start fresh
-                    window.startSandbox(data.title, data.duration, data.questionPaperUrl, data.keyString, null);
+                    window.startSandbox(data.title, data.duration, data.questionPaperUrl, data.keyString, null, data.customRanges || null);
                 }
             }
         };
@@ -996,7 +1127,7 @@
             const savedAt = sessionData.savedAt ? new Date(sessionData.savedAt).toLocaleString() : 'unknown time';
             document.getElementById('resume-modal-info').innerHTML =
                 `Saved at: <b>${savedAt}</b><br>` +
-                `Questions answered: <b>${respCount}/200</b><br>` +
+                `Questions answered: <b>${respCount}</b><br>` +
                 `Time remaining: <b>${minsLeft}m ${secsLeft}s</b>`;
             modal.style.display = 'flex';
         };
@@ -1015,27 +1146,166 @@
 
             if (choice === 'continue') {
                 // Resume from the saved session — pass sessionData so startSandbox restores it
-                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, sessionData);
+                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, sessionData, info.customRanges);
             } else {
                 // Retake from scratch — delete the old session first, then start fresh
                 await clearSessionSnapshot();
-                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, null);
+                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, null, info.customRanges);
             }
+        };
+
+        // Reads the four Start/End pairs out of an accordion; returns null unless all are valid.
+        window.readCustomRanges = function(prefix) {
+            // Auto-filled values are NOT an override — only ranges the user
+            // explicitly typed (panel opened + edited) bypass the auto engine.
+            const acc = document.getElementById(prefix + '-range-accordion');
+            if (!acc || acc.dataset.touched !== '1') return null;
+            const out = {};
+            for (const name of ['Physics', 'Chemistry', 'Botany', 'Zoology']) {
+                const st = document.getElementById(`${prefix}-${name.toLowerCase()}-start`);
+                const en = document.getElementById(`${prefix}-${name.toLowerCase()}-end`);
+                if (!st || !en || st.value === '' || en.value === '') return null;
+                out[name] = { start: parseInt(st.value, 10), end: parseInt(en.value, 10) };
+            }
+            return window.normalizeCustomRanges(out);
         };
 
         window.startLocalSandbox = function() {
             const title = document.getElementById('local-title').value;
-            const duration = parseInt(document.getElementById('local-duration').value) || 200;
+            const duration = parseInt(document.getElementById('local-duration').value) || 180;
             const qpFile = document.getElementById('local-qp').files[0];
             const keyString = document.getElementById('local-key-string').value.trim();
 
             if (!qpFile) return alert("Please upload a Question Paper PDF.");
             window.activeTestType = 'local';
             window.activeCloudTestId = null;
-            window.startSandbox(title, duration, URL.createObjectURL(qpFile), keyString, null);
+            window.startSandbox(title, duration, URL.createObjectURL(qpFile), keyString, null, window.readCustomRanges('local'));
         };
 
-        const totalQuestions = 200;
+
+        // ====== DYNAMIC SUBJECT LAYOUT ENGINE ======
+        // Pattern A: 180 items -> 4 x 45, every question compulsory.
+        // Pattern B: 200 items -> 4 x 50 with Section B (last 15), first 10 attempted scored.
+        // Manual overrides: explicit start/end pairs bypass both patterns entirely.
+        const SUBJECT_NAMES = ['Physics', 'Chemistry', 'Botany', 'Zoology'];
+        window.currentCustomRanges = null;
+
+        window.normalizeCustomRanges = function(c) {
+            if (!c) return null;
+            const out = {};
+            for (const n of SUBJECT_NAMES) {
+                const r = c[n];
+                if (!r) return null;
+                const st = parseInt(r.start, 10), en = parseInt(r.end, 10);
+                if (isNaN(st) || isNaN(en) || st < 1 || en < st) return null;
+                out[n] = { start: st, end: en };
+            }
+            return out;
+        };
+
+        // Deduces test metadata (question count + total marks) straight from the
+        // selected time limit. 180 min -> 180 Qs (4 x 45) locked to 720 marks.
+        // 200 min -> legacy NTA 200-item paper (graded base capped at 180 -> 720).
+        window.templateForDuration = function(mins) {
+            const m = parseInt(mins, 10);
+            let total;
+            if (!m || m <= 0) total = 180;
+            else if (m === 200) total = 200;
+            else if (m === 180) total = 180;
+            else total = m;
+            const layout = window.buildSubjectLayout(total);
+            return { total: total, marks: window.maxMarksFor(layout), layout: layout };
+        };
+
+        // Live readout under the duration fields in both config forms. Also
+        // background-fills the (hidden) custom-range inputs from the template so
+        // the engine always has a consistent layout — unless the admin has opened
+        // the override panel and typed their own values.
+        window.syncTemplateInfo = function(prefix) {
+            const el = document.getElementById(prefix + '-template-info');
+            const input = document.getElementById(prefix === 'local' ? 'local-duration' : 'admin-test-duration');
+            const tpl = window.templateForDuration(input ? input.value : 180);
+            if (el) {
+                const per = tpl.layout.map(s => (s.end - s.start + 1)).join('/');
+                const note = tpl.total === 200 ? ' · Legacy NTA Section B (best 10 of 15 per subject)' : '';
+                el.innerText = `Auto: ${tpl.total} Questions · ${tpl.marks} Marks · P/C/B/Z ${per}${note}`;
+            }
+            const accordion = document.getElementById(prefix + '-range-accordion');
+            const overridden = accordion && accordion.open && accordion.dataset.touched === '1';
+            if (!overridden) {
+                tpl.layout.forEach(s => {
+                    const key = s.name.toLowerCase();
+                    const st = document.getElementById(`${prefix}-${key}-start`);
+                    const en = document.getElementById(`${prefix}-${key}-end`);
+                    if (st) st.value = s.start;
+                    if (en) en.value = s.end;
+                });
+                if (accordion) accordion.dataset.touched = '';
+            }
+        };
+        // Any manual edit inside a range panel marks it as an explicit override.
+        document.addEventListener('input', (e) => {
+            const acc = e.target && e.target.closest ? e.target.closest('.range-accordion') : null;
+            if (acc) acc.dataset.touched = '1';
+        });
+        // Pre-fill both forms from the default 180-minute template on load
+        // (deferred so the layout engine below is defined first).
+        window.addEventListener('DOMContentLoaded', () => {
+            window.syncTemplateInfo('local');
+            window.syncTemplateInfo('admin');
+        });
+
+        window.buildSubjectLayout = function(total) {
+            if (total === 180) {
+                return SUBJECT_NAMES.map((n, i) => ({ name: n, start: i * 45 + 1, end: (i + 1) * 45, secBStart: null }));
+            }
+            if (total === 200) {
+                return SUBJECT_NAMES.map((n, i) => ({ name: n, start: i * 50 + 1, end: (i + 1) * 50, secBStart: i * 50 + 36 }));
+            }
+            const per = Math.ceil(total / 4);
+            return SUBJECT_NAMES.map((n, i) => ({
+                name: n, start: i * per + 1,
+                end: (i === 3 ? total : Math.min((i + 1) * per, total)),
+                secBStart: null
+            }));
+        };
+
+        // Resolves the subject layout for a payload: manual override first, then the
+        // answer-key length, then the highest question number present in the responses.
+        window.getSubjects = function(resp, key, custom) {
+            const c = window.normalizeCustomRanges(custom !== undefined ? custom : window.currentCustomRanges);
+            if (c) return SUBJECT_NAMES.map(n => ({ name: n, start: c[n].start, end: c[n].end, secBStart: null }));
+            // The selected duration is the source of truth for question count;
+            // the answer key / responses only fill in when no template is active.
+            let total = window.currentTemplateTotal || 0;
+            if (!total && key && key.length) total = key.length;
+            if (!total && resp) {
+                const nums = Object.keys(resp).map(Number).filter(n => !isNaN(n));
+                if (nums.length) total = Math.max(...nums);
+            }
+            if (!total) total = 180;
+            return window.buildSubjectLayout(total);
+        };
+
+        // Highest question index covered by a layout.
+        window.layoutTotal = function(subjects) {
+            return subjects.reduce((mx, s) => Math.max(mx, s.end), 0);
+        };
+
+        // Maximum achievable marks for a layout (+4 each graded item).
+        window.maxMarksFor = function(subjects) {
+            return subjects.reduce((sum, s) => {
+                const graded = s.secBStart ? (s.secBStart - s.start) + 10 : (s.end - s.start + 1);
+                return sum + graded * 4;
+            }, 0);
+        };
+
+        // Subjects for a stored vault record.
+        window.subjectsForRecord = function(r) {
+            return window.getSubjects(r.responses || {}, r.savedKey || [], r.customRanges || null);
+        };
+
+        let totalQuestions = 200;
         let responses = {}, states = {}, timeSpent = {}; 
         let currentQ = 1, examTimer, timeLeft = 0; 
         let qEnterTime = null;
@@ -1077,13 +1347,10 @@
         //   - avgSpeedSeconds: totalSeconds / visitedCount (0 if no questions visited)
         // Because timeSpent accumulates additively on every visit, this is inherently safe
         // against students jumping back and forth between subjects multiple times.
-        function computeSubjectTimingMetrics(timingObj) {
-            const ranges = {
-                'Physics':   { start: 1,   end: 50  },
-                'Chemistry': { start: 51,  end: 100 },
-                'Botany':    { start: 101, end: 150 },
-                'Zoology':   { start: 151, end: 200 }
-            };
+        function computeSubjectTimingMetrics(timingObj, subjects) {
+            const list = subjects || window.getSubjects({}, [], null);
+            const ranges = {};
+            list.forEach(s => { ranges[s.name] = { start: s.start, end: s.end }; });
             const metrics = {};
             for (const [subject, range] of Object.entries(ranges)) {
                 let totalSeconds = 0;
@@ -1111,11 +1378,14 @@
             return `${m}m ${s}s`;
         }
 
-        window.startSandbox = function(title, duration, pdfUrl, keyString, sessionData) {
+        window.startSandbox = function(title, duration, pdfUrl, keyString, sessionData, customRanges) {
             window.currentAnswerKey = keyString ? keyString.split(',').map(s => s.trim()) : [];
-            if (window.currentAnswerKey.length > 0 && window.currentAnswerKey.length !== totalQuestions) {
-                alert(`⚠️ Heads up: the answer key has ${window.currentAnswerKey.length} entries but this test has ${totalQuestions} questions. Scoring may be off for the mismatched questions — you can fix the key later from the result screen.`);
-            }
+            window.currentCustomRanges = window.normalizeCustomRanges(customRanges || null);
+            window.currentTemplateTotal = window.templateForDuration(duration).total;
+            SECTIONS = window.getSubjects({}, window.currentAnswerKey, window.currentCustomRanges);
+            totalQuestions = window.layoutTotal(SECTIONS);
+            window.activeQpUrl = pdfUrl;
+            window.currentMaxMarks = window.maxMarksFor(SECTIONS);
             
             document.getElementById('active-exam-title').innerText = title;
             document.getElementById('pdf-view-frame').innerHTML = `<iframe src="${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1"></iframe>`;
@@ -1126,6 +1396,7 @@
             timeLeft = sessionData?.timeLeft || (duration * 60);
             qEnterTime = null;
             examPaused = false;
+            window.currentQNotes = {};
             
             if(!sessionData) for(let i=1; i<=totalQuestions; i++) states[i] = 'unseen';
 
@@ -1141,6 +1412,9 @@
 
             activeSection = 0; buildSectionTabs(); buildPalette(); loadQuestion(1);
             document.getElementById('exam-view').classList.add('active');
+            const answeredChip = document.querySelector('.exam-progress-chip');
+            if (answeredChip) answeredChip.innerHTML = `Answered <b id="exam-answered-count">${Object.keys(responses).length}</b> / ${totalQuestions}`;
+            window.armAntiCheat();
         };
 
         function updateTimerDisplay() {
@@ -1153,12 +1427,9 @@
         }
 
         // ===== SECTION-WISE PALETTE (NTA style) =====
-        const SECTIONS = [
-            { name: 'Physics',   start: 1,   end: 50  },
-            { name: 'Chemistry', start: 51,  end: 100 },
-            { name: 'Botany',    start: 101, end: 150 },
-            { name: 'Zoology',   start: 151, end: 200 }
-        ];
+        // Live OMR section markers — rebuilt from whichever distribution the active
+        // test object carries (Pattern A, Pattern B, or manual overrides).
+        let SECTIONS = window.getSubjects({}, [], null);
         let activeSection = 0;
 
         function sectionIndexOf(qNum) {
@@ -1282,6 +1553,7 @@
         // student isn't typing in a field.
         document.addEventListener('keydown', (e) => {
             if (!document.getElementById('exam-view')?.classList.contains('active')) return;
+            if (window.antiCheatLocked) { e.preventDefault(); return; }
             const tag = (e.target.tagName || '').toLowerCase();
             if (tag === 'input' || tag === 'textarea') return;
             if (['1','2','3','4'].includes(e.key)) { e.preventDefault(); setOption(parseInt(e.key)); }
@@ -1296,6 +1568,7 @@
             if (!auto && !confirm(`Attempted ${attempted}/${totalQuestions}. Finalize submission?`)) return;
 
             markTimeSpent(); // book time for whichever question was open at submission
+            window.disarmAntiCheat();
             clearInterval(examTimer);
             clearInterval(autosaveTimer);
             document.getElementById('exam-view').classList.remove('active');
@@ -1307,7 +1580,7 @@
             // Compute the subject-wise timing metrics from the raw timeSpent object.
             // This is done once at submission so the processed result is permanently
             // archived and doesn't need to be recomputed when viewing history later.
-            const subjectTimingMetrics = computeSubjectTimingMetrics(timeSpent);
+            const subjectTimingMetrics = computeSubjectTimingMetrics(timeSpent, SECTIONS);
             window.currentSubjectTimingMetrics = subjectTimingMetrics;
             
             window.activeHistoryDocId = await window.saveToHistoryVault(
@@ -1331,7 +1604,7 @@
         window.saveToHistoryVault = async function(title, timeStr, attempted, keyArr, timingObj, cloudTestId, subjectTimingMetrics) {
             if (!window.currentUser || !window.db) return null;
             try {
-                const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                const subjects = window.getSubjects(window.currentResponses || {}, keyArr || [], window.currentCustomRanges);
                 let marks = null;
                 if (keyArr && keyArr.length > 0) {
                     marks = 0;
@@ -1344,6 +1617,7 @@
                     notes: "", 
                     topics: {},
                     timing: timingObj || {},
+                    customRanges: window.currentCustomRanges || null,
                     subjectTimingMetrics: subjectTimingMetrics || {},
                     marks: marks,
                     cloudTestId: cloudTestId || null,
@@ -1366,7 +1640,7 @@
             btn.innerText = "Rescoring...";
 
             window.currentAnswerKey = keyArr;
-            const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+            const subjects = window.getSubjects(window.currentResponses || {}, keyArr, window.currentCustomRanges);
             let marks = 0;
             subjects.forEach(sub => { marks += calcSubjectStats(sub, window.currentResponses || {}, keyArr, true).marks; });
 
@@ -1402,6 +1676,7 @@
         // Updated to load the saved subjectTimingMetrics from the document so the
         // result breakdown shows the archived time/speed data when viewing history.
         window.viewHistoricalSheet = async function(docId) {
+            window.currentReviewPdfUrl = window.activeQpUrl || null;
             const docSnap = await getDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId));
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -1411,9 +1686,11 @@
                 window.currentTiming = data.timing || {};
                 // Use the archived metrics if present; for older records that predate
                 // this feature, compute them on-the-fly from the raw timing object.
+                window.currentCustomRanges = window.normalizeCustomRanges(data.customRanges || null);
+                window.currentQNotes = data.qNotes || {};
                 window.currentSubjectTimingMetrics = data.subjectTimingMetrics && Object.keys(data.subjectTimingMetrics).length > 0
                     ? data.subjectTimingMetrics
-                    : computeSubjectTimingMetrics(data.timing || {});
+                    : computeSubjectTimingMetrics(data.timing || {}, window.subjectsForRecord(data));
                 window.activeHistoryDocId = docId; 
                 
                 document.getElementById('res-timestamp').innerText = data.timeStr;
@@ -1430,6 +1707,7 @@
                     try {
                         const cloudDoc = await getDoc(doc(window.db, 'cloud_tests', data.cloudTestId));
                         if (cloudDoc.exists() && cloudDoc.data().questionPaperUrl) {
+                            window.currentReviewPdfUrl = cloudDoc.data().questionPaperUrl;
                             dlBtn.href = cloudDoc.data().questionPaperUrl;
                             dlBtn.download = (data.title || 'question-paper') + '.pdf';
                             dlBtn.style.display = 'inline-flex';
@@ -1451,14 +1729,17 @@
             let html = "";
             snapshot.forEach(d => {
                 const h = d.data();
-                let scoreLabel = `Att: ${h.attempted}/200`;
+                const hSubjects = window.subjectsForRecord(h);
+                const hTotal = window.layoutTotal(hSubjects);
+                const hMax = window.maxMarksFor(hSubjects);
+                let scoreLabel = `Att: ${h.attempted}/${hTotal}`;
                 if (typeof h.marks === 'number') {
-                    scoreLabel = `${h.marks}/720 (Att: ${h.attempted}/200)`;
+                    scoreLabel = `${h.marks}/${hMax} (Att: ${h.attempted}/${hTotal})`;
                 } else if (h.savedKey && h.savedKey.length > 0) {
-                    const subjects = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                    const subjects = window.subjectsForRecord(h);
                     let marks = 0;
                     subjects.forEach(sub => { marks += calcSubjectStats(sub, h.responses || {}, h.savedKey, true).marks; });
-                    scoreLabel = `${marks}/720 (Att: ${h.attempted}/200)`;
+                    scoreLabel = `${marks}/${hMax} (Att: ${h.attempted}/${hTotal})`;
                 }
                 html += `<tr>
                     <td style="font-weight: 600;">${h.title}</td>
@@ -1551,10 +1832,9 @@
             }
             // Accuracy = (correct / (correct + wrong)) * 100, computed per test using the
             // same dynamic NTA evaluation so it stays consistent with the result breakdown.
-            const subjectRanges = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
             const accuracyData = scored.map(r => {
                 let totalCorrect = 0, totalWrong = 0;
-                subjectRanges.forEach(sub => {
+                window.subjectsForRecord(r).forEach(sub => {
                     const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey, true);
                     totalCorrect += stats.correct;
                     totalWrong += stats.wrong;
@@ -1590,19 +1870,19 @@
                 return;
             }
             const subjectNames = ['Physics', 'Chemistry', 'Botany', 'Zoology'];
-            const subjectRanges = { Physics: {s:1,e:50}, Chemistry: {s:51,e:100}, Botany: {s:101,e:150}, Zoology: {s:151,e:200} };
             const subjectColors = ['#2563eb', '#16a34a', '#eab308', '#ef4444'];
             const datasets = subjectNames.map((subj, idx) => ({
                 label: subj,
                 data: withTiming.map(r => {
+                    const recSubjects = window.subjectsForRecord(r);
                     const metrics = r.subjectTimingMetrics && Object.keys(r.subjectTimingMetrics).length > 0
-                        ? r.subjectTimingMetrics : computeSubjectTimingMetrics(r.timing || {});
+                        ? r.subjectTimingMetrics : computeSubjectTimingMetrics(r.timing || {}, recSubjects);
                     const m = metrics[subj];
                     if (!m || m.totalSeconds === 0) return 0;
-                    const rng = subjectRanges[subj];
+                    const rng = recSubjects.find(x => x.name === subj) || { start: 1, end: 0 };
                     let answered = 0;
                     const resp = r.responses || {};
-                    for (let q = rng.s; q <= rng.e; q++) { if (resp[q] && resp[q] !== '-') answered++; }
+                    for (let q = rng.start; q <= rng.end; q++) { if (resp[q] && resp[q] !== '-') answered++; }
                     return m.totalSeconds > 0 && answered > 0 ? Math.round((m.totalSeconds / answered) * 10) / 10 : 0;
                 }),
                 borderColor: subjectColors[idx], backgroundColor: subjectColors[idx] + '20',
@@ -1630,16 +1910,16 @@
                 canvas.parentElement.style.width = '100%';
                 return;
             }
-            const subjectRanges = [{name:'Physics',start:1,end:50},{name:'Chemistry',start:51,end:100},{name:'Botany',start:101,end:150},{name:'Zoology',start:151,end:200}];
             const subjectColors = { Physics: '#2563eb', Chemistry: '#16a34a', Botany: '#eab308', Zoology: '#ef4444' };
-            const datasets = subjectRanges.map(sub => ({
-                label: sub.name,
+            const datasets = ['Physics','Chemistry','Botany','Zoology'].map(subName => ({
+                label: subName,
                 data: scored.map(r => {
                     const hasKey = r.savedKey && r.savedKey.length > 0;
+                    const sub = window.subjectsForRecord(r).find(x => x.name === subName);
                     const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey || [], hasKey);
                     return hasKey ? stats.marks : null;
                 }),
-                borderColor: subjectColors[sub.name], backgroundColor: subjectColors[sub.name] + '20',
+                borderColor: subjectColors[subName], backgroundColor: subjectColors[subName] + '20',
                 tension: 0.3, fill: false, spanGaps: true
             }));
             setChartScrollWidth(canvas, scored.length);
@@ -1648,7 +1928,7 @@
                 data: { labels: scored.map((r, i) => `T${i + 1}`), datasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: -45, max: 180 } },
+                    scales: { x: { type: 'category', ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } }, y: { min: -50, max: 200 } },
                     plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
                 }
             });
@@ -1664,16 +1944,16 @@
                 canvas.parentElement.style.width = '100%';
                 return;
             }
-            const subjectRanges = [{name:'Physics',start:1,end:50},{name:'Chemistry',start:51,end:100},{name:'Botany',start:101,end:150},{name:'Zoology',start:151,end:200}];
             const subjectColors = { Physics: '#2563eb', Chemistry: '#16a34a', Botany: '#eab308', Zoology: '#ef4444' };
-            const datasets = subjectRanges.map(sub => ({
-                label: sub.name,
+            const datasets = ['Physics','Chemistry','Botany','Zoology'].map(subName => ({
+                label: subName,
                 data: scored.map(r => {
+                    const sub = window.subjectsForRecord(r).find(x => x.name === subName);
                     const stats = calcSubjectStats(sub, r.responses || {}, r.savedKey, true);
                     const denom = stats.correct + stats.wrong;
                     return denom > 0 ? Math.round((stats.correct / denom) * 1000) / 10 : 0;
                 }),
-                borderColor: subjectColors[sub.name], backgroundColor: subjectColors[sub.name] + '20',
+                borderColor: subjectColors[subName], backgroundColor: subjectColors[subName] + '20',
                 tension: 0.3, fill: false, spanGaps: true
             }));
             setChartScrollWidth(canvas, scored.length);
@@ -1712,7 +1992,8 @@
             const key = window.currentAnswerKey || [];
             if (key.length === 0) { alert("No answer key on file — can't identify wrong responses."); return; }
             const wrongQs = [];
-            for (let i = 1; i <= 200; i++) {
+            const copyTotal = window.layoutTotal(window.getSubjects(resp, key, window.currentCustomRanges));
+            for (let i = 1; i <= copyTotal; i++) {
                 if (evalQuestion(i, resp, key, true) === 'wrong') wrongQs.push(i);
             }
             if (wrongQs.length === 0) { alert("No wrong responses found in this test!"); return; }
@@ -1752,22 +2033,19 @@
         // Condition B (full 200-Q booklet): max question > 180 AND total answered > 180 → apply
         //   classic NTA Section B safeguards: per subject, only the first 10 attempted questions
         //   in the Section B range are scored; extras are shown but excluded.
-        function shouldApplySectionBRule(resp) {
-            const qNums = Object.keys(resp).map(k => parseInt(k, 10)).filter(k => !isNaN(k));
-            if (qNums.length === 0) return false;
-            const maxQ = Math.max(...qNums);
-            const totalAnswered = qNums.length;
-            return maxQ > 180 && totalAnswered > 180;
+        // Section B safeguards apply only when the active layout declares a Section B
+        // (Pattern B / 200-item booklets). Manual overrides and Pattern A never do.
+        function shouldApplySectionBRule(resp, subjects) {
+            const list = subjects || window.getSubjects(resp, window.currentAnswerKey || [], undefined);
+            return list.some(s => !!s.secBStart);
         }
 
         function calcSubjectStats(sub, resp, key, hasKey) {
-            const applySectionB = shouldApplySectionBRule(resp);
-            const aStart = sub.start, aEnd = sub.start + 34;
-            const bStart = sub.start + 35, bEnd = sub.end;
             let correct = 0, wrong = 0, unattempted = 0;
+            const hasSecB = !!sub.secBStart;
+            const aEnd = hasSecB ? sub.secBStart - 1 : sub.end;
 
-            // Section A: always all compulsory, always graded.
-            for (let i = aStart; i <= aEnd; i++) {
+            for (let i = sub.start; i <= aEnd; i++) {
                 const st = evalQuestion(i, resp, key, hasKey);
                 if (st === 'correct') correct++;
                 else if (st === 'wrong') wrong++;
@@ -1775,11 +2053,9 @@
             }
 
             let countedB = [], notCountedB = [];
-
-            if (applySectionB) {
-                // Condition B: NTA Section B rule — only first 10 attempted in Section B count.
+            if (hasSecB) {
                 const attemptedB = [];
-                for (let i = bStart; i <= bEnd; i++) if ((resp[i] || '-') !== '-') attemptedB.push(i);
+                for (let i = sub.secBStart; i <= sub.end; i++) if ((resp[i] || '-') !== '-') attemptedB.push(i);
                 countedB = attemptedB.slice(0, 10);
                 notCountedB = attemptedB.slice(10);
                 countedB.forEach(i => {
@@ -1787,15 +2063,7 @@
                     if (st === 'correct') correct++;
                     else if (st === 'wrong') wrong++;
                 });
-                unattempted += (bEnd - bStart + 1) - attemptedB.length;
-            } else {
-                // Condition A: whole paper — grade every Section B question uniformly.
-                for (let i = bStart; i <= bEnd; i++) {
-                    const st = evalQuestion(i, resp, key, hasKey);
-                    if (st === 'correct') correct++;
-                    else if (st === 'wrong') wrong++;
-                    else if (st === 'unattempted') unattempted++;
-                }
+                unattempted += (sub.end - sub.secBStart + 1) - attemptedB.length;
             }
 
             const marks = hasKey ? (correct * 4 - wrong * 1) : null;
@@ -1806,6 +2074,7 @@
             window.currentTopics = window.currentTopics || {};
             if (val.trim()) window.currentTopics[qNum] = val.trim();
             else delete window.currentTopics[qNum];
+            if (typeof window.queueReviewSave === 'function') window.queueReviewSave();
         };
 
         let resultDoughnutInstance = null;
@@ -1878,6 +2147,7 @@
         function renderScoreSummary(subjectStats, hasKey) {
             const statsBox = document.getElementById('res-stats-container');
             let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalMarks = 0, totalNotCounted = 0;
+            const maxTotal = window.currentMaxMarks || 720;
             subjectStats.forEach(s => {
                 totalCorrect += s.stats.correct; totalWrong += s.stats.wrong; totalUnattempted += s.stats.unattempted;
                 totalNotCounted += s.stats.notCountedB.length;
@@ -1890,7 +2160,7 @@
                          <div class="stat-chip">Wrong <b style="color:#ef4444;">${totalWrong}</b></div>
                          <div class="stat-chip">Unattempted <b>${totalUnattempted}</b></div>`;
             chips += hasKey
-                ? `<div class="stat-chip">Total Score <b style="color:var(--primary);">${totalMarks}</b> / 720</div>`
+                ? `<div class="stat-chip">Total Score <b style="color:var(--primary);">${totalMarks}</b> / ${window.currentMaxMarks || 720}</div>`
                 : `<div class="stat-chip" style="color:#a16207;">Upload an answer key to see marks (NTA: +4 / -1)</div>`;
 
             let table = '';
@@ -1898,7 +2168,7 @@
                 table = `<table class="subject-stats-table"><thead><tr><th>Subject</th><th>Correct</th><th>Wrong</th><th>Unatt.</th><th>Penalty</th><th>Marks</th></tr></thead><tbody>`;
                 subjectStats.forEach(s => {
                     const penalty = s.stats.wrong * -1;
-                    table += `<tr><td>${s.name}</td><td>${s.stats.correct}</td><td>${s.stats.wrong}</td><td>${s.stats.unattempted}</td><td><span class="penalty-pill">${penalty}</span></td><td><b>${s.stats.marks}</b>/180</td></tr>`;
+                    table += `<tr><td>${s.name}</td><td>${s.stats.correct}</td><td>${s.stats.wrong}</td><td>${s.stats.unattempted}</td><td><span class="penalty-pill">${penalty}</span></td><td><b>${s.stats.marks}</b>/${s.max}</td></tr>`;
                 });
                 table += `</tbody></table>`;
             }
@@ -1959,20 +2229,19 @@
         function renderResultGrid() {
             const container = document.getElementById('detailed-results-container');
             container.innerHTML = '';
-            const subjects = [
-                { name: 'Physics', start: 1, end: 50 },
-                { name: 'Chemistry', start: 51, end: 100 },
-                { name: 'Botany', start: 101, end: 150 },
-                { name: 'Zoology', start: 151, end: 200 }
-            ];
-
             const activeResp = window.currentResponses || {};
             const key = window.currentAnswerKey || [];
             const hasKey = key.length > 0;
             const topics = window.currentTopics || {};
-            const applySectionB = shouldApplySectionBRule(activeResp);
+            const subjects = window.getSubjects(activeResp, key, window.currentCustomRanges);
+            window.currentMaxMarks = window.maxMarksFor(subjects);
+            const applySectionB = shouldApplySectionBRule(activeResp, subjects);
 
-            const subjectStats = subjects.map(sub => ({ name: sub.name, stats: calcSubjectStats(sub, activeResp, key, hasKey) }));
+            const subjectStats = subjects.map(sub => ({
+                name: sub.name,
+                max: (sub.secBStart ? (sub.secBStart - sub.start) + 10 : (sub.end - sub.start + 1)) * 4,
+                stats: calcSubjectStats(sub, activeResp, key, hasKey)
+            }));
             renderScoreSummary(subjectStats, hasKey);
             renderWeakTopics(subjects, activeResp, key, hasKey, topics);
 
@@ -1990,7 +2259,7 @@
                 for (let i = sub.start; i <= sub.end; i++) {
                     const ans = activeResp[i] || '-';
                     const correctAns = hasKey ? key[i - 1] : null;
-                    const inSectionB = i > sub.start + 34;
+                    const inSectionB = !!sub.secBStart && i >= sub.secBStart;
 
                     let statusClass = "unattempted";
                     if (ans !== '-') {
@@ -2016,8 +2285,8 @@
                     if (inSectionB) sectionHtml.B += box; else sectionHtml.A += box;
                 }
 
-                if (sectionHtml.A) html += `<div class="section-label">Section A (Q${sub.start}-${sub.start + 34}) — all compulsory</div><div class="result-grid">${sectionHtml.A}</div>`;
-                if (sectionHtml.B) html += `<div class="section-label">Section B (Q${sub.start + 35}-${sub.end})${applySectionB ? ' — attempt any 10, first 10 attempted are scored' : ' — all graded (whole paper mode)'}</div><div class="result-grid">${sectionHtml.B}</div>`;
+                if (sectionHtml.A) html += `<div class="section-label">${sub.secBStart ? `Section A (Q${sub.start}-${sub.secBStart - 1})` : `Q${sub.start}-${sub.end}`} — all compulsory</div><div class="result-grid">${sectionHtml.A}</div>`;
+                if (sectionHtml.B) html += `<div class="section-label">Section B (Q${sub.secBStart}-${sub.end}) — attempt any 10, first 10 attempted are scored</div><div class="result-grid">${sectionHtml.B}</div>`;
                 html += `</div>`;
                 if (visibleCount > 0) container.innerHTML += html;
             });
@@ -2071,7 +2340,7 @@
             const questionsSolved = recs.reduce((sum, r) => sum + (r.attempted || 0), 0);
             let totalCorrect = 0, totalWrong = 0;
             scored.forEach(r => {
-                const subs = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                const subs = window.subjectsForRecord(r);
                 subs.forEach(sub => {
                     const s = calcSubjectStats(sub, r.responses || {}, r.savedKey || [], true);
                     totalCorrect += s.correct; totalWrong += s.wrong;
@@ -2103,11 +2372,11 @@
                 const hasKey = r.savedKey && r.savedKey.length > 0;
                 let totalC = 0, totalW = 0, accLabel = '—', scoreLabel = '—';
                 if (hasKey) {
-                    const subs = [{start:1,end:50},{start:51,end:100},{start:101,end:150},{start:151,end:200}];
+                    const subs = window.subjectsForRecord(r);
                     subs.forEach(sub => { const s = calcSubjectStats(sub, r.responses || {}, r.savedKey, true); totalC += s.correct; totalW += s.wrong; });
                     const denom = totalC + totalW;
                     accLabel = denom > 0 ? Math.round(totalC / denom * 1000) / 10 + '%' : '—';
-                    scoreLabel = (typeof r.marks === 'number' ? r.marks : '—') + '/720';
+                    scoreLabel = (typeof r.marks === 'number' ? r.marks : '—') + '/' + window.maxMarksFor(subs);
                 }
                 const tag = r.cloudTestId ? '☁️ Cloud' : '🧪 Local';
                 const accBadge = hasKey ? `<span style="padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;background:${parseFloat(accLabel) >= 70 ? '#e8fbf2' : '#fef3c7'};color:${parseFloat(accLabel) >= 70 ? '#10b981' : '#d97706'}">${accLabel}</span>` : '—';
@@ -2152,13 +2421,20 @@
                 const seqName = `T${tests.indexOf(t) + 1}`;
                 return (t.title || '').toLowerCase().includes(query_str) || seqName.toLowerCase().includes(query_str);
             });
-            const html = filtered.map(t => {
+            // Newest first: the cache stays ascending so T-numbers remain stable,
+            // but the rendered list runs reverse-chronologically.
+            const ordered = filtered.slice().sort((a, b) => {
+                const da = Date.parse(a.createdAt || '') || 0, db_ = Date.parse(b.createdAt || '') || 0;
+                if (da !== db_) return db_ - da;
+                return tests.indexOf(b) - tests.indexOf(a);
+            });
+            const html = ordered.map(t => {
                 const idx = tests.indexOf(t);
                 const seqName = `Test ${idx + 1} (T${idx + 1})`;
                 return `<div class="test-card">
                     <h3>${seqName}</h3>
                     <p style="font-size:12px;color:var(--text-muted);margin:4px 0;">${t.title || ''}</p>
-                    <p>⏱️ ${t.duration} Mins · 720 Marks</p>
+                    <p>⏱️ ${t.duration} Mins · ${t.totalMarks || window.templateForDuration(t.duration).marks} Marks</p>
                     <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:#eaf2ff;color:#3b82f6;">NEET</span>
                     <button class="btn" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.fetchAndStartCloudTest('${t.id}')">Start Test →</button>
                 </div>`;
@@ -2214,8 +2490,8 @@
             const yourLatest = recs.length > 0 ? recs[recs.length - 1] : null;
             let yourSubs = { phy: 0, chem: 0, bot: 0, zoo: 0 };
             if (yourLatest) {
-                const subs = [{name:'phy',start:1,end:50},{name:'chem',start:51,end:100},{name:'bot',start:101,end:150},{name:'zoo',start:151,end:200}];
-                subs.forEach(sub => { yourSubs[sub.name] = calcSubjectStats(sub, yourLatest.responses || {}, yourLatest.savedKey || [], true).marks; });
+                const keys = ['phy','chem','bot','zoo'];
+                window.subjectsForRecord(yourLatest).forEach((sub, si) => { yourSubs[keys[si]] = calcSubjectStats(sub, yourLatest.responses || {}, yourLatest.savedKey || [], true).marks; });
             }
             const yourTotal = yourLatest ? yourLatest.marks : 0;
             const allEntries = comps.map(c => ({ ...c, isYou: false }));
@@ -2259,7 +2535,8 @@
             const timing = latest.timing || {};
             const fastCorrect = [], slowCorrect = [], fastWrong = [], slowWrong = [];
             const medianTime = 60; // seconds threshold for fast vs slow
-            for (let q = 1; q <= 200; q++) {
+            const scatterTotal = window.layoutTotal(window.subjectsForRecord(latest));
+            for (let q = 1; q <= scatterTotal; q++) {
                 const t = timing[q] || 0;
                 if (t === 0) continue;
                 const ans = resp[q] || '-';
@@ -2299,6 +2576,168 @@
                 renderScatterPlot();
             };
         })(window.loadAnalyticsHub);
+
+        // ============ INTERACTIVE FULLSCREEN REVIEW MODE ============
+        // Opens only for finalized (submitted) results — cloud or local sandbox.
+        // Left pane: sticky QP PDF. Right pane: only wrong + blank questions.
+        // No timers here: the workspace stays open indefinitely. Every keystroke in the
+        // topic/note fields is debounced straight into the permanent record.
+        window.currentQNotes = window.currentQNotes || {};
+        let reviewSaveTimer = null;
+
+        function reviewLocalKey(docId) { return `vb-review-${docId || 'local'}`; }
+
+        function setReviewChip(text) {
+            const chip = document.getElementById('review-save-chip');
+            if (chip) chip.innerText = text;
+        }
+
+        // Debounced persistence: mirrors to localStorage instantly and pushes the same
+        // snapshot to the cloud history document when the student is signed in.
+        window.queueReviewSave = function() {
+            setReviewChip('Saving…');
+            clearTimeout(reviewSaveTimer);
+            reviewSaveTimer = setTimeout(async () => {
+                const docId = window.activeHistoryDocId;
+                const payload = { topics: window.currentTopics || {}, qNotes: window.currentQNotes || {} };
+                try { localStorage.setItem(reviewLocalKey(docId), JSON.stringify(payload)); } catch (e) {}
+                if (docId && window.currentUser && window.db) {
+                    try {
+                        await updateDoc(doc(window.db, "users", window.currentUser.uid, "vault", docId), payload);
+                    } catch (e) { setReviewChip('Saved locally'); return; }
+                }
+                setReviewChip('✅ Saved');
+                setTimeout(() => setReviewChip('Auto-save on'), 1500);
+            }, 500);
+        };
+
+        window.updateReviewTopic = function(qNum, val) {
+            window.currentTopics = window.currentTopics || {};
+            if (val.trim()) window.currentTopics[qNum] = val.trim(); else delete window.currentTopics[qNum];
+            const mirror = document.querySelector(`.topic-input[data-q="${qNum}"]`);
+            if (mirror) mirror.value = val;
+            window.queueReviewSave();
+        };
+
+        window.updateReviewNote = function(qNum, val) {
+            window.currentQNotes = window.currentQNotes || {};
+            if (val.trim()) window.currentQNotes[qNum] = val; else delete window.currentQNotes[qNum];
+            window.queueReviewSave();
+        };
+
+        window.launchReviewMode = function() {
+            if (document.getElementById('exam-view')?.classList.contains('active')) {
+                alert('Review mode unlocks after the paper is submitted.');
+                return;
+            }
+            const resp = window.currentResponses || {};
+            const key = window.currentAnswerKey || [];
+            const subjects = window.getSubjects(resp, key, window.currentCustomRanges);
+            const hasKey = key.length > 0;
+            const topics = window.currentTopics || {};
+            const notes = window.currentQNotes || {};
+
+            // Restore any locally mirrored edits (offline / local sandbox attempts).
+            try {
+                const cached = JSON.parse(localStorage.getItem(reviewLocalKey(window.activeHistoryDocId)) || 'null');
+                if (cached) {
+                    window.currentTopics = Object.assign({}, cached.topics || {}, topics);
+                    window.currentQNotes = Object.assign({}, cached.qNotes || {}, notes);
+                }
+            } catch (e) {}
+
+            const pdfPane = document.getElementById('review-pdf-pane');
+            const url = window.currentReviewPdfUrl;
+            pdfPane.innerHTML = url
+                ? `<iframe src="${url}#toolbar=0&navpanes=0&scrollbar=1" title="Question paper"></iframe>`
+                : `<div class="review-pdf-empty">Question paper PDF isn't available for this attempt.<br>Cloud tests always keep their paper; local sandbox papers are only available in the same browser session.</div>`;
+
+            let cards = '';
+            let shown = 0;
+            subjects.forEach(sub => {
+                for (let i = sub.start; i <= sub.end; i++) {
+                    const outcome = evalQuestion(i, resp, key, hasKey);
+                    if (outcome !== 'wrong' && outcome !== 'unattempted') continue;
+                    shown++;
+                    const given = resp[i] || '—';
+                    const correct = hasKey ? (key[i - 1] || '—') : '—';
+                    const t = (window.currentTopics[i] || '').replace(/"/g, '&quot;');
+                    const n = (window.currentQNotes[i] || '').replace(/</g, '&lt;');
+                    const blank = outcome === 'unattempted';
+                    cards += `<div class="review-card ${blank ? 'blank' : ''}">
+                        <div class="review-card-head">
+                            <b>Q${i} · ${sub.name}</b>
+                            <span class="review-pill ${blank ? 'blank' : 'wrong'}">${blank ? 'Left blank' : 'Incorrect'}</span>
+                        </div>
+                        <div class="review-answers">Your answer: <b>${given}</b> · Correct answer: <b>${correct}</b></div>
+                        <input type="text" placeholder="Tag Topic (e.g. Kinematics)" value="${t}" oninput="window.updateReviewTopic(${i}, this.value)">
+                        <textarea placeholder="Personal Note — why did this go wrong?" oninput="window.updateReviewNote(${i}, this.value)">${n}</textarea>
+                    </div>`;
+                }
+            });
+
+            document.getElementById('review-q-pane').innerHTML = shown > 0
+                ? cards
+                : `<div class="review-empty">Nothing to review — no incorrect or blank questions in this attempt.${hasKey ? '' : '<br>Upload an answer key first to see mistakes here.'}</div>`;
+            document.getElementById('review-mode-title').innerText =
+                '🔍 ' + (document.getElementById('res-title')?.innerText || 'Interactive Review');
+            document.getElementById('review-mode-sub').innerText = `${shown} question${shown === 1 ? '' : 's'} to review · mistakes & blanks only · no timer`;
+            setReviewChip('Auto-save on');
+
+            document.body.style.overflow = 'hidden';
+            document.getElementById('review-mode-workspace').classList.add('active');
+        };
+
+        window.exitReviewMode = function() {
+            document.getElementById('review-mode-workspace').classList.remove('active');
+            document.getElementById('review-pdf-pane').innerHTML = '';
+            document.body.style.overflow = '';
+            renderResultGrid();           // reflect newly tagged topics in the standard breakdown
+            window.renderHistoryVault();  // restore the historical log panel
+        };
+
+        // The launch button only exists for finalized papers — keep it hidden while an
+        // exam is live, shown whenever a processed result is on screen.
+        window.syncReviewButtonState = function() {
+            const btn = document.getElementById('launch-review-btn');
+            if (!btn) return;
+            const examLive = document.getElementById('exam-view')?.classList.contains('active');
+            btn.style.display = examLive ? 'none' : 'inline-flex';
+            btn.disabled = !!examLive;
+        };
+        setInterval(window.syncReviewButtonState, 800);
     </script>
+
+    <!-- ANTI-CHEAT LOCKOUT MODAL -->
+    <div id="anticheat-modal">
+        <div class="anticheat-card">
+            <h2>⚠️ Cheating / Window Focus Loss Detected!</h2>
+            <p>Outside application interference is restricted. If this was an accident, resolve the issue immediately.</p>
+            <p style="margin-top:10px;font-size:12px;"><b>Your exam timer is still running.</b></p>
+            <div class="anticheat-meta" id="anticheat-reason"></div>
+            <div class="anticheat-actions">
+                <button class="btn btn-success" onclick="window.releaseAntiCheatLock(false)">▶ Continue Test</button>
+                <button class="btn btn-danger" onclick="window.antiCheatSubmitNow()">🏁 Submit Test Immediately</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE FULLSCREEN REVIEW MODE -->
+    <div id="review-mode-workspace">
+        <div class="review-mode-bar">
+            <div>
+                <h3 id="review-mode-title">Interactive Review</h3>
+                <div class="review-sub" id="review-mode-sub">Mistakes &amp; blanks only · no timer</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span class="review-save-chip" id="review-save-chip">Auto-save on</span>
+                <button class="btn btn-danger" style="padding:8px 14px;font-size:12px;" onclick="window.exitReviewMode()">✕ Exit Review Mode</button>
+            </div>
+        </div>
+        <div class="review-split">
+            <div class="review-pdf-pane" id="review-pdf-pane"></div>
+            <div class="review-q-pane" id="review-q-pane"></div>
+        </div>
+    </div>
 </body>
 </html>
