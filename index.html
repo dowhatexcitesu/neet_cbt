@@ -128,11 +128,10 @@
         /* Question-snippet viewer: locked, responsive, no zoom-out / no peeking at neighbours */
         .qsnip-viewport { position: relative; width: 100%; max-width: 100%; height: 100%; flex: 1; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; padding: 10px; background: var(--bg-surface); touch-action: pan-y; -webkit-user-select: none; user-select: none; }
         .qsnip-scroll { width: 100%; max-width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-        .qsnip-adjustments { position: absolute; top: 8px; right: 12px; z-index: 4; display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--bg-surface); box-shadow: var(--shadow-sm); opacity: 0.24; transition: opacity 0.16s ease; }
+        .qsnip-adjustments { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--bg-surface); box-shadow: var(--shadow-sm); opacity: 0.2; transition: opacity 0.16s ease; }
         .qsnip-adjustments:hover, .qsnip-adjustments:focus-within { opacity: 1; }
-        .qsnip-adjust-btn { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-main); cursor: pointer; font-size: 15px; line-height: 1; }
+        .qsnip-adjust-btn { width: 28px; height: 28px; padding: 0; border: 0; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-main); cursor: pointer; font-size: 16px; line-height: 1; }
         .qsnip-adjust-btn:hover, .qsnip-adjust-btn:focus-visible { background: var(--bg-body); outline: 1px solid var(--border-light); }
-        .qsnip-adjust-btn span { font-size: 9px; font-weight: 700; margin-left: 1px; }
         .qsnip-img { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; object-position: top center; pointer-events: none; -webkit-user-drag: none; background: var(--bg-surface); }
         .qsnip-empty { display: flex; height: 100%; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: 13px; color: var(--text-muted); }
         .qsnip-prefetch { position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; overflow: hidden; }
@@ -1440,28 +1439,24 @@
         // builds percentage-based Cloudinary crop URLs on the fly. No pdf.js, no
         // canvas, no iframe — just <img> tags inside a locked container.
         window.activeQuestionCoordinates = null;
-        let topOffset = 0;
-        let bottomOffset = 0;
+        let verticalExpansion = 0;
+        let horizontalExpansion = 0;
 
         function coordScale(v) { return Math.round((v / 1000) * 10000) / 10000; }
         function cropPrecision(v) { return Math.round(v * 10000) / 10000; }
         function resetQuestionCropOffsets() {
-            topOffset = 0;
-            bottomOffset = 0;
+            verticalExpansion = 0;
+            horizontalExpansion = 0;
         }
         function questionAdjustmentControls() {
             return `<div class="qsnip-adjustments" role="toolbar" aria-label="Adjust question crop">
-                <button type="button" class="qsnip-adjust-btn" title="Expand top" aria-label="Expand top" onclick="window.adjustQuestionCrop('expand-top')">↑<span>+</span></button>
-                <button type="button" class="qsnip-adjust-btn" title="Shrink top" aria-label="Shrink top" onclick="window.adjustQuestionCrop('shrink-top')">↓<span>−</span></button>
-                <button type="button" class="qsnip-adjust-btn" title="Expand bottom" aria-label="Expand bottom" onclick="window.adjustQuestionCrop('expand-bottom')">↓<span>+</span></button>
-                <button type="button" class="qsnip-adjust-btn" title="Shrink bottom" aria-label="Shrink bottom" onclick="window.adjustQuestionCrop('shrink-bottom')">↑<span>−</span></button>
+                <button type="button" class="qsnip-adjust-btn" title="Expand vertically" aria-label="Expand vertically" onclick="window.adjustQuestionCrop('expand-vertical')">↕</button>
+                <button type="button" class="qsnip-adjust-btn" title="Expand horizontally" aria-label="Expand horizontally" onclick="window.adjustQuestionCrop('expand-horizontal')">↔</button>
             </div>`;
         }
         window.adjustQuestionCrop = function(action) {
-            if (action === 'expand-top') topOffset = cropPrecision(topOffset - 0.02);
-            if (action === 'shrink-top') topOffset = cropPrecision(topOffset + 0.02);
-            if (action === 'expand-bottom') bottomOffset = cropPrecision(bottomOffset + 0.02);
-            if (action === 'shrink-bottom') bottomOffset = cropPrecision(bottomOffset - 0.02);
+            if (action === 'expand-vertical') verticalExpansion = cropPrecision(verticalExpansion + 0.04);
+            if (action === 'expand-horizontal') horizontalExpansion = cropPrecision(horizontalExpansion + 0.02);
             window.renderQuestionSnippet(currentQ);
         };
 
@@ -1500,10 +1495,10 @@
             if (qIdx !== -1) { query = tail.slice(qIdx); tail = tail.slice(0, qIdx); }
             tail = tail.replace(/\.pdf$/i, '.' + (format || 'png'));
             if (!/\.(png|webp|jpg|jpeg)$/i.test(tail)) tail += '.' + (format || 'png');
-            const w = coordScale(Number(box.xmax) - Number(box.xmin));
-            const h = cropPrecision(coordScale(Number(box.ymax) - Number(box.ymin)) - topOffset + bottomOffset);
-            const x = coordScale(Number(box.xmin));
-            const y = cropPrecision(coordScale(Number(box.ymin)) + topOffset);
+            const w = cropPrecision(coordScale(Number(box.xmax) - Number(box.xmin)) + (horizontalExpansion * 2));
+            const h = cropPrecision(coordScale(Number(box.ymax) - Number(box.ymin)) + (verticalExpansion * 2));
+            const x = cropPrecision(coordScale(Number(box.xmin)) - horizontalExpansion);
+            const y = cropPrecision(coordScale(Number(box.ymin)) - verticalExpansion);
             const t = `pg_${box.page || 1},c_crop,g_north_west,w_${w},h_${h},x_${x},y_${y},fl_relative`;
             return head + t + '/' + tail + query;
         };
