@@ -125,6 +125,12 @@
         .exam-workspace { display: flex; width: 100vw; height: calc(100vh - 50px); overflow: hidden; background: var(--exam-workspace-bg);}
         .pdf-panel { width: 70%; flex: 0 0 70%; height: 100%; overflow-y: auto; background: var(--bg-surface); display: flex; flex-direction: column; border: none;}
         .pdf-panel iframe { width: 100%; height: 100%; border: none; flex: 1; display: block; outline: none; }
+        /* Question-snippet viewer: locked, responsive, no zoom-out / no peeking at neighbours */
+        .qsnip-viewport { width: 100%; max-width: 100%; height: 100%; flex: 1; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; padding: 10px; background: var(--bg-surface); touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+        .qsnip-scroll { width: 100%; max-width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        .qsnip-img { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; object-position: top center; pointer-events: none; -webkit-user-drag: none; background: var(--bg-surface); }
+        .qsnip-empty { display: flex; height: 100%; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: 13px; color: var(--text-muted); }
+        .qsnip-prefetch { position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; overflow: hidden; }
         .control-panel { width: 30%; flex: 0 0 30%; height: 100%; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--control-panel-bg); }
         .q-card { background: var(--bg-surface); border-radius: 8px; padding: 15px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);}
         .options-row { display: flex; justify-content: space-evenly; margin-bottom: 25px; }
@@ -370,108 +376,6 @@
             .review-q-pane { flex: 1 1 auto; }
         }
     </style>
-    <!-- ===== STUDY PLANNER ADD-ON STYLES (categories · memory index · streak · calendar) ===== -->
-    <style id="planner-styles">
-        .planner-grid { display:grid; grid-template-columns: 1fr 1.5fr; gap:18px; margin-bottom:24px; }
-        @media (max-width:900px){ .planner-grid{ grid-template-columns:1fr; } }
-        .streak-hero { display:flex; align-items:center; gap:18px; }
-        .streak-flame { font-size:46px; line-height:1; filter: drop-shadow(0 6px 12px rgba(249,115,22,.35)); }
-        .streak-flame.cold { filter: grayscale(1); opacity:.5; }
-        .streak-count { font-size:42px; font-weight:800; letter-spacing:-1px; line-height:1; }
-        .streak-count small { font-size:13px; color:var(--text-muted); font-weight:700; margin-left:6px; letter-spacing:0; }
-        .streak-status { font-size:12px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
-        .streak-week { display:flex; gap:6px; margin-top:16px; }
-        .streak-day { flex:1; text-align:center; font-size:10px; font-weight:700; color:var(--text-muted); }
-        .streak-day i { display:block; height:8px; border-radius:4px; background:var(--border-light); margin-bottom:4px; }
-        .streak-day.on i { background:linear-gradient(135deg,#f97316,#ea580c); }
-        .streak-warn { margin-top:14px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; border-radius:10px; padding:10px 12px; font-size:12px; font-weight:600; line-height:1.5; }
-        .streak-reset { margin-top:14px; background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:10px; padding:10px 12px; font-size:12px; font-weight:600; }
-        .dark .streak-warn { background:#450a0a; border-color:#7f1d1d; color:#fca5a5; }
-        .dark .streak-reset { background:#431407; border-color:#9a3412; color:#fdba74; }
-        .cal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-        .cal-head b { font-size:15px; }
-        .cal-nav { border:1px solid var(--border-light); background:var(--bg-body); color:var(--text-main); width:30px; height:30px; border-radius:8px; cursor:pointer; font-weight:700; }
-        .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-        .cal-dow { text-align:center; font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; padding:4px 0; }
-        .cal-cell { aspect-ratio:1; border-radius:9px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:12px; font-weight:600; cursor:pointer; border:1px solid transparent; color:var(--text-main); background:var(--bg-body); transition:border-color .15s, transform .15s; }
-        .cal-cell:hover { border-color:#fb923c; transform:translateY(-1px); }
-        .cal-cell.empty { background:transparent; cursor:default; pointer-events:none; }
-        .cal-cell.today { border-color:#f97316; color:#ea580c; }
-        .cal-cell.past { opacity:.6; }
-        .cal-dots { display:flex; gap:3px; margin-top:3px; height:5px; }
-        .cal-dots i { width:5px; height:5px; border-radius:50%; display:block; }
-        .cal-dots i.attempt { background:#10b981; } .cal-dots i.target { background:#f97316; } .cal-dots i.due { background:#ef4444; } .cal-dots i.rev { background:#8b5cf6; }
-        .cal-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--text-muted); font-weight:600; margin-top:10px; }
-        .cal-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
-        .add-target-btn { background:none; border:0; color:#ea580c; font-weight:700; font-size:13px; cursor:pointer; padding:12px 0 0; text-align:left; }
-        .add-target-btn:hover { text-decoration:underline; }
-        .target-list { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
-        .target-row { display:flex; align-items:center; gap:10px; border:1px solid var(--border-light); border-radius:10px; padding:8px 12px; font-size:12px; background:var(--bg-body); }
-        .target-row .t-date { font-weight:800; color:#ea580c; min-width:58px; }
-        .target-row .t-title { font-weight:700; flex:1; }
-        .target-row .t-title small { display:block; font-weight:500; color:var(--text-muted); }
-        .target-row .t-days { color:var(--text-muted); font-weight:600; white-space:nowrap; }
-        .target-row.done .t-title { text-decoration:line-through; opacity:.6; }
-        .icon-btn { border:1px solid var(--border-light); background:var(--bg-surface); color:var(--text-muted); border-radius:6px; min-width:26px; height:26px; padding:0 6px; cursor:pointer; font-size:11px; font-weight:800; }
-        .icon-btn:hover { color:var(--danger); border-color:var(--danger); }
-        .icon-btn.ok:hover { color:var(--success); border-color:var(--success); }
-        #target-alert-stack { position:sticky; top:0; z-index:30; display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
-        #target-alert-stack:empty { display:none; }
-        .target-banner { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#f97316,#ea580c); color:#fff; border-radius:14px; padding:14px 18px; box-shadow:0 12px 26px rgba(249,115,22,.32); border:1px solid rgba(255,255,255,.25); }
-        .target-banner.urgent { background:linear-gradient(135deg,#ef4444,#b91c1c); box-shadow:0 12px 26px rgba(239,68,68,.32); }
-        .target-banner .tb-badge { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); border-radius:999px; padding:4px 10px; font-size:11px; font-weight:800; letter-spacing:.06em; white-space:nowrap; }
-        .target-banner .tb-text { flex:1; font-size:14px; font-weight:700; }
-        .target-banner .tb-text small { display:block; font-weight:500; opacity:.9; font-size:12px; margin-top:2px; }
-        .target-banner .btn { background:#fff; color:#ea580c; padding:8px 12px; font-size:12px; }
-        .target-banner .tb-close { background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.4); border-radius:8px; width:32px; height:32px; cursor:pointer; font-weight:800; font-size:14px; flex-shrink:0; }
-        .target-banner .tb-close:hover { background:#fff; color:#b91c1c; }
-        @media (max-width:640px){ .target-banner { flex-wrap:wrap; } }
-        .memory-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
-        .memory-card { border:1px solid var(--border-light); border-radius:14px; padding:16px; background:var(--bg-body); display:flex; flex-direction:column; gap:10px; }
-        .memory-card h4 { font-size:14px; font-weight:700; }
-        .memory-card .m-sub { font-size:11px; color:var(--text-muted); line-height:1.5; }
-        .memory-card .m-rev { font-size:12px; font-weight:600; background:var(--vault-note-bg); border:1px dashed var(--vault-note-border); color:var(--vault-note-text); padding:8px 10px; border-radius:8px; }
-        .battery { display:flex; align-items:center; gap:10px; }
-        .battery-shell { flex:1; height:16px; border:2px solid var(--text-muted); border-radius:5px; padding:2px; position:relative; }
-        .battery-shell::after { content:''; position:absolute; right:-7px; top:2px; width:4px; height:6px; background:var(--text-muted); border-radius:0 2px 2px 0; }
-        .battery-fill { height:100%; border-radius:2px; transition:width .4s; background:#10b981; }
-        .battery-fill.mid { background:#eab308; } .battery-fill.low { background:#ef4444; }
-        .battery-pct { font-size:13px; font-weight:800; min-width:44px; text-align:right; }
-        .rev-timeline { display:flex; gap:5px; }
-        .rev-step { flex:1; text-align:center; font-size:10px; font-weight:700; padding:5px 2px; border-radius:6px; border:1px solid var(--border-light); color:var(--text-muted); background:var(--bg-surface); line-height:1.3; }
-        .rev-step span { display:block; font-size:9px; font-weight:600; opacity:.8; }
-        .rev-step.done { background:#e8fbf2; border-color:#6ee7b7; color:#047857; }
-        .rev-step.due { background:#fff1e8; border-color:#fb923c; color:#ea580c; }
-        .rev-step.overdue { background:#fee2e2; border-color:#f87171; color:#991b1b; }
-        .dark .rev-step.done { background:#064e3b; color:#6ee7b7; } .dark .rev-step.due { background:#431407; color:#fdba74; } .dark .rev-step.overdue { background:#7f1d1d; color:#fca5a5; }
-        .memory-actions { display:flex; gap:6px; flex-wrap:wrap; }
-        .memory-actions .btn { padding:7px 10px; font-size:11px; }
-        .browse-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
-        .browse-toolbar .spacer { flex:1; }
-        .chip-row { display:flex; gap:6px; flex-wrap:wrap; }
-        .filter-chip { border:1px solid var(--border-light); background:var(--bg-body); color:var(--text-muted); padding:7px 12px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer; }
-        .filter-chip.active { background:#fff1e8; border-color:#fb923c; color:#ea580c; }
-        .dark .filter-chip.active { background:#431407; }
-        .browse-toolbar select { padding:8px 10px; border:1px solid var(--border-light); border-radius:9px; background:var(--bg-body); color:var(--text-main); font-size:12px; font-weight:600; }
-        .browse-toolbar label { font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; }
-        .card-badges { display:flex; gap:4px; flex-wrap:wrap; margin:6px 0; }
-        .cat-badge { display:inline-block; padding:3px 8px; border-radius:6px; font-size:10px; font-weight:800; }
-        .cat-pre { background:#f1edff; color:#7c3aed; } .cat-chapter { background:#eaf2ff; color:#2563eb; } .cat-revision { background:#e8fbf2; color:#059669; }
-        .diff-badge { display:inline-block; padding:3px 8px; border-radius:6px; font-size:10px; font-weight:800; background:var(--bg-surface); border:1px solid var(--border-light); color:var(--text-muted); }
-        .status-badge { display:inline-block; padding:3px 8px; border-radius:6px; font-size:10px; font-weight:800; }
-        .st-done { background:#e8fbf2; color:#059669; } .st-open { background:#fef3c7; color:#b45309; } .st-missed { background:#fee2e2; color:#b91c1c; }
-        .card-cat-select { width:100%; margin-top:8px; padding:6px 8px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-surface); color:var(--text-muted); font-size:11px; font-weight:600; }
-        .planner-modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,.7); backdrop-filter:blur(4px); z-index:400; align-items:center; justify-content:center; padding:16px; }
-        .planner-modal.open { display:flex; }
-        .planner-modal-card { background:var(--bg-surface); border:1px solid var(--border-light); border-radius:16px; padding:26px; width:100%; max-width:470px; box-shadow:0 20px 40px rgba(0,0,0,.25); }
-        .planner-modal-card h3 { font-size:18px; font-weight:700; margin-bottom:4px; }
-        .planner-modal-card .m-hint { font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.5; }
-        .planner-modal-card .form-group input, .planner-modal-card .form-group select, .planner-modal-card .form-group textarea { color:var(--text-main); }
-        .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
-        .empty-note { font-size:13px; color:var(--text-muted); line-height:1.6; }
-        .card-head-row { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
-        .card-head-row h2 { margin:0; }
-    </style>
     <script>
         window.mockLogin = window.mockLogin || function() { alert("Authentication module initializing. Please wait..."); };
         window.mockLogout = window.mockLogout || function() {};
@@ -532,7 +436,6 @@
 
     <!-- 1. OVERVIEW DASHBOARD VIEW -->
     <div id="dashboard-view" class="view-panel active section-container">
-        <div id="target-alert-stack"></div>
         <div class="overview-hero">
             <div>
                 <span class="target-pill">TARGET GOAL: NEET / JEE</span>
@@ -547,32 +450,6 @@
             <div class="metric-card"><div class="metric-icon blue">📄</div><div><div class="metric-label">Tests Taken</div><div class="metric-value" id="ov-tests">0</div></div></div>
             <div class="metric-card"><div class="metric-icon green">⚡</div><div><div class="metric-label">Questions Solved</div><div class="metric-value" id="ov-questions">0</div></div></div>
             <div class="metric-card"><div class="metric-icon violet">🏅</div><div><div class="metric-label">Predicted AIR</div><div class="metric-value" id="ov-air">—</div></div></div>
-        </div>
-
-        <!-- ===== STUDY PLANNER: STREAK + CALENDAR ===== -->
-        <div class="planner-grid">
-            <div class="card" style="margin-bottom:0;">
-                <div class="card-head-row"><h2>🔥 Daily Streak</h2><span class="section-kicker" id="streak-best">Best: 0</span></div>
-                <div id="streak-widget"><p class="empty-note">Log in to start tracking your streak.</p></div>
-            </div>
-            <div class="card" style="margin-bottom:0;">
-                <div class="card-head-row"><h2>🗓️ Target Calendar</h2><span class="section-kicker" id="cal-upcoming-count"></span></div>
-                <div id="calendar-widget"></div>
-                <button class="add-target-btn" onclick="window.openTargetModal()">+ Add Test Target Note</button>
-                <div id="target-list" class="target-list"></div>
-            </div>
-        </div>
-
-        <!-- ===== STUDY PLANNER: MEMORY STRENGTH INDEX ===== -->
-        <div class="card">
-            <div class="card-head-row">
-                <div>
-                    <h2>🧠 Memory Strength Index</h2>
-                    <p class="section-kicker" style="margin-top:4px;">1 · 3 · 7 · 15 · 30 day revision queue · R = e<sup>-t/S</sup></p>
-                </div>
-                <button class="btn btn-outline" style="padding:8px 12px;font-size:12px;" onclick="window.openPlanModal()">+ Track a Chapter Manually</button>
-            </div>
-            <div id="memory-list" class="memory-list"><p class="empty-note">Finish a Chapterwise Test and its revision queue appears here automatically.</p></div>
         </div>
 
         <div class="card">
@@ -622,33 +499,6 @@
         <div class="header-section"><h1>📚 Browse Cloud Tests</h1><p>All tests are auto-named T1, T2, T3… Type a test name in the search to jump straight to it.</p></div>
         <div class="card">
             <input class="search-input" type="text" id="browse-search-input" placeholder="🔍 Search tests (e.g. T5)…" oninput="window.filterCloudTests()">
-            <!-- ===== CATEGORY FILTER / SORT TOOLBAR ===== -->
-            <div class="browse-toolbar">
-                <div class="chip-row" id="browse-cat-chips">
-                    <button class="filter-chip active" data-cat="all" onclick="window.setBrowseFilter('cat','all',this)">All</button>
-                    <button class="filter-chip" data-cat="pre" onclick="window.setBrowseFilter('cat','pre',this)">🎯 Pre-Tests</button>
-                    <button class="filter-chip" data-cat="chapter" onclick="window.setBrowseFilter('cat','chapter',this)">📖 Chapterwise</button>
-                    <button class="filter-chip" data-cat="revision" onclick="window.setBrowseFilter('cat','revision',this)">🔁 Revision</button>
-                </div>
-                <div class="spacer"></div>
-                <label>Status</label>
-                <select id="browse-done-filter" onchange="window.setBrowseFilter('done', this.value)">
-                    <option value="all">All</option>
-                    <option value="pending">Not attempted</option>
-                    <option value="done">Completed</option>
-                    <option value="missed">Deadline missed</option>
-                </select>
-                <label>Sort</label>
-                <select id="browse-sort" onchange="window.setBrowseFilter('sort', this.value)">
-                    <option value="newest">Newest first</option>
-                    <option value="oldest">Oldest first</option>
-                    <option value="due">Due date (soonest)</option>
-                    <option value="difficulty">Difficulty (easy → hard)</option>
-                    <option value="completion">Completion (pending first)</option>
-                    <option value="title">Title (A → Z)</option>
-                </select>
-            </div>
-            <p style="font-size:11px;color:var(--text-muted);margin:-6px 0 12px;">Wrong category? Use the dropdown on any card to re-file it — your override is saved to your account.</p>
             <div id="browse-tests-container" class="test-grid">
                 <p style="color: var(--text-muted); font-size: 14px;">Loading cloud tests…</p>
             </div>
@@ -807,31 +657,17 @@
                     <label>Official Answer Key String <span style="font-weight:400; color:var(--text-muted);">(optional — can be added later, 200 comma-separated entries for a full paper)</span></label>
                     <input type="text" id="admin-key-string" placeholder="Comma separated right answers">
                 </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Gemini Coordinate Map JSON <span style="font-weight:400; color:var(--text-muted);">(optional — enables per-question auto-zoom snippets)</span></label>
+                    <textarea id="admin-coord-json" rows="10" placeholder='[{"q_no":1,"page":1,"xmin":40,"ymin":60,"xmax":960,"ymax":210}, ...]' style="width:100%; min-height:180px; padding:12px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-surface); color:var(--text-main); font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; resize:vertical;"></textarea>
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">One object per question on a 0–1000 coordinate scale. Multiple objects with the same <b>q_no</b> are allowed for questions that spill across a page break — they render stacked in order. Leave blank to keep the classic full-paper view.</p>
+                </div>
             </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label>Due Date <span style="font-weight:400; color:var(--text-muted);">(optional)</span></label>
                     <input type="datetime-local" id="admin-test-duedate">
                     <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Before this date, each student gets one graded attempt. After it passes, "Launch Exam" turns into unlimited "Reattempt" for practice — the paper never disappears. Leave blank for an always-open practice test.</p>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Test Category</label>
-                    <select id="admin-test-category">
-                        <option value="pre">Pre-Test (Target Term / AIATS mock)</option>
-                        <option value="chapter" selected>Chapterwise Test</option>
-                        <option value="revision">Revision Test</option>
-                    </select>
-                    <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Students can re-file a test from Browse Tests if this is wrong.</p>
-                </div>
-                <div class="form-group">
-                    <label>Difficulty</label>
-                    <select id="admin-test-difficulty">
-                        <option value="easy">Easy</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
                 </div>
             </div>
             <button class="btn" style="background: linear-gradient(135deg,#f97316,#ea580c); width: 100%; margin-top: 10px; padding: 14px;" id="btn-admin-publish" onclick="window.publishMockTest()">Deploy Test to Cloud Database</button>
@@ -1138,9 +974,44 @@
             const duration = document.getElementById('admin-test-duration').value;
             const qpFile = document.getElementById('admin-qp-file').files[0];
             const keyString = document.getElementById('admin-key-string').value.trim();
+            const coordText = (document.getElementById('admin-coord-json')?.value || '').trim();
             const dueDateVal = document.getElementById('admin-test-duedate').value; // "" if left blank
 
             if (!title || !qpFile) return alert("Title and QP PDF are required.");
+
+            // ---- Coordinate map validation (client-side, before any upload happens) ----
+            const expectedTotal = window.templateForDuration(duration).total;
+            let questionCoordinates = null;
+            if (coordText) {
+                let parsed;
+                try { parsed = JSON.parse(coordText); }
+                catch (e) { return alert("Coordinate Map JSON is not valid JSON:\n\n" + e.message); }
+                if (!Array.isArray(parsed)) return alert("Coordinate Map JSON must be an array of objects.");
+                const fields = ['q_no', 'page', 'xmin', 'ymin', 'xmax', 'ymax'];
+                for (let i = 0; i < parsed.length; i++) {
+                    const box = parsed[i];
+                    if (!box || typeof box !== 'object' || Array.isArray(box)) return alert(`Entry #${i + 1} is not an object.`);
+                    for (const f of fields) {
+                        const v = box[f];
+                        if (!Number.isFinite(Number(v))) return alert(`Entry #${i + 1} is missing a numeric "${f}".`);
+                    }
+                    if (Number(box.xmax) <= Number(box.xmin) || Number(box.ymax) <= Number(box.ymin)) return alert(`Entry #${i + 1} (q_no ${box.q_no}) has an empty or inverted box.`);
+                    for (const f of ['xmin', 'ymin', 'xmax', 'ymax']) {
+                        const v = Number(box[f]);
+                        if (v < 0 || v > 1000) return alert(`Entry #${i + 1}: "${f}" must be on the 0-1000 scale.`);
+                    }
+                }
+                const uniqueQs = new Set(parsed.map(b => Number(b.q_no)));
+                if (uniqueQs.size !== expectedTotal) {
+                    return alert(`Coordinate map covers ${uniqueQs.size} question(s) but this test has ${expectedTotal} questions. Fix the map (or clear the field) before deploying.`);
+                }
+                questionCoordinates = parsed.map(b => ({
+                    q_no: Math.round(Number(b.q_no)), page: Math.round(Number(b.page)),
+                    xmin: Math.round(Number(b.xmin)), ymin: Math.round(Number(b.ymin)),
+                    xmax: Math.round(Number(b.xmax)), ymax: Math.round(Number(b.ymax))
+                })).sort((a, b) => a.q_no - b.q_no || a.page - b.page || a.ymin - b.ymin);
+            }
+
             const btn = document.getElementById('btn-admin-publish');
             btn.innerText = "Deploying..."; btn.disabled = true;
 
@@ -1149,15 +1020,16 @@
                 await addDoc(collection(db, "cloud_tests"), {
                     title: title, duration: parseInt(duration || "180", 10), 
                     questionPaperUrl: qpURL, keyString: keyString,
+                    questionCoordinates: questionCoordinates,
                     customRanges: window.readCustomRanges('admin'),
                     totalQuestions: window.templateForDuration(duration).total,
                     totalMarks: window.templateForDuration(duration).marks,
                     dueDate: dueDateVal ? new Date(dueDateVal).toISOString() : null,
-                    category: (document.getElementById('admin-test-category') || {}).value || 'chapter',
-                    difficulty: (document.getElementById('admin-test-difficulty') || {}).value || 'medium',
                     createdAt: new Date().toISOString()
                 });
                 alert("Published successfully!");
+                const coordBox = document.getElementById('admin-coord-json');
+                if (coordBox) coordBox.value = '';
                 document.getElementById('admin-test-title').value = '';
                 document.getElementById('admin-key-string').value = '';
                 document.getElementById('admin-test-duedate').value = '';
@@ -1286,12 +1158,13 @@
                     window.pendingResumeData = sessionData;
                     window.pendingResumeTestInfo = {
                         testId, title: data.title, duration: data.duration,
-                        qpUrl: data.questionPaperUrl, keyString: data.keyString, customRanges: data.customRanges || null
+                        qpUrl: data.questionPaperUrl, keyString: data.keyString, customRanges: data.customRanges || null,
+                        questionCoordinates: data.questionCoordinates || null
                     };
                     window.showResumeModal(data.title, sessionData);
                 } else {
                     // No saved session — start fresh
-                    window.startSandbox(data.title, data.duration, data.questionPaperUrl, data.keyString, null, data.customRanges || null);
+                    window.startSandbox(data.title, data.duration, data.questionPaperUrl, data.keyString, null, data.customRanges || null, data.questionCoordinates || null);
                 }
             }
         };
@@ -1325,11 +1198,11 @@
 
             if (choice === 'continue') {
                 // Resume from the saved session — pass sessionData so startSandbox restores it
-                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, sessionData, info.customRanges);
+                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, sessionData, info.customRanges, info.questionCoordinates || null);
             } else {
                 // Retake from scratch — delete the old session first, then start fresh
                 await clearSessionSnapshot();
-                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, null, info.customRanges);
+                window.startSandbox(info.title, info.duration, info.qpUrl, info.keyString, null, info.customRanges, info.questionCoordinates || null);
             }
         };
 
@@ -1557,17 +1430,120 @@
             return `${m}m ${s}s`;
         }
 
-        window.startSandbox = function(title, duration, pdfUrl, keyString, sessionData, customRanges) {
+        // ================= CLOUDINARY QUESTION-SNIPPET ENGINE =================
+        // Reads the coordinate map stored on the test document (0-1000 scale) and
+        // builds percentage-based Cloudinary crop URLs on the fly. No pdf.js, no
+        // canvas, no iframe — just <img> tags inside a locked container.
+        window.activeQuestionCoordinates = null;
+
+        function coordScale(v) { return Math.round((v / 1000) * 10000) / 10000; }
+
+        // Groups the flat coordinate array into { qNum: [box, box...] } so a question
+        // that spills over a page boundary keeps all of its boxes, in order.
+        window.buildCoordinateIndex = function(list) {
+            if (!Array.isArray(list) || !list.length) return null;
+            const index = {};
+            list.forEach(b => {
+                if (!b) return;
+                const q = Math.round(Number(b.q_no));
+                if (!Number.isFinite(q)) return;
+                const box = {
+                    q_no: q, page: Math.round(Number(b.page)) || 1,
+                    xmin: Number(b.xmin), ymin: Number(b.ymin),
+                    xmax: Number(b.xmax), ymax: Number(b.ymax)
+                };
+                if (![box.xmin, box.ymin, box.xmax, box.ymax].every(Number.isFinite)) return;
+                (index[q] = index[q] || []).push(box);
+            });
+            Object.values(index).forEach(arr => arr.sort((a, b) => a.page - b.page || a.ymin - b.ymin));
+            return Object.keys(index).length ? index : null;
+        };
+
+        // Injects `pg_[page],c_crop,g_north_west,w_,h_,x_,y_,fl_relative` right after
+        // /upload/ and swaps the .pdf extension for a raster one.
+        window.buildQuestionCropUrl = function(baseUrl, box, format) {
+            if (!baseUrl || !box) return null;
+            const marker = '/upload/';
+            const at = baseUrl.indexOf(marker);
+            if (at === -1) return null;
+            const head = baseUrl.slice(0, at + marker.length);
+            let tail = baseUrl.slice(at + marker.length);
+            let query = '';
+            const qIdx = tail.indexOf('?');
+            if (qIdx !== -1) { query = tail.slice(qIdx); tail = tail.slice(0, qIdx); }
+            tail = tail.replace(/\.pdf$/i, '.' + (format || 'png'));
+            if (!/\.(png|webp|jpg|jpeg)$/i.test(tail)) tail += '.' + (format || 'png');
+            const w = coordScale(Number(box.xmax) - Number(box.xmin));
+            const h = coordScale(Number(box.ymax) - Number(box.ymin));
+            const x = coordScale(Number(box.xmin));
+            const y = coordScale(Number(box.ymin));
+            const t = `pg_${box.page || 1},c_crop,g_north_west,w_${w},h_${h},x_${x},y_${y},fl_relative`;
+            return head + t + '/' + tail + query;
+        };
+
+        window.questionCropUrls = function(qNum) {
+            const index = window.activeQuestionCoordinates;
+            if (!index || !window.activeQpUrl) return [];
+            const boxes = index[qNum];
+            if (!boxes || !boxes.length) return [];
+            return boxes.map(b => window.buildQuestionCropUrl(window.activeQpUrl, b)).filter(Boolean);
+        };
+
+        // Silent, low-priority warm-up of the next two questions so navigation feels instant.
+        const prefetchedSnippets = new Set();
+        function prefetchQuestion(qNum) {
+            window.questionCropUrls(qNum).forEach(url => {
+                if (prefetchedSnippets.has(url)) return;
+                prefetchedSnippets.add(url);
+                const img = new Image();
+                try { img.fetchPriority = 'low'; } catch (e) {}
+                img.decoding = 'async';
+                img.loading = 'eager';
+                img.src = url;
+            });
+        }
+
+        // Renders one question's snippet(s) stacked vertically inside the locked view.
+        window.renderQuestionSnippet = function(qNum) {
+            const frame = document.getElementById('pdf-view-frame');
+            if (!frame || !window.activeQuestionCoordinates) return false;
+            const urls = window.questionCropUrls(qNum);
+            let scroll = frame.querySelector('.qsnip-scroll');
+            if (!scroll) {
+                frame.innerHTML = '<div class="qsnip-viewport"><div class="qsnip-scroll"></div></div>';
+                scroll = frame.querySelector('.qsnip-scroll');
+            }
+            if (!urls.length) {
+                scroll.innerHTML = `<div class="qsnip-empty">No coordinate box stored for Question ${qNum}. Answer it from the paper or ask your admin to re-upload the coordinate map.</div>`;
+            } else {
+                scroll.innerHTML = urls.map((url, i) =>
+                    `<img class="qsnip-img" src="${url}" alt="Question ${qNum}${urls.length > 1 ? ' part ' + (i + 1) : ''}" draggable="false" decoding="async" fetchpriority="high">`
+                ).join('');
+            }
+            scroll.scrollTop = 0;
+            prefetchQuestion(qNum + 1);
+            prefetchQuestion(qNum + 2);
+            return true;
+        };
+
+        window.startSandbox = function(title, duration, pdfUrl, keyString, sessionData, customRanges, questionCoordinates) {
             window.currentAnswerKey = keyString ? keyString.split(',').map(s => s.trim()) : [];
             window.currentCustomRanges = window.normalizeCustomRanges(customRanges || null);
             window.currentTemplateTotal = window.templateForDuration(duration).total;
             SECTIONS = window.getSubjects({}, window.currentAnswerKey, window.currentCustomRanges);
             totalQuestions = window.layoutTotal(SECTIONS);
             window.activeQpUrl = pdfUrl;
+            window.activeQuestionCoordinates = window.buildCoordinateIndex(questionCoordinates);
             window.currentMaxMarks = window.maxMarksFor(SECTIONS);
             
             document.getElementById('active-exam-title').innerText = title;
-            document.getElementById('pdf-view-frame').innerHTML = `<iframe src="${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1"></iframe>`;
+            if (window.activeQuestionCoordinates) {
+                // Coordinate map present -> locked per-question image snippets.
+                document.getElementById('pdf-view-frame').innerHTML = '<div class="qsnip-viewport"><div class="qsnip-scroll"></div></div>';
+            } else {
+                // No map (e.g. local sandbox papers) -> classic full-paper view.
+                document.getElementById('pdf-view-frame').innerHTML = `<iframe src="${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1"></iframe>`;
+            }
             
             responses = sessionData?.responses || {};
             states = sessionData?.states || {};
@@ -1656,6 +1632,7 @@
         window.loadQuestion = function(qNum) {
             markTimeSpent();
             currentQ = qNum;
+            window.renderQuestionSnippet(qNum);
             document.getElementById('current-q-label').innerText = `Question ${qNum}`;
             const secIdx = sectionIndexOf(qNum);
             document.getElementById('current-q-subject').innerText = SECTIONS[secIdx].name;
@@ -2885,476 +2862,6 @@
             btn.disabled = !!examLive;
         };
         setInterval(window.syncReviewButtonState, 800);
-    </script>
-
-    <!-- ===== STUDY PLANNER MODALS ===== -->
-    <div id="target-modal" class="planner-modal" onclick="if(event.target===this) window.closeTargetModal()">
-        <div class="planner-modal-card">
-            <h3>🎯 Pin a Test Target</h3>
-            <p class="m-hint">Pin a self-assigned practice target or an external exam date. A persistent banner appears on the Overview when the date is 3 days away or less, until you finish the test or clear it.</p>
-            <input type="hidden" id="target-edit-id">
-            <div class="form-group"><label>Target Date</label><input type="date" id="target-date"></div>
-            <div class="form-group"><label>Title</label><input type="text" id="target-title" placeholder="e.g. Finish AIATS-3 · Physics revision · Board exam"></div>
-            <div class="form-group"><label>Link a cloud test <span style="font-weight:400;color:var(--text-muted);">(optional — auto-completes the target when attempted)</span></label><select id="target-test"><option value="">None (manual target)</option></select></div>
-            <div class="form-group"><label>Note <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label><textarea id="target-note" rows="2" placeholder="Anything you want to remember about this target…"></textarea></div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="window.closeTargetModal()">Cancel</button>
-                <button class="btn" style="background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.saveTarget()">Pin Target</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="plan-modal" class="planner-modal" onclick="if(event.target===this) window.closePlanModal()">
-        <div class="planner-modal-card">
-            <h3>🧠 Revision Queue for a Chapter</h3>
-            <p class="m-hint">Type the exact title of the revision test you want to sit after this chapter (it's a free note — nothing is pre-filled). Micro-revisions are queued on day 1, 3, 7, 15 and 30. When you attempt a test with a matching title, the memory battery jumps back to 100%.</p>
-            <input type="hidden" id="plan-edit-id">
-            <div class="form-group"><label>Chapter / Chapterwise test</label><input type="text" id="plan-chapter" placeholder="e.g. the chapterwise test you just finished" list="cloud-test-titles"></div>
-            <div class="form-group"><label>Day 0 (chapter test completed on)</label><input type="date" id="plan-day0"></div>
-            <div class="form-group"><label>Revision test to attempt <span style="font-weight:400;color:var(--text-muted);">(your note)</span></label><input type="text" id="plan-revision" placeholder="Type the revision test title you'll use" list="cloud-test-titles"></div>
-            <div class="form-group"><label>Extra note <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label><textarea id="plan-note" rows="2" placeholder="e.g. focus on numericals, redo wrong Qs first…"></textarea></div>
-            <datalist id="cloud-test-titles"></datalist>
-            <div class="modal-actions">
-                <button class="btn btn-outline" id="plan-delete-btn" style="margin-right:auto;color:var(--danger);border-color:var(--danger);display:none;" onclick="window.deletePlan()">Remove</button>
-                <button class="btn btn-outline" onclick="window.closePlanModal()">Cancel</button>
-                <button class="btn btn-success" onclick="window.savePlan()">Save Queue</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== STUDY PLANNER ENGINE =====
-         Test categorisation & user overrides · forgetting-curve revision queue (1-3-7-15-30) ·
-         strict deadline streak tracker · calendar targets with 3-day banners.
-         Everything is persisted per-user in Firestore at users/{uid}/meta/planner. -->
-    <script type="module">
-        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const CAT_LABEL = { pre: 'Pre-Test', chapter: 'Chapterwise', revision: 'Revision' };
-        const INTERVALS = [1, 3, 7, 15, 30];          // spaced-repetition offsets (days after Day 0)
-        const STABILITY = [2, 4, 8, 16, 32, 64];      // S (days) in R = e^(-t/S); grows per completed revision
-        const DIFF_ORDER = { easy: 0, medium: 1, hard: 2 };
-        const DAY = 86400000;
-
-        // ---- state ----
-        const P = { overrides: {}, plans: {}, streak: { missed: {} }, targets: [] };
-        window.plannerState = P;
-        let loadedFor = null;
-        const BF = { cat: 'all', done: 'all', sort: 'newest' };
-        let calCursor = new Date();
-
-        // ---- helpers ----
-        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const pad = n => String(n).padStart(2, '0');
-        const dayKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-        const parseDay = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
-        const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        const daysUntil = k => Math.round((startOfDay(parseDay(k)) - startOfDay(new Date())) / DAY);
-        const addDays = (d, n) => new Date(d.getTime() + n * DAY);
-        const uid = () => window.currentUser?.uid || null;
-        const recs = () => window.allVaultRecords || [];
-        const tests = () => window._cloudTestCache || [];
-        const testById = id => tests().find(t => t.id === id);
-        const fmtDate = k => parseDay(k).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-
-        // ---- persistence ----
-        function ref() { return doc(window.db, 'users', uid(), 'meta', 'planner'); }
-        async function ensureLoaded() {
-            if (!uid() || !window.db) return false;
-            if (loadedFor === uid()) return true;
-            try {
-                const snap = await getDoc(ref());
-                const d = snap.exists() ? snap.data() : {};
-                P.overrides = d.overrides || {};
-                P.plans = d.plans || {};
-                P.streak = Object.assign({ missed: {} }, d.streak || {});
-                P.targets = Array.isArray(d.targets) ? d.targets : [];
-            } catch (e) { console.warn('planner load failed', e); }
-            loadedFor = uid();
-            return true;
-        }
-        let saveTimer = null;
-        function save() {
-            if (!uid() || !window.db) return;
-            clearTimeout(saveTimer);
-            saveTimer = setTimeout(async () => {
-                try { await setDoc(ref(), JSON.parse(JSON.stringify(P))); } catch (e) { console.warn('planner save failed', e); }
-            }, 250);
-        }
-
-        // ================= 1. CATEGORISATION =================
-        function inferCategory(t) {
-            const s = (t.title || '').toLowerCase();
-            if (/revis|recap|redo/.test(s)) return 'revision';
-            if (/aiats|target|term|full syllabus|grand|mock|major|pre-?test/.test(s)) return 'pre';
-            return 'chapter';
-        }
-        window.testCategory = t => P.overrides[t.id] || t.category || inferCategory(t);
-        window.setTestCategory = function (testId, cat) {
-            if (!cat) delete P.overrides[testId]; else P.overrides[testId] = cat;
-            save(); window.filterCloudTests(); refreshPlanner();
-        };
-        window.setBrowseFilter = function (key, value, el) {
-            BF[key] = value;
-            if (key === 'cat') document.querySelectorAll('#browse-cat-chips .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.cat === value));
-            window.filterCloudTests();
-        };
-
-        // attempts made BEFORE the deadline (or any attempt if no deadline) count as "completed on time"
-        function attemptsFor(testId) { return recs().filter(r => r.cloudTestId === testId); }
-        function testStatus(t) {
-            const atts = attemptsFor(t.id);
-            const due = t.dueDate ? new Date(t.dueDate) : null;
-            if (atts.length) {
-                const onTime = !due || atts.some(r => !r.createdAt || new Date(r.createdAt) <= due);
-                return onTime ? 'done' : 'late';
-            }
-            if (due && new Date() >= due) return 'missed';
-            return 'pending';
-        }
-
-        // Replaces the original card renderer with a category-aware one (original stays defined above).
-        window.filterCloudTests = function () {
-            const browseContainer = document.getElementById('browse-tests-container');
-            const dashContainer = document.getElementById('available-tests-container');
-            const all = tests();
-            const q = ((document.getElementById('browse-search-input') || {}).value || (document.getElementById('test-search-input') || {}).value || '').toLowerCase().trim();
-            const build = (list, applyFilters) => {
-                let f = list.filter(t => {
-                    const seq = `t${all.indexOf(t) + 1}`;
-                    if (q && !((t.title || '').toLowerCase().includes(q) || seq.includes(q))) return false;
-                    if (!applyFilters) return true;
-                    if (BF.cat !== 'all' && window.testCategory(t) !== BF.cat) return false;
-                    const st = testStatus(t);
-                    if (BF.done === 'done' && !(st === 'done' || st === 'late')) return false;
-                    if (BF.done === 'pending' && st !== 'pending') return false;
-                    if (BF.done === 'missed' && st !== 'missed') return false;
-                    return true;
-                });
-                const ts = t => Date.parse(t.createdAt || '') || 0;
-                const sort = applyFilters ? BF.sort : 'newest';
-                f.sort((a, b) => {
-                    switch (sort) {
-                        case 'oldest': return ts(a) - ts(b);
-                        case 'due': { const da = a.dueDate ? Date.parse(a.dueDate) : Infinity, db_ = b.dueDate ? Date.parse(b.dueDate) : Infinity; return da - db_ || ts(b) - ts(a); }
-                        case 'difficulty': return (DIFF_ORDER[a.difficulty] ?? 1) - (DIFF_ORDER[b.difficulty] ?? 1) || ts(b) - ts(a);
-                        case 'completion': { const o = { pending: 0, missed: 1, late: 2, done: 3 }; return o[testStatus(a)] - o[testStatus(b)] || ts(b) - ts(a); }
-                        case 'title': return (a.title || '').localeCompare(b.title || '');
-                        default: return ts(b) - ts(a) || all.indexOf(b) - all.indexOf(a);
-                    }
-                });
-                return f.map(t => {
-                    const idx = all.indexOf(t);
-                    const cat = window.testCategory(t);
-                    const overridden = !!P.overrides[t.id];
-                    const st = testStatus(t);
-                    const stHtml = { done: '<span class="status-badge st-done">✅ Completed</span>', late: '<span class="status-badge st-done">🔁 Practised (after due)</span>', missed: '<span class="status-badge st-missed">⛔ Deadline missed</span>', pending: t.dueDate ? `<span class="status-badge st-open">⏳ Due ${new Date(t.dueDate).toLocaleDateString()}</span>` : '<span class="status-badge st-open">Open</span>' }[st];
-                    const diff = t.difficulty || 'medium';
-                    return `<div class="test-card">
-                        <h3>Test ${idx + 1} (T${idx + 1})</h3>
-                        <p style="font-size:12px;color:var(--text-muted);margin:4px 0;">${esc(t.title || '')}</p>
-                        <p>⏱️ ${esc(t.duration)} Mins · ${t.totalMarks || window.templateForDuration(t.duration).marks} Marks</p>
-                        <div class="card-badges">
-                            <span class="cat-badge cat-${cat}">${CAT_LABEL[cat]}${overridden ? ' ✎' : ''}</span>
-                            <span class="diff-badge">${diff.charAt(0).toUpperCase() + diff.slice(1)}</span>
-                            ${stHtml}
-                        </div>
-                        <select class="card-cat-select" title="Re-file this test" onchange="window.setTestCategory('${t.id}', this.value)">
-                            <option value="pre" ${cat === 'pre' ? 'selected' : ''}>📂 Pre-Tests</option>
-                            <option value="chapter" ${cat === 'chapter' ? 'selected' : ''}>📂 Chapterwise Tests</option>
-                            <option value="revision" ${cat === 'revision' ? 'selected' : ''}>📂 Revision Tests</option>
-                            ${overridden ? '<option value="">↺ Reset to default category</option>' : ''}
-                        </select>
-                        <button class="btn" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.fetchAndStartCloudTest('${t.id}')">${st === 'done' || st === 'late' ? 'Reattempt →' : 'Start Test →'}</button>
-                    </div>`;
-                }).join('');
-            };
-            const empty = '<p style="color:var(--text-muted);font-size:14px;">No tests match your filters.</p>';
-            if (browseContainer) browseContainer.innerHTML = build(all, true) || empty;
-            if (dashContainer) dashContainer.innerHTML = build(all, false) || empty;
-        };
-
-        // ================= 2. FORGETTING CURVE / MEMORY INDEX =================
-        function planStability(p) { return STABILITY[Math.min((p.done || []).length, STABILITY.length - 1)]; }
-        function retention(p) {
-            const last = new Date(p.lastReviewAt || p.completedAt || Date.now());
-            const t = Math.max(0, (Date.now() - last.getTime()) / DAY);
-            return Math.max(0, Math.min(1, Math.exp(-t / planStability(p))));
-        }
-        function planSteps(p) {
-            const day0 = startOfDay(new Date(p.completedAt));
-            const today = startOfDay(new Date());
-            return INTERVALS.map(off => {
-                const date = addDays(day0, off);
-                const done = (p.done || []).includes(off);
-                let state = 'future';
-                if (done) state = 'done';
-                else if (date.getTime() === today.getTime()) state = 'due';
-                else if (date < today) state = 'overdue';
-                return { off, date, state };
-            });
-        }
-        function nextStep(p) { return planSteps(p).find(s => s.state !== 'done') || null; }
-        function findTestByTitle(title) {
-            const t = (title || '').trim().toLowerCase();
-            return t ? tests().find(x => (x.title || '').trim().toLowerCase() === t) : null;
-        }
-        window.completeRevision = function (planId) {
-            const p = P.plans[planId]; if (!p) return;
-            const nxt = nextStep(p);
-            p.done = p.done || [];
-            if (nxt) p.done.push(nxt.off);
-            p.lastReviewAt = new Date().toISOString();   // instant reset to 100%
-            save(); refreshPlanner();
-        };
-        window.startRevisionFor = function (planId) {
-            const p = P.plans[planId]; if (!p) return;
-            const t = findTestByTitle(p.revisionTitle);
-            if (t) window.fetchAndStartCloudTest(t.id);
-            else alert(`No cloud test titled "${p.revisionTitle}" was found. Attempt it from Local Sandbox or Browse Tests, then press "Mark revision done".`);
-        };
-        function renderMemory() {
-            const box = document.getElementById('memory-list'); if (!box) return;
-            const plans = Object.values(P.plans).sort((a, b) => retention(a) - retention(b));
-            if (!plans.length) { box.innerHTML = '<p class="empty-note">Finish a <b>Chapterwise Test</b> and its 1-3-7-15-30 day revision queue appears here automatically. You then type which revision test to use — nothing is pre-filled.</p>'; return; }
-            box.innerHTML = plans.map(p => {
-                const r = Math.round(retention(p) * 100);
-                const cls = r > 60 ? '' : r > 30 ? 'mid' : 'low';
-                const steps = planSteps(p);
-                const nxt = nextStep(p);
-                const overdue = steps.filter(s => s.state === 'overdue').length;
-                const revNote = p.revisionTitle ? `🔁 Revision test: <b>${esc(p.revisionTitle)}</b>` : '⚠️ No revision test assigned yet — click <b>Edit</b> and type which revision test you will attempt.';
-                const nxtLabel = nxt ? (nxt.state === 'due' ? 'Due <b>today</b>' : nxt.state === 'overdue' ? `<b>Overdue</b> since ${nxt.date.toLocaleDateString()}` : `Next: <b>${nxt.date.toLocaleDateString()}</b> (day ${nxt.off})`) : '<b>Cycle complete</b> 🎉 — all 5 revisions done';
-                return `<div class="memory-card">
-                    <div>
-                        <h4>${esc(p.chapterTitle || 'Chapter')}</h4>
-                        <div class="m-sub">Day 0: ${new Date(p.completedAt).toLocaleDateString()} · S = ${planStability(p)}d · ${(p.done || []).length}/5 revisions · ${nxtLabel}${overdue ? ` · <span style="color:var(--danger);font-weight:700;">${overdue} ignored</span>` : ''}</div>
-                    </div>
-                    <div class="battery"><div class="battery-shell"><div class="battery-fill ${cls}" style="width:${r}%"></div></div><span class="battery-pct" style="color:${r > 60 ? '#10b981' : r > 30 ? '#ca8a04' : '#ef4444'}">${r}%</span></div>
-                    <div class="rev-timeline">${steps.map(s => `<div class="rev-step ${s.state}">D${s.off}<span>${s.state === 'done' ? '✓' : s.date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span></div>`).join('')}</div>
-                    <div class="m-rev">${revNote}${p.note ? `<div style="font-weight:500;margin-top:4px;">📝 ${esc(p.note)}</div>` : ''}</div>
-                    <div class="memory-actions">
-                        ${nxt ? `<button class="btn" style="background:linear-gradient(135deg,#f97316,#ea580c);" onclick="window.startRevisionFor('${p.id}')">▶ Start revision</button><button class="btn btn-success" onclick="window.completeRevision('${p.id}')">✓ Mark revision done</button>` : ''}
-                        <button class="btn btn-outline" onclick="window.openPlanModal('${p.id}')">✎ Edit</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-        window.openPlanModal = function (planId) {
-            const m = document.getElementById('plan-modal');
-            const p = planId ? P.plans[planId] : null;
-            document.getElementById('plan-edit-id').value = planId || '';
-            document.getElementById('plan-chapter').value = p?.chapterTitle || '';
-            document.getElementById('plan-day0').value = dayKey(p ? new Date(p.completedAt) : new Date());
-            document.getElementById('plan-revision').value = p?.revisionTitle || '';
-            document.getElementById('plan-note').value = p?.note || '';
-            document.getElementById('plan-delete-btn').style.display = p ? 'inline-flex' : 'none';
-            document.getElementById('cloud-test-titles').innerHTML = tests().map(t => `<option value="${esc(t.title)}"></option>`).join('');
-            m.classList.add('open');
-        };
-        window.closePlanModal = () => document.getElementById('plan-modal').classList.remove('open');
-        window.savePlan = function () {
-            const id = document.getElementById('plan-edit-id').value || ('manual-' + Date.now());
-            const chapter = document.getElementById('plan-chapter').value.trim();
-            const day0 = document.getElementById('plan-day0').value;
-            if (!chapter || !day0) return alert('Chapter title and Day 0 date are required.');
-            const existing = P.plans[id] || { id, done: [], createdAt: new Date().toISOString() };
-            const completedAt = parseDay(day0).toISOString();
-            if (existing.completedAt !== completedAt) { existing.lastReviewAt = existing.lastReviewAt && existing.done?.length ? existing.lastReviewAt : completedAt; }
-            Object.assign(existing, { chapterTitle: chapter, completedAt, revisionTitle: document.getElementById('plan-revision').value.trim(), note: document.getElementById('plan-note').value.trim() });
-            P.plans[id] = existing;
-            save(); window.closePlanModal(); refreshPlanner();
-        };
-        window.deletePlan = function () {
-            const id = document.getElementById('plan-edit-id').value;
-            if (id && confirm('Remove this chapter from the revision queue?')) { delete P.plans[id]; save(); refreshPlanner(); }
-            window.closePlanModal();
-        };
-
-        // Called right after any test result is archived.
-        function onTestCompleted(title, cloudTestId, docId) {
-            const nowIso = new Date().toISOString();
-            if (docId && !recs().some(r => r.id === docId)) recs().push({ id: docId, title, cloudTestId: cloudTestId || null, createdAt: nowIso });
-            // (a) completing an assigned revision test → battery to 100%
-            const tl = (title || '').trim().toLowerCase();
-            Object.values(P.plans).forEach(p => {
-                if (p.revisionTitle && p.revisionTitle.trim().toLowerCase() === tl && nextStep(p)) {
-                    p.done = p.done || []; p.done.push(nextStep(p).off); p.lastReviewAt = nowIso;
-                }
-            });
-            // (b) completing a chapterwise cloud test → queue a new revision cycle (Day 0 = now)
-            const t = cloudTestId ? testById(cloudTestId) : null;
-            if (t && window.testCategory(t) === 'chapter' && !P.plans[t.id]) {
-                P.plans[t.id] = { id: t.id, chapterTitle: t.title, completedAt: nowIso, lastReviewAt: nowIso, revisionTitle: '', note: '', done: [], createdAt: nowIso };
-                setTimeout(() => { if (confirm(`"${t.title}" is a Chapterwise Test. A 1-3-7-15-30 day revision queue was created.\n\nAdd the revision test you'll use now?`)) window.openPlanModal(t.id); }, 800);
-            }
-            // (c) linked calendar targets auto-complete
-            P.targets.forEach(tg => { if (!tg.completed && ((tg.testId && tg.testId === cloudTestId) || (!tg.testId && tg.title.trim().toLowerCase() === tl))) tg.completed = true; });
-            save(); refreshPlanner();
-        }
-
-        // ================= 3. STRICT STREAK TRACKER =================
-        function computeStreak() {
-            const now = new Date();
-            P.streak.missed = P.streak.missed || {};
-            // Strict rule: a live test hit its deadline with is_attempted == false → streak resets to 0.
-            tests().forEach(t => {
-                if (!t.dueDate) return;
-                const due = new Date(t.dueDate);
-                if (now < due) return;
-                const attemptedOnTime = recs().some(r => r.cloudTestId === t.id && (!r.createdAt || new Date(r.createdAt) <= due));
-                if (!attemptedOnTime && !P.streak.missed[t.id]) { P.streak.missed[t.id] = due.toISOString(); P.streak.dirty = true; }
-            });
-            const resetAt = Object.values(P.streak.missed).sort().pop() || null;
-            const days = new Set(recs().filter(r => r.createdAt && (!resetAt || r.createdAt > resetAt)).map(r => dayKey(new Date(r.createdAt))));
-            let count = 0; let cursor = startOfDay(now);
-            if (!days.has(dayKey(cursor))) cursor = addDays(cursor, -1); // today still pending doesn't break it
-            while (days.has(dayKey(cursor))) { count++; cursor = addDays(cursor, -1); }
-            // longest run ever (ignores resets) for the "Best" chip
-            const allDays = [...new Set(recs().filter(r => r.createdAt).map(r => dayKey(new Date(r.createdAt))))].sort();
-            let best = 0, run = 0, prev = null;
-            allDays.forEach(k => { run = prev && (parseDay(k) - parseDay(prev)) === DAY ? run + 1 : 1; best = Math.max(best, run); prev = k; });
-            const resetTest = resetAt ? Object.entries(P.streak.missed).find(([, v]) => v === resetAt)?.[0] : null;
-            Object.assign(P.streak, { count, best: Math.max(best, P.streak.best || 0), resetAt, resetTestId: resetTest, activeToday: days.has(dayKey(startOfDay(now))), lastComputed: now.toISOString() });
-            if (P.streak.dirty) { delete P.streak.dirty; save(); }
-        }
-        function renderStreak() {
-            const box = document.getElementById('streak-widget'); if (!box) return;
-            if (!uid()) { box.innerHTML = '<p class="empty-note">Log in to start tracking your streak.</p>'; return; }
-            const s = P.streak; const c = s.count || 0;
-            document.getElementById('streak-best').innerText = `Best: ${s.best || 0} day${s.best === 1 ? '' : 's'}`;
-            const week = []; for (let i = 6; i >= 0; i--) { const d = addDays(startOfDay(new Date()), -i); week.push(d); }
-            const activeDays = new Set(recs().filter(r => r.createdAt).map(r => dayKey(new Date(r.createdAt))));
-            const upcoming = tests().filter(t => t.dueDate && new Date(t.dueDate) > new Date() && !attemptsFor(t.id).length && (new Date(t.dueDate) - Date.now()) < 3 * DAY)
-                .sort((a, b) => Date.parse(a.dueDate) - Date.parse(b.dueDate));
-            const status = s.activeToday ? '✅ Test done today — streak is safe.' : c > 0 ? '⏰ No test yet today. Finish any Pre / Chapterwise / Revision test before midnight to keep it.' : 'Complete any test today to light the flame.';
-            const resetInfo = s.resetAt ? `<div class="streak-reset">🔻 Streak was reset to 0 on ${new Date(s.resetAt).toLocaleString()} — <b>${esc(testById(s.resetTestId)?.title || 'a cloud test')}</b> reached its deadline unattempted.</div>` : '';
-            box.innerHTML = `
-                <div class="streak-hero">
-                    <div class="streak-flame ${c ? '' : 'cold'}">🔥</div>
-                    <div><div class="streak-count">${c}<small>day${c === 1 ? '' : 's'}</small></div><div class="streak-status">${status}</div></div>
-                </div>
-                <div class="streak-week">${week.map(d => `<div class="streak-day ${activeDays.has(dayKey(d)) && (!s.resetAt || d.toISOString() > s.resetAt.slice(0, 10)) ? 'on' : ''}"><i></i>${d.toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 2)}</div>`).join('')}</div>
-                ${upcoming.length ? `<div class="streak-warn">⚠️ Deadline risk — unattempted tests that will <b>reset your streak to 0</b> if missed:${upcoming.map(t => `<div>• <b>${esc(t.title)}</b> · due ${new Date(t.dueDate).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} <button class="icon-btn ok" style="margin-left:6px;" onclick="window.fetchAndStartCloudTest('${t.id}')">Start</button></div>`).join('')}</div>` : ''}
-                ${resetInfo}`;
-        }
-
-        // ================= 4. CALENDAR + TARGETS + 3-DAY BANNERS =================
-        function targetIsComplete(tg) {
-            if (tg.completed) return true;
-            if (tg.testId) return recs().some(r => r.cloudTestId === tg.testId && (!r.createdAt || r.createdAt >= (tg.createdAt || '')));
-            return false;
-        }
-        window.calShift = function (n) { calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth() + n, 1); renderCalendar(); };
-        function renderCalendar() {
-            const box = document.getElementById('calendar-widget'); if (!box) return;
-            const y = calCursor.getFullYear(), m = calCursor.getMonth();
-            const first = new Date(y, m, 1), daysInMonth = new Date(y, m + 1, 0).getDate();
-            const todayKey = dayKey(new Date());
-            const attemptDays = new Set(recs().filter(r => r.createdAt).map(r => dayKey(new Date(r.createdAt))));
-            const targetDays = new Set(P.targets.filter(t => !t.dismissed).map(t => t.date));
-            const dueDays = new Set(tests().filter(t => t.dueDate).map(t => dayKey(new Date(t.dueDate))));
-            const revDays = new Set(); Object.values(P.plans).forEach(p => planSteps(p).forEach(s => { if (s.state !== 'done') revDays.add(dayKey(s.date)); }));
-            let cells = '';
-            for (let i = 0; i < first.getDay(); i++) cells += '<div class="cal-cell empty"></div>';
-            for (let d = 1; d <= daysInMonth; d++) {
-                const k = `${y}-${pad(m + 1)}-${pad(d)}`;
-                const dots = (attemptDays.has(k) ? '<i class="attempt"></i>' : '') + (targetDays.has(k) ? '<i class="target"></i>' : '') + (dueDays.has(k) ? '<i class="due"></i>' : '') + (revDays.has(k) ? '<i class="rev"></i>' : '');
-                cells += `<div class="cal-cell ${k === todayKey ? 'today' : ''} ${k < todayKey ? 'past' : ''}" title="Pin a target on ${k}" onclick="window.openTargetModal('${k}')">${d}<div class="cal-dots">${dots}</div></div>`;
-            }
-            box.innerHTML = `
-                <div class="cal-head"><button class="cal-nav" onclick="window.calShift(-1)">‹</button><b>${first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</b><button class="cal-nav" onclick="window.calShift(1)">›</button></div>
-                <div class="cal-grid">${['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<div class="cal-dow">${d}</div>`).join('')}${cells}</div>
-                <div class="cal-legend"><span><i style="background:#10b981"></i>Attempt</span><span><i style="background:#f97316"></i>Target</span><span><i style="background:#ef4444"></i>Test deadline</span><span><i style="background:#8b5cf6"></i>Revision due</span></div>`;
-        }
-        function renderTargets() {
-            const list = document.getElementById('target-list'); if (!list) return;
-            const items = P.targets.filter(t => !t.dismissed).sort((a, b) => a.date.localeCompare(b.date));
-            const cnt = document.getElementById('cal-upcoming-count');
-            if (cnt) cnt.innerText = items.filter(t => !targetIsComplete(t) && daysUntil(t.date) >= 0).length + ' upcoming';
-            list.innerHTML = items.map(t => {
-                const du = daysUntil(t.date); const done = targetIsComplete(t);
-                const when = done ? 'Done' : du === 0 ? 'Today' : du < 0 ? `${-du}d ago` : `in ${du}d`;
-                return `<div class="target-row ${done ? 'done' : ''}">
-                    <span class="t-date">${fmtDate(t.date)}</span>
-                    <span class="t-title">${esc(t.title)}${t.testId ? `<small>🔗 ${esc(testById(t.testId)?.title || 'cloud test')}</small>` : ''}${t.note ? `<small>📝 ${esc(t.note)}</small>` : ''}</span>
-                    <span class="t-days">${when}</span>
-                    ${!done ? `<button class="icon-btn ok" title="Mark completed" onclick="window.completeTarget('${t.id}')">✓</button>` : ''}
-                    <button class="icon-btn" title="Edit" onclick="window.openTargetModal(null,'${t.id}')">✎</button>
-                    <button class="icon-btn" title="Remove" onclick="window.dismissTarget('${t.id}')">✕</button>
-                </div>`;
-            }).join('') || '<p class="empty-note" style="margin-top:8px;">No targets pinned. Click a day or the button above.</p>';
-        }
-        function renderBanners() {
-            const stack = document.getElementById('target-alert-stack'); if (!stack) return;
-            const due = P.targets.filter(t => !t.dismissed && !targetIsComplete(t) && daysUntil(t.date) <= 3).sort((a, b) => a.date.localeCompare(b.date));
-            stack.innerHTML = due.map(t => {
-                const du = daysUntil(t.date);
-                const badge = du < 0 ? `${-du} DAY${-du === 1 ? '' : 'S'} OVERDUE` : du === 0 ? 'TODAY' : `IN ${du} DAY${du === 1 ? '' : 'S'}`;
-                const linked = t.testId ? testById(t.testId) : findTestByTitle(t.title);
-                return `<div class="target-banner ${du <= 1 ? 'urgent' : ''}" role="alert">
-                    <span class="tb-badge">🎯 ${badge}</span>
-                    <div class="tb-text">${esc(t.title)}<small>Target date ${parseDay(t.date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}${t.note ? ` · ${esc(t.note)}` : ''}</small></div>
-                    ${linked ? `<button class="btn" onclick="window.fetchAndStartCloudTest('${linked.id}')">Start test →</button>` : `<button class="btn" onclick="window.completeTarget('${t.id}')">Mark done</button>`}
-                    <button class="tb-close" title="Clear this alert" onclick="window.dismissTarget('${t.id}')">✕</button>
-                </div>`;
-            }).join('');
-        }
-        window.openTargetModal = function (dateKey, editId) {
-            if (!uid()) return alert('Sign in first to pin targets.');
-            const t = editId ? P.targets.find(x => x.id === editId) : null;
-            document.getElementById('target-edit-id').value = editId || '';
-            document.getElementById('target-date').value = t?.date || dateKey || dayKey(new Date());
-            document.getElementById('target-title').value = t?.title || '';
-            document.getElementById('target-note').value = t?.note || '';
-            const sel = document.getElementById('target-test');
-            sel.innerHTML = '<option value="">None (manual target / external exam)</option>' + tests().map(x => `<option value="${x.id}" ${t?.testId === x.id ? 'selected' : ''}>${esc(x.title)}</option>`).join('');
-            document.getElementById('target-modal').classList.add('open');
-            setTimeout(() => document.getElementById('target-title').focus(), 50);
-        };
-        window.closeTargetModal = () => document.getElementById('target-modal').classList.remove('open');
-        window.saveTarget = function () {
-            const date = document.getElementById('target-date').value;
-            const title = document.getElementById('target-title').value.trim();
-            if (!date || !title) return alert('Pick a date and give the target a title.');
-            const id = document.getElementById('target-edit-id').value;
-            const testId = document.getElementById('target-test').value || null;
-            const note = document.getElementById('target-note').value.trim();
-            const existing = id ? P.targets.find(x => x.id === id) : null;
-            if (existing) Object.assign(existing, { date, title, testId, note });
-            else P.targets.push({ id: 'tg-' + Date.now(), date, title, testId, note, dismissed: false, completed: false, createdAt: new Date().toISOString() });
-            calCursor = parseDay(date);
-            save(); window.closeTargetModal(); refreshPlanner();
-        };
-        window.completeTarget = function (id) { const t = P.targets.find(x => x.id === id); if (t) { t.completed = true; save(); refreshPlanner(); } };
-        window.dismissTarget = function (id) { const t = P.targets.find(x => x.id === id); if (t) { t.dismissed = true; save(); refreshPlanner(); } };
-
-        // ================= ORCHESTRATION =================
-        function refreshPlanner() {
-            if (!uid()) { renderStreak(); renderCalendar(); return; }
-            computeStreak(); renderStreak(); renderMemory(); renderCalendar(); renderTargets(); renderBanners();
-        }
-        window.refreshPlanner = refreshPlanner;
-
-        // Hook the existing data-loading pipeline (nothing in the original code is removed).
-        (function (orig) {
-            window.loadAnalyticsHub = async function () { if (typeof orig === 'function') await orig.apply(this, arguments); await ensureLoaded(); refreshPlanner(); };
-        })(window.loadAnalyticsHub);
-        (function (orig) {
-            window.loadOfficialCloudTests = async function () { if (typeof orig === 'function') await orig.apply(this, arguments); await ensureLoaded(); window.filterCloudTests(); refreshPlanner(); };
-        })(window.loadOfficialCloudTests);
-        (function (orig) {
-            window.saveToHistoryVault = async function (title, timeStr, attempted, keyArr, timingObj, cloudTestId, metrics) {
-                const docId = typeof orig === 'function' ? await orig.apply(this, arguments) : null;
-                try { await ensureLoaded(); onTestCompleted(title, cloudTestId, docId); } catch (e) { console.warn(e); }
-                return docId;
-            };
-        })(window.saveToHistoryVault);
-
-        // Deadlines & day boundaries pass while the tab is open — re-evaluate every minute.
-        setInterval(() => { if (uid() && loadedFor === uid()) refreshPlanner(); }, 60000);
-        // Reset cached planner when the account changes.
-        setInterval(() => { if (loadedFor && loadedFor !== uid()) { loadedFor = null; } }, 2000);
-        renderCalendar();
     </script>
 
     <!-- ANTI-CHEAT LOCKOUT MODAL -->
