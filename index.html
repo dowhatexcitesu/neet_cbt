@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-body: #f2f6fb; --bg-surface: #ffffff;
+            --bg-body: #f2f6fb; --bg-surface: #ffffff; --paper-bg: #fafaf6;
             --text-main: #0b1328; --text-muted: #60718b;
             --primary: #f97316; --primary-hover: #ea580c;
             --success: #16a34a; --danger: #ef4444; --warning: #eab308;
@@ -31,7 +31,7 @@
         }
 
         .dark {
-            --bg-body: #0f172a; --bg-surface: #1e293b;
+            --bg-body: #0f172a; --bg-surface: #1e293b; --paper-bg: #1e293b;
             --text-main: #f8fafc; --text-muted: #94a3b8;
             --border-light: #334155;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -126,13 +126,13 @@
         .pdf-panel { width: 70%; flex: 0 0 70%; height: 100%; overflow-y: auto; background: var(--bg-surface); display: flex; flex-direction: column; border: none;}
         .pdf-panel iframe { width: 100%; height: 100%; border: none; flex: 1; display: block; outline: none; }
         /* Question-snippet viewer: locked, responsive, no zoom-out / no peeking at neighbours */
-        .qsnip-viewport { position: relative; width: 100%; max-width: 100%; height: 100%; flex: 1; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; padding: 10px; background: var(--bg-surface); touch-action: pan-y; -webkit-user-select: none; user-select: none; }
-        .qsnip-scroll { width: 100%; max-width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        .qsnip-viewport { position: relative; width: 100%; max-width: 100%; height: 100%; flex: 1; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 10px; background: var(--paper-bg); touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+        .qsnip-scroll { width: 100%; max-width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 4px; background: var(--paper-bg); }
         .qsnip-adjustments { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--bg-surface); box-shadow: var(--shadow-sm); opacity: 0.2; transition: opacity 0.16s ease; }
         .qsnip-adjustments:hover, .qsnip-adjustments:focus-within { opacity: 1; }
         .qsnip-adjust-btn { width: 28px; height: 28px; padding: 0; border: 0; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-main); cursor: pointer; font-size: 16px; line-height: 1; }
         .qsnip-adjust-btn:hover, .qsnip-adjust-btn:focus-visible { background: var(--bg-body); outline: 1px solid var(--border-light); }
-        .qsnip-img { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; object-position: top center; pointer-events: none; -webkit-user-drag: none; background: var(--bg-surface); }
+        .qsnip-img { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; object-position: center; pointer-events: none; -webkit-user-drag: none; background: var(--paper-bg); }
         .qsnip-empty { display: flex; height: 100%; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: 13px; color: var(--text-muted); }
         .qsnip-prefetch { position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; overflow: hidden; }
         .control-panel { width: 30%; flex: 0 0 30%; height: 100%; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--control-panel-bg); }
