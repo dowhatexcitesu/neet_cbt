@@ -1455,8 +1455,8 @@
             </div>`;
         }
         window.adjustQuestionCrop = function(action) {
-            if (action === 'expand-vertical') verticalExpansion = cropPrecision(verticalExpansion + 0.04);
-            if (action === 'expand-horizontal') horizontalExpansion = cropPrecision(horizontalExpansion + 0.02);
+            if (action === 'expand-vertical') verticalExpansion = cropPrecision(verticalExpansion + 0.60);
+            if (action === 'expand-horizontal') horizontalExpansion = cropPrecision(horizontalExpansion + 0.60);
             window.renderQuestionSnippet(currentQ);
         };
 
@@ -1493,12 +1493,23 @@
             let query = '';
             const qIdx = tail.indexOf('?');
             if (qIdx !== -1) { query = tail.slice(qIdx); tail = tail.slice(0, qIdx); }
-            tail = tail.replace(/\.pdf$/i, '.' + (format || 'png'));
-            if (!/\.(png|webp|jpg|jpeg)$/i.test(tail)) tail += '.' + (format || 'png');
-            const w = cropPrecision(coordScale(Number(box.xmax) - Number(box.xmin)) + (horizontalExpansion * 2));
-            const h = cropPrecision(coordScale(Number(box.ymax) - Number(box.ymin)) + (verticalExpansion * 2));
-            const x = cropPrecision(coordScale(Number(box.xmin)) - horizontalExpansion);
-            const y = cropPrecision(coordScale(Number(box.ymin)) - verticalExpansion);
+            tail = tail.replace(/\.pdf$/i, '.png');
+            if (!/\.png$/i.test(tail)) tail = tail.replace(/\.(webp|jpg|jpeg)$/i, '') + '.png';
+
+            const adjustedX = Number(box.xmin) / 1000;
+            const adjustedY = Number(box.ymin) / 1000;
+            const adjustedWidth = Math.min(1 - adjustedX, ((Number(box.xmax) - Number(box.xmin)) / 1000) + 0.35);
+            const adjustedHeight = Math.min(1 - adjustedY, ((Number(box.ymax) - Number(box.ymin)) / 1000) + 0.35);
+
+            const finalX = Math.max(0, adjustedX);
+            const finalY = Math.max(0, adjustedY);
+            const finalWidth = Math.min(1 - finalX, adjustedWidth + horizontalExpansion);
+            const finalHeight = Math.min(1 - finalY, adjustedHeight + verticalExpansion);
+
+            const x = finalX.toFixed(3);
+            const y = finalY.toFixed(3);
+            const w = finalWidth.toFixed(3);
+            const h = finalHeight.toFixed(3);
             const t = `pg_${box.page || 1},c_crop,g_north_west,w_${w},h_${h},x_${x},y_${y},fl_relative`;
             return head + t + '/' + tail + query;
         };
@@ -1667,8 +1678,14 @@
             updatePaletteUI();
         };
 
-        window.prevQuestion = function() { if (currentQ > 1) loadQuestion(currentQ - 1); };
-        window.nextQuestion = function() { if (currentQ < totalQuestions) loadQuestion(currentQ + 1); };
+        window.prevQuestion = function() {
+            resetQuestionCropOffsets();
+            if (currentQ > 1) loadQuestion(currentQ - 1);
+        };
+        window.nextQuestion = function() {
+            resetQuestionCropOffsets();
+            if (currentQ < totalQuestions) loadQuestion(currentQ + 1);
+        };
 
         window.setOption = function(val) {
             document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
@@ -1679,6 +1696,7 @@
         };
 
         window.saveNext = function() {
+            resetQuestionCropOffsets();
             states[currentQ] = responses[currentQ] ? 'answered' : 'not-answered';
             saveSessionSnapshot();
             if (currentQ < totalQuestions) loadQuestion(currentQ + 1);
